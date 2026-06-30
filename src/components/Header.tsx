@@ -1,4 +1,4 @@
-import focusIcon from '@/assets/focus-icon.png.asset.json';
+import focusIcon from '@/assets/focus-mark.png.asset.json';
 import ThemeToggle from './ThemeToggle';
 
 export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
@@ -36,7 +36,7 @@ export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
           alt="Focus Indica"
           style={{ height: 32, width: 'auto' }}
         />
-        <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+        <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px', fontFamily: '"Montserrat Alternates", sans-serif' }}>
           Focus Indica
         </span>
       </a>
