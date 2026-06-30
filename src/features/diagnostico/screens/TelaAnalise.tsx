@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PageBackground from '@/components/PageBackground';
 
 const MENSAGENS = [
   'Lendo suas respostas...',
@@ -45,23 +46,9 @@ export default function TelaAnalise({ respostas, onConcluir }: Props) {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
-      style={{ background: 'var(--page-bg)', paddingTop: '60px' }}
+      style={{ paddingTop: '60px' }}
     >
-      {/* Animated blobs */}
-      <div
-        className="animate-blob absolute pointer-events-none"
-        style={{
-          top: '-100px', right: '-80px', width: 500, height: 500, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)',
-        }}
-      />
-      <div
-        className="animate-blob2 delay-2000 absolute pointer-events-none"
-        style={{
-          bottom: '-120px', left: '-60px', width: 400, height: 400, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%)',
-        }}
-      />
+      <PageBackground />
 
       <div className="relative z-10 flex flex-col items-center gap-8 max-w-sm w-full">
 

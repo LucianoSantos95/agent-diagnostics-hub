@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import MultipleChoiceQuestion from '../questions/MultipleChoiceQuestion';
 import FreeTextQuestion from '../questions/FreeTextQuestion';
+import PageBackground from '@/components/PageBackground';
+
 
 interface Pergunta {
   numero: number;
@@ -107,32 +109,9 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden"
-      style={{ background: 'var(--page-bg)', paddingTop: '80px' }}
+      style={{ paddingTop: '80px' }}
     >
-      {/* Animated blobs */}
-      <div
-        className="animate-blob absolute pointer-events-none"
-        style={{
-          top: '-100px', right: '-80px', width: 500, height: 500, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)',
-        }}
-      />
-      <div
-        className="animate-blob2 delay-2000 absolute pointer-events-none"
-        style={{
-          bottom: '-120px', left: '-60px', width: 400, height: 400, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%)',
-        }}
-      />
-
-      {/* Grid */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
+      <PageBackground />
 
       <div className="relative z-10 w-full max-w-2xl">
 
