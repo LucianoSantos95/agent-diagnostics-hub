@@ -29,7 +29,7 @@ export default function Footer() {
         <img
           src={focusLogo.url}
           alt="Focus"
-          style={{ height: 130, width: 'auto', filter: 'var(--logo-filter)' }}
+          style={{ height: 100, width: 'auto', filter: 'var(--logo-filter)' }}
         />
       </a>
     </footer>
