@@ -220,11 +220,14 @@ export default function TelaAbertura({ onIniciar }: Props) {
                         </div>
                       ))}
                     </div>
-                    <p className="text-xs leading-tight" style={{ color: 'rgba(147,197,253,0.65)' }}>
-                      <strong className="text-white">Case real:</strong> "Testamos 6 ferramentas.
+                    <button
+                      onClick={() => setCaseOpen(true)}
+                      className="text-xs leading-tight text-left hover:opacity-80 transition-opacity cursor-pointer"
+                      style={{ color: 'rgba(147,197,253,0.65)', background: 'none', border: 'none', padding: 0 }}
+                    >
+                      <strong className="text-white underline decoration-dotted underline-offset-2">Case real:</strong> "Testamos 6 ferramentas.
                       Nenhuma funcionou — porque estávamos resolvendo o problema errado."
-                    </p>
-                  </div>
+                    </button>
                 </div>
               </div>
             </div>
