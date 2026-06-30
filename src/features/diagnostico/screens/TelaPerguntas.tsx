@@ -107,7 +107,7 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden"
-      style={{ background: 'linear-gradient(145deg, #0a1628 0%, #1B3A5C 55%, #0f2440 100%)', paddingTop: '80px' }}
+      style={{ background: 'var(--page-bg)', paddingTop: '80px' }}
     >
       {/* Animated blobs */}
       <div

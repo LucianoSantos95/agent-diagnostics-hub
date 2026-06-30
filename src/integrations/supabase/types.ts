@@ -14,7 +14,97 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      diagnostico_leads: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          nome: string | null
+          quer_consultoria: boolean
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          quer_consultoria?: boolean
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          quer_consultoria?: boolean
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostico_leads_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "diagnostico_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostico_respostas: {
+        Row: {
+          id: string
+          pergunta_numero: number
+          resposta_valor: string
+          session_id: string
+        }
+        Insert: {
+          id?: string
+          pergunta_numero: number
+          resposta_valor: string
+          session_id: string
+        }
+        Update: {
+          id?: string
+          pergunta_numero?: number
+          resposta_valor?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostico_respostas_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostico_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostico_sessions: {
+        Row: {
+          categoria_resultado: string | null
+          completed_at: string | null
+          created_at: string
+          current_step: number
+          id: string
+          utm_source: string | null
+        }
+        Insert: {
+          categoria_resultado?: string | null
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          id?: string
+          utm_source?: string | null
+        }
+        Update: {
+          categoria_resultado?: string | null
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          id?: string
+          utm_source?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

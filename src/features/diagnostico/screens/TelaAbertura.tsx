@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import CursorRipple from '@/components/CursorRipple';
+import CaseRealDialog from '@/components/CaseRealDialog';
 
 interface Props {
   onIniciar: () => void;
@@ -13,6 +15,7 @@ const CATEGORIAS = [
 
 export default function TelaAbertura({ onIniciar }: Props) {
   const [visivel, setVisivel] = useState(false);
+  const [caseOpen, setCaseOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setVisivel(true), 80);
@@ -22,8 +25,9 @@ export default function TelaAbertura({ onIniciar }: Props) {
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
-      style={{ background: 'linear-gradient(145deg, #0a1628 0%, #1B3A5C 55%, #0f2440 100%)', paddingTop: '60px' }}
+      style={{ background: 'var(--page-bg)', paddingTop: '60px' }}
     >
+      <CursorRipple />
       {/* Animated blobs */}
       <div
         className="animate-blob absolute pointer-events-none"
@@ -216,10 +220,14 @@ export default function TelaAbertura({ onIniciar }: Props) {
                         </div>
                       ))}
                     </div>
-                    <p className="text-xs leading-tight" style={{ color: 'rgba(147,197,253,0.65)' }}>
-                      <strong className="text-white">Case real:</strong> "Testamos 6 ferramentas.
+                    <button
+                      onClick={() => setCaseOpen(true)}
+                      className="text-xs leading-tight text-left hover:opacity-80 transition-opacity cursor-pointer"
+                      style={{ color: 'rgba(147,197,253,0.65)', background: 'none', border: 'none', padding: 0 }}
+                    >
+                      <strong className="text-white underline decoration-dotted underline-offset-2">Case real:</strong> "Testamos 6 ferramentas.
                       Nenhuma funcionou — porque estávamos resolvendo o problema errado."
-                    </p>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -228,6 +236,8 @@ export default function TelaAbertura({ onIniciar }: Props) {
           </div>
         </div>
       </div>
+
+      <CaseRealDialog open={caseOpen} onClose={() => setCaseOpen(false)} />
     </div>
   );
 }
