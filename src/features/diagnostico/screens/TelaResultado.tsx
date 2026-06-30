@@ -11,6 +11,13 @@ const ICONE: Record<string, string> = {
   financeiro: '💰',
 };
 
+const COR_CATEGORIA: Record<string, string> = {
+  atendimento: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
+  vendas: 'linear-gradient(135deg, #10b981, #059669)',
+  operacao: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+  financeiro: 'linear-gradient(135deg, #f59e0b, #d97706)',
+};
+
 interface Props {
   resultado: ResultadoDiagnostico;
   respostas: Record<number, string>;
@@ -21,6 +28,7 @@ interface Props {
 
 export default function TelaResultado({ resultado, respostas, onSalvarEmail, onRegistrarCTA, onReiniciar }: Props) {
   const tarefaP4 = respostas[4] ?? '';
+  const cor = COR_CATEGORIA[resultado.categoria];
 
   const acordionItens = [
     { titulo: 'O que você precisa', conteudo: resultado.oQuePrecisa },
@@ -30,32 +38,42 @@ export default function TelaResultado({ resultado, respostas, onSalvarEmail, onR
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-lg mx-auto flex flex-col gap-6">
+    <div className="min-h-screen py-10 px-4"
+      style={{ background: 'linear-gradient(145deg, #0a1628 0%, #0f1f35 100%)' }}>
+      <div className="max-w-lg mx-auto flex flex-col gap-5">
 
-        {/* Header do resultado */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-6">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="text-3xl">{ICONE[resultado.categoria]}</span>
-            <div>
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Sua recomendação</p>
-              <h2 className="text-xl font-bold text-[#1B3A5C]">{resultado.titulo}</h2>
+        {/* Header resultado */}
+        <div className="rounded-2xl overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          {/* Topo colorido */}
+          <div className="px-6 py-5" style={{ background: cor }}>
+            <div className="flex items-center gap-3">
+              <span className="text-4xl">{ICONE[resultado.categoria]}</span>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-white/70 mb-0.5">
+                  Sua recomendação
+                </p>
+                <h2 className="text-2xl font-extrabold text-white">{resultado.titulo}</h2>
+              </div>
             </div>
           </div>
-          <p className="text-sm text-gray-500 italic mb-3">{resultado.subtitulo}</p>
-          <p className="text-sm text-gray-700 leading-relaxed">{resultado.porque}</p>
+          {/* Corpo */}
+          <div className="px-6 py-5" style={{ background: 'rgba(255,255,255,0.05)' }}>
+            <p className="text-sm italic mb-3" style={{ color: '#93c5fd' }}>{resultado.subtitulo}</p>
+            <p className="text-sm leading-relaxed" style={{ color: '#cbd5e1' }}>{resultado.porque}</p>
+          </div>
         </div>
 
-        {/* Aviso extra se tentou ferramenta antes e não deu certo */}
+        {/* Aviso ferramentas genéricas */}
         {resultado.avisoToolsGenericas && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4">
-            <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-1">
-              Atenção — você já tentou antes
+          <div className="rounded-xl px-5 py-4 border"
+            style={{ background: 'rgba(245,158,11,0.1)', borderColor: 'rgba(245,158,11,0.3)' }}>
+            <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: '#fbbf24' }}>
+              ⚠️ Atenção — você já tentou antes
             </p>
-            <p className="text-sm text-amber-800 leading-relaxed">
-              O erro mais comum de quem testou e não viu resultado é usar uma ferramenta genérica
-              para um problema específico. Um agente bem configurado para o <em>seu</em> gargalo
-              é completamente diferente de um chatbot genérico ou de uma automação de prateleira.
+            <p className="text-sm leading-relaxed" style={{ color: '#fde68a' }}>
+              O erro mais comum é usar uma ferramenta genérica para um problema específico.
+              Um agente configurado para o <em>seu</em> gargalo é completamente diferente
+              de um chatbot de prateleira.
             </p>
           </div>
         )}
@@ -63,26 +81,23 @@ export default function TelaResultado({ resultado, respostas, onSalvarEmail, onR
         {/* Accordion */}
         <AccordionResultado itens={acordionItens} />
 
-        {/* Bloco personalizado com P4 */}
+        {/* Personalização P4 */}
         <BlocoPersonalizacao tarefaP4={tarefaP4} categoria={resultado.categoria} />
 
-        {/* Captura de email */}
+        {/* Captura email */}
         <CapturaEmail onSalvar={onSalvarEmail} />
 
         {/* Reiniciar */}
         <div className="text-center">
-          <button
-            onClick={onReiniciar}
-            className="text-sm text-gray-400 hover:text-gray-600 underline transition-colors"
-          >
+          <button onClick={onReiniciar}
+            className="text-sm underline transition-colors"
+            style={{ color: 'rgba(147,197,253,0.5)' }}>
             Refazer com outras respostas
           </button>
         </div>
 
-        {/* CTA Comercial — visualmente separado */}
-        <div className="pt-2">
-          <CTAComercial onRegistrarCTA={onRegistrarCTA} />
-        </div>
+        {/* CTA Comercial */}
+        <CTAComercial onRegistrarCTA={onRegistrarCTA} />
 
       </div>
     </div>

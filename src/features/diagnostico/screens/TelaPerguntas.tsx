@@ -98,50 +98,60 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
   }, [perguntaAtual]);
 
   const pergunta = PERGUNTAS[perguntaVisivel - 1];
-  const resposta = respostas[perguntaAtual];
-  const podeAvancar = !!resposta?.trim();
+  const podeAvancar = !!(respostas[perguntaAtual]?.trim());
   const progresso = (perguntaAtual / 7) * 100;
   const microcopy = perguntaAtual > 1 ? PERGUNTAS[perguntaAtual - 2]?.microcopy : undefined;
 
-  function handleAvancar() {
-    setDirecao('frente');
-    onAvancar();
-  }
-
-  function handleVoltar() {
-    setDirecao('tras');
-    onVoltar();
-  }
+  function handleAvancar() { setDirecao('frente'); onAvancar(); }
+  function handleVoltar() { setDirecao('tras'); onVoltar(); }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-10">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
+      style={{ background: 'linear-gradient(145deg, #0a1628 0%, #1B3A5C 55%, #0f2440 100%)' }}
+    >
       <div className="w-full max-w-lg">
 
-        {/* Barra de progresso */}
+        {/* Progresso */}
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs text-gray-500 font-medium">Pergunta {perguntaAtual} de 7</span>
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-xs font-semibold" style={{ color: 'rgba(147,197,253,0.7)' }}>
+              Pergunta {perguntaAtual} de 7
+            </span>
             {microcopy && (
-              <span className="text-xs text-[#1B3A5C] font-medium">{microcopy}</span>
+              <span className="text-xs font-semibold text-emerald-400">{microcopy}</span>
             )}
           </div>
-          <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[#1B3A5C] rounded-full transition-all duration-500"
-              style={{ width: `${progresso}%` }}
-            />
+          {/* Bolinhas de progresso */}
+          <div className="flex gap-2">
+            {Array.from({ length: 7 }, (_, i) => (
+              <div
+                key={i}
+                className="flex-1 h-1.5 rounded-full transition-all duration-500"
+                style={{
+                  background: i < perguntaAtual
+                    ? 'linear-gradient(90deg, #3b82f6, #60a5fa)'
+                    : 'rgba(255,255,255,0.12)'
+                }}
+              />
+            ))}
           </div>
         </div>
 
-        {/* Card da pergunta */}
+        {/* Card */}
         <div
-          className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-180
-            ${animando
-              ? direcao === 'frente' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
-              : 'opacity-100 translate-x-0'
-            }`}
+          className="rounded-2xl p-6 border transition-all duration-200"
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            borderColor: 'rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(12px)',
+            opacity: animando ? 0 : 1,
+            transform: animando
+              ? direcao === 'frente' ? 'translateX(16px)' : 'translateX(-16px)'
+              : 'translateX(0)'
+          }}
         >
-          <h2 className="text-lg font-semibold text-[#1B3A5C] mb-5 leading-snug">
+          <h2 className="text-lg font-bold text-white mb-6 leading-snug">
             {pergunta.texto}
           </h2>
 
@@ -161,12 +171,16 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
         </div>
 
         {/* Navegação */}
-        <div className="flex gap-3 mt-5">
+        <div className="flex gap-3 mt-4">
           {perguntaAtual > 1 && (
             <button
               onClick={handleVoltar}
-              className="flex-none px-5 py-3 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium
-                hover:border-gray-300 hover:bg-gray-50 transition-all"
+              className="flex-none px-5 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+              style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#93c5fd'
+              }}
             >
               ← Voltar
             </button>
@@ -174,11 +188,16 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
           <button
             onClick={handleAvancar}
             disabled={!podeAvancar}
-            className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all duration-200
-              ${podeAvancar
-                ? 'bg-[#1B3A5C] text-white hover:bg-[#152e4a] shadow-md hover:shadow-lg active:scale-95'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }`}
+            className="flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-200"
+            style={podeAvancar ? {
+              background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+              color: '#fff',
+              boxShadow: '0 4px 20px rgba(37,99,235,0.4)'
+            } : {
+              background: 'rgba(255,255,255,0.07)',
+              color: 'rgba(255,255,255,0.3)',
+              cursor: 'not-allowed'
+            }}
           >
             {perguntaAtual === 7 ? 'Ver resultado →' : 'Continuar →'}
           </button>

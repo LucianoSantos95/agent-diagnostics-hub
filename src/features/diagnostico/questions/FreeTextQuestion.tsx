@@ -1,4 +1,4 @@
-const MAX = 140;
+﻿const MAX = 140;
 
 interface Props {
   placeholder: string;
@@ -13,15 +13,27 @@ export default function FreeTextQuestion({ placeholder, valorAtual, onChange }: 
   return (
     <div className="flex flex-col gap-2">
       <textarea
-        className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm text-gray-800
-          placeholder:text-gray-400 resize-none focus:outline-none focus:border-[#1B3A5C] transition-colors
-          min-h-[96px]"
+        className="w-full rounded-xl px-4 py-3 text-sm resize-none focus:outline-none min-h-[100px] transition-all duration-200"
+        style={{
+          background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          color: '#f1f5f9',
+          caretColor: '#60a5fa'
+        }}
         placeholder={placeholder}
         maxLength={MAX}
         value={valor}
         onChange={e => onChange(e.target.value)}
+        onFocus={e => {
+          e.currentTarget.style.borderColor = '#3b82f6';
+          e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.2)';
+        }}
+        onBlur={e => {
+          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+          e.currentTarget.style.boxShadow = 'none';
+        }}
       />
-      <p className={`text-xs text-right ${restantes <= 20 ? 'text-amber-500' : 'text-gray-400'}`}>
+      <p className="text-xs text-right" style={{ color: restantes <= 20 ? '#fbbf24' : 'rgba(147,197,253,0.4)' }}>
         {restantes} caracteres restantes
       </p>
     </div>
