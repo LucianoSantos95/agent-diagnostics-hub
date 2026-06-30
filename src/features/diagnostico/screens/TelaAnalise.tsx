@@ -45,7 +45,7 @@ export default function TelaAnalise({ respostas, onConcluir }: Props) {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
-      style={{ background: 'linear-gradient(145deg, #0a1628 0%, #1B3A5C 55%, #0f2440 100%)', paddingTop: '60px' }}
+      style={{ background: 'var(--page-bg)', paddingTop: '60px' }}
     >
       {/* Animated blobs */}
       <div

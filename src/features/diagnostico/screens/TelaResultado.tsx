@@ -49,7 +49,7 @@ export default function TelaResultado({ resultado, respostas, onSalvarEmail, onR
   return (
     <div
       className="min-h-screen"
-      style={{ background: 'linear-gradient(160deg, #070f1e 0%, #0c1a30 50%, #07111e 100%)', paddingTop: '60px' }}
+      style={{ background: 'var(--page-bg-result)', paddingTop: '60px' }}
     >
       <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-5">
 
