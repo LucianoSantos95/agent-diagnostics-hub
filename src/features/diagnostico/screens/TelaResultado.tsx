@@ -4,6 +4,7 @@ import BlocoPersonalizacao from '../resultado/BlocoPersonalizacao';
 import CapturaEmail from '../resultado/CapturaEmail';
 import CTAComercial from '../resultado/CTAComercial';
 import Footer from '@/components/Footer';
+import PageBackground from '@/components/PageBackground';
 
 const ICONE: Record<string, string> = {
   atendimento: '💬',
@@ -29,12 +30,13 @@ const COR_TEXTO: Record<string, string> = {
 interface Props {
   resultado: ResultadoDiagnostico;
   respostas: Record<number, string>;
+  sessionId: string;
   onSalvarEmail: (email: string) => Promise<void>;
   onRegistrarCTA: () => void;
   onReiniciar: () => void;
 }
 
-export default function TelaResultado({ resultado, respostas, onSalvarEmail, onRegistrarCTA, onReiniciar }: Props) {
+export default function TelaResultado({ resultado, respostas, sessionId, onSalvarEmail, onRegistrarCTA, onReiniciar }: Props) {
   const tarefaP4 = respostas[4] ?? '';
   const cor = COR_CATEGORIA[resultado.categoria];
   const corTexto = COR_TEXTO[resultado.categoria];
@@ -48,10 +50,11 @@ export default function TelaResultado({ resultado, respostas, onSalvarEmail, onR
 
   return (
     <div
-      className="min-h-screen"
-      style={{ background: 'var(--page-bg-result)', paddingTop: '60px' }}
+      className="min-h-screen relative overflow-hidden"
+      style={{ paddingTop: '60px' }}
     >
-      <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-5">
+      <PageBackground variant="result" />
+      <div className="relative z-10 max-w-2xl mx-auto px-4 py-8 flex flex-col gap-5">
 
         {/* Header resultado — hero section */}
         <div className="rounded-2xl overflow-hidden border animate-fade-up" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
@@ -156,7 +159,11 @@ export default function TelaResultado({ resultado, respostas, onSalvarEmail, onR
         </div>
 
         {/* Captura email */}
-        <CapturaEmail onSalvar={onSalvarEmail} />
+        <CapturaEmail
+          sessionId={sessionId}
+          categoria={resultado.categoria}
+          onSalvar={onSalvarEmail}
+        />
 
         {/* CTA Comercial */}
         <CTAComercial onRegistrarCTA={onRegistrarCTA} />

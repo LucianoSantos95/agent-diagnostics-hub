@@ -15,12 +15,11 @@ export default function DiagnosticoFlow() {
     [concluirAnalise]
   );
 
-  // TelaResultado manages its own footer
   const showFooter = state.tela === 'abertura';
 
   return (
     <div>
-      <Header />
+      <Header onLogoClick={reiniciar} />
 
       {state.tela === 'abertura' && <TelaAbertura onIniciar={iniciar} />}
 
@@ -45,6 +44,7 @@ export default function DiagnosticoFlow() {
         <TelaResultado
           resultado={state.resultado}
           respostas={state.respostas}
+          sessionId={state.sessionId}
           onSalvarEmail={salvarEmail}
           onRegistrarCTA={registrarCTA}
           onReiniciar={reiniciar}
