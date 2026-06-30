@@ -1,5 +1,12 @@
 export type Categoria = 'atendimento' | 'vendas' | 'operacao' | 'financeiro';
 
+export interface Ferramenta {
+  nome: string;
+  url: string;
+  descricao: string;
+  plano: string;
+}
+
 export interface ResultadoDiagnostico {
   categoria: Categoria;
   titulo: string;
@@ -7,6 +14,7 @@ export interface ResultadoDiagnostico {
   porque: string;
   oQuePrecisa: string;
   ondeEncontrar: string;
+  ferramentas: Ferramenta[];
   comoComecar: string;
   errosComuns: string;
   avisoToolsGenericas: boolean;
@@ -17,12 +25,12 @@ const CONTEUDO: Record<Categoria, Omit<ResultadoDiagnostico, 'categoria' | 'porq
     titulo: 'Agente de Atendimento',
     subtitulo: 'Seu maior gargalo está em responder clientes com velocidade e consistência.',
     oQuePrecisa: `Um agente de atendimento automatiza respostas para as dúvidas mais frequentes dos seus clientes — via WhatsApp, Instagram ou chat no site — sem precisar de um humano disponível 24h. Ele responde na hora, filtra o que precisa de atenção real e só escala para você o que não consegue resolver. O resultado prático: menos tempo perdido em perguntas repetitivas e nenhum cliente ignorado por demora.`,
-    ondeEncontrar: `**Ferramentas de mercado (neutro):**
-- **Typebot** — construtor visual de fluxos de conversa, gratuito para começar, funciona com WhatsApp via Zapi ou Evolution API
-- **ManyChat** — especializado em automação de DM no Instagram e Messenger, plano gratuito disponível
-- **Tidio** — chat com IA embutida para sites, integra com e-mail e redes sociais, plano gratuito com limites
-
-Nenhuma dessas ferramentas exige programação para começar. A curva de aprendizado é de 1 a 2 semanas.`,
+    ferramentas: [
+      { nome: 'Typebot', url: 'https://typebot.io', descricao: 'Fluxos de conversa visuais + WhatsApp', plano: 'Gratuito' },
+      { nome: 'ManyChat', url: 'https://manychat.com', descricao: 'Automação de DM no Instagram', plano: 'Gratuito' },
+      { nome: 'Tidio', url: 'https://tidio.com', descricao: 'Chat com IA para sites', plano: 'Gratuito' },
+    ],
+    ondeEncontrar: `Nenhuma dessas ferramentas exige programação para começar. A curva de aprendizado é de 1 a 2 semanas. Para integração com WhatsApp, o Typebot é o ponto de entrada mais rápido no Brasil.`,
     comoComecar: `1. Liste as 10 perguntas que você mais recebe dos clientes hoje (por WhatsApp, e-mail ou DM)
 2. Escolha uma plataforma gratuita (Typebot ou ManyChat) e monte um fluxo respondendo só essas 10 perguntas
 3. Teste você mesmo o fluxo como se fosse um cliente antes de ativar
@@ -38,12 +46,12 @@ Você não precisa automatizar tudo de uma vez — comece pelo que mais repete.`
     titulo: 'Agente de Vendas e Follow-up',
     subtitulo: 'Seu maior gargalo está em manter o contato com leads quentes sem deixar oportunidade esfriar.',
     oQuePrecisa: `Um agente de vendas e follow-up automatiza a sequência de contatos com leads que já demonstraram interesse — mandando a mensagem certa, no momento certo, sem depender da sua memória ou disponibilidade. Ele identifica quem parou de responder, reativa contatos frios e libera você para focar nas negociações que realmente precisam de atenção humana.`,
-    ondeEncontrar: `**Ferramentas de mercado (neutro):**
-- **RD Station CRM** — CRM brasileiro com automação de follow-up por e-mail e notificações, plano gratuito disponível
-- **Kommo (ex-amoCRM)** — pipeline visual com automação de WhatsApp e e-mail, forte para vendas consultivas
-- **Pipedrive** — pipeline com lembretes automáticos e integração com e-mail, amplamente usado por times pequenos
-
-Todas oferecem período de teste gratuito de 14 a 30 dias.`,
+    ferramentas: [
+      { nome: 'RD Station CRM', url: 'https://www.rdstation.com/crm/', descricao: 'CRM brasileiro com follow-up', plano: 'Gratuito' },
+      { nome: 'Kommo', url: 'https://www.kommo.com', descricao: 'Pipeline + automação WhatsApp', plano: 'Teste 14 dias' },
+      { nome: 'Pipedrive', url: 'https://pipedrive.com', descricao: 'Pipeline visual para times pequenos', plano: 'Teste 14 dias' },
+    ],
+    ondeEncontrar: `Todas oferecem período de teste gratuito de 14 a 30 dias. Para times pequenos brasileiros que já usam WhatsApp, o Kommo tem a integração mais direta.`,
     comoComecar: `1. Mapeie seu funil atual: quais etapas existem do primeiro contato até a venda fechada?
 2. Identifique em qual etapa os leads param de responder (é aqui que o agente entra)
 3. Crie uma sequência simples: contato inicial → follow-up em 48h → reativação em 7 dias
@@ -59,12 +67,12 @@ Comece com 1 sequência, não 10.`,
     titulo: 'Agente de Automação e Operação',
     subtitulo: 'Seu maior gargalo está em tarefas repetitivas internas que consomem tempo sem gerar valor direto.',
     oQuePrecisa: `Um agente de automação operacional conecta sistemas, move dados entre ferramentas e executa tarefas repetitivas sem precisar de ninguém para apertar o botão. Relatórios que você gera manualmente toda semana, notificações que você envia por fora, dados que você copia de uma planilha para outra — tudo isso pode rodar sozinho, em horário programado ou acionado por um evento.`,
-    ondeEncontrar: `**Ferramentas de mercado (neutro):**
-- **Make (ex-Integromat)** — automação visual entre centenas de apps, plano gratuito com 1.000 operações/mês
-- **n8n** — open source, pode rodar no seu próprio servidor, sem limite de operações, mais técnico
-- **Zapier** — o mais conhecido, conecta mais de 6.000 apps, plano gratuito com 100 tarefas/mês
-
-Para começar sem programação, Make ou Zapier são os mais acessíveis.`,
+    ferramentas: [
+      { nome: 'Make', url: 'https://make.com', descricao: 'Automação visual entre centenas de apps', plano: 'Grátis 1k ops/mês' },
+      { nome: 'n8n', url: 'https://n8n.io', descricao: 'Open source, sem limite de operações', plano: 'Open source' },
+      { nome: 'Zapier', url: 'https://zapier.com', descricao: '+6.000 integrações, o mais popular', plano: 'Grátis 100 tasks' },
+    ],
+    ondeEncontrar: `Para começar sem programação, Make ou Zapier são os mais acessíveis. O n8n é ideal para quem quer controle total sem pagar por uso.`,
     comoComecar: `1. Escolha UMA tarefa repetitiva que você faz toda semana (ex: gerar relatório, enviar confirmação, mover dados entre planilhas)
 2. Mapeie o passo a passo manual dessa tarefa (quais apps envolvidos, em que ordem)
 3. Crie um fluxo no Make ou Zapier replicando esses passos
@@ -80,12 +88,12 @@ Automatize uma tarefa de cada vez. Complexidade acumulada quebra tudo.`,
     titulo: 'Agente Financeiro',
     subtitulo: 'Seu maior gargalo está na previsibilidade de caixa e na cobrança manual de clientes.',
     oQuePrecisa: `Um agente financeiro automatiza o envio de cobranças, lembretes de pagamento e conciliação básica de recebíveis — eliminando o trabalho de perseguir clientes inadimplentes manualmente e dando visibilidade real sobre o que entra e quando. Não substitui um contador, mas resolve o operacional financeiro que hoje consome seu tempo.`,
-    ondeEncontrar: `**Ferramentas de mercado (neutro):**
-- **Asaas** — plataforma brasileira de cobranças automáticas (boleto, PIX, cartão), régua de cobrança embutida, plano gratuito
-- **Vindi** — gestão de recorrência e cobranças, boa para quem tem mensalidades ou contratos
-- **Conta Simples** — conta empresarial com categorização automática de despesas e integração bancária
-
-Para cobrança automática no Brasil, Asaas é o ponto de entrada mais direto.`,
+    ferramentas: [
+      { nome: 'Asaas', url: 'https://asaas.com', descricao: 'Cobranças automáticas: boleto, PIX, cartão', plano: 'Gratuito' },
+      { nome: 'Vindi', url: 'https://vindi.com.br', descricao: 'Recorrência e mensalidades', plano: 'Sob consulta' },
+      { nome: 'Conta Simples', url: 'https://contasimples.com', descricao: 'Conta PJ + categorização automática', plano: 'Gratuito' },
+    ],
+    ondeEncontrar: `Para cobrança automática no Brasil, o Asaas é o ponto de entrada mais direto — tem plano gratuito, aceita PIX, boleto e cartão, e já inclui régua de cobrança embutida.`,
     comoComecar: `1. Liste todos os clientes que te devem hoje e o status de cada cobrança
 2. Crie uma conta no Asaas (gratuito) e importe esses clientes
 3. Configure uma régua de cobrança: lembrete 3 dias antes do vencimento + no dia + 3 dias depois
