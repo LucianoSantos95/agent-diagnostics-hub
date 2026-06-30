@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import CursorRipple from '@/components/CursorRipple';
+import CaseRealDialog from '@/components/CaseRealDialog';
 
 interface Props {
   onIniciar: () => void;
@@ -13,6 +15,7 @@ const CATEGORIAS = [
 
 export default function TelaAbertura({ onIniciar }: Props) {
   const [visivel, setVisivel] = useState(false);
+  const [caseOpen, setCaseOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setVisivel(true), 80);
@@ -22,8 +25,9 @@ export default function TelaAbertura({ onIniciar }: Props) {
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
-      style={{ background: 'linear-gradient(145deg, #0a1628 0%, #1B3A5C 55%, #0f2440 100%)', paddingTop: '60px' }}
+      style={{ background: 'var(--page-bg)', paddingTop: '60px' }}
     >
+      <CursorRipple />
       {/* Animated blobs */}
       <div
         className="animate-blob absolute pointer-events-none"
