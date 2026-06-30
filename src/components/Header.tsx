@@ -1,7 +1,13 @@
-import focusLogo from '@/assets/focus-logo.png.asset.json';
+import focusIcon from '@/assets/focus-icon.png.asset.json';
 import ThemeToggle from './ThemeToggle';
 
-export default function Header() {
+export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
+  function handleLogoClick(e: React.MouseEvent) {
+    if (onLogoClick) {
+      e.preventDefault();
+      onLogoClick();
+    }
+  }
   return (
     <header
       style={{
@@ -20,18 +26,18 @@ export default function Header() {
       }}
     >
       <a
-        href="https://focusinteligente.com.br"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}
+        href="/"
+        onClick={handleLogoClick}
+        style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
+        aria-label="Voltar ao início"
       >
         <img
-          src={focusLogo.url}
-          alt="Focus"
-          style={{ height: 28, width: 'auto', filter: 'var(--logo-filter)' }}
+          src={focusIcon.url}
+          alt="Focus Indica"
+          style={{ height: 32, width: 'auto' }}
         />
-        <span style={{ fontSize: 16, fontWeight: 700, color: '#60a5fa', letterSpacing: '-0.3px' }}>
-          Indica
+        <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+          Focus Indica
         </span>
       </a>
 
