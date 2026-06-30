@@ -228,6 +228,7 @@ export default function TelaAbertura({ onIniciar }: Props) {
                       <strong className="text-white underline decoration-dotted underline-offset-2">Case real:</strong> "Testamos 6 ferramentas.
                       Nenhuma funcionou — porque estávamos resolvendo o problema errado."
                     </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -235,6 +236,8 @@ export default function TelaAbertura({ onIniciar }: Props) {
           </div>
         </div>
       </div>
+
+      <CaseRealDialog open={caseOpen} onClose={() => setCaseOpen(false)} />
     </div>
   );
 }
