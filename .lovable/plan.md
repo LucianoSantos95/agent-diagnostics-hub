@@ -1,50 +1,104 @@
-# Plano de ajustes — Focus Indica
+# Ajustes Focus Indica
 
-## 1. Renomeação global
-Substituir todas as ocorrências de "FocusCustom" / "Focus Custom" por **"Focus Indica"** (Header, Footer, `index.html` title/meta se aplicável, qualquer copy interna).
+## 1. Header (canto superior esquerdo)
+- Substituir o logo atual pelo novo ícone enviado (raio roxo/azul). Upload via `lovable-assets` → `src/assets/focus-icon.png.asset.json`.
+- Texto ao lado: manter **"Focus Indica"** porém no formato compacto antigo (uma única "pílula" tipográfica, sem o azul separado em "Indica"). Vai virar texto único branco/cinza claro com peso 700.
+- Logo + nome ficam dentro de um `<Link to="/">` (react-router) — clique volta ao menu principal (TelaAbertura, resetando o flow).
+- Para resetar o flow ao clicar no logo, exponho um `resetDiagnostico()` no hook e o Header dispara um evento (ou usamos navegação + key reset na DiagnosticoPage).
 
-## 2. Logo da marca (imagem enviada)
-- Salvar a logo "Focus" enviada como asset via lovable-assets (`src/assets/focus-logo.png.asset.json`).
-- **Header**: trocar o ícone atual (check em gradiente azul/roxo) pela imagem da logo Focus. Em tema escuro, aplicar `filter: invert(1)` para manter legibilidade (logo é preta).
-- **Footer**: substituir o bloco `FocusCustom` (SVG check + texto) pela mesma logo Focus clicável, mantendo o link e o texto "Um produto criado pela".
+## 2. Footer
+- Aumentar logo de `height: 22px` para `height: 40px`.
+- Ajustar gap/padding para acomodar o tamanho maior.
 
-## 3. Seletor de tema (claro / escuro / padrão)
-- Ícone de lâmpada (`Lightbulb` do lucide-react) ao lado do título "Diagnóstico Gratuito" no Header.
-- Click abre dropdown com 3 opções: **Claro**, **Escuro**, **Padrão** (atual — azul-marinho profundo).
-- Implementação:
-  - Criar `src/contexts/ThemeContext.tsx` com estado `'claro' | 'escuro' | 'padrao'`, persistido em `localStorage`.
-  - Aplicar classe no `<html>` (`theme-claro`, `theme-escuro`, `theme-padrao`).
-  - Refatorar `src/index.css` com tokens HSL por tema (background, foreground, card, muted, accent, border).
-  - **Importante**: hoje os componentes (TelaResultado, Footer, etc.) usam cores hardcoded em `style={{...}}` (`#070f1e`, `#cbd5e1`, `rgba(...)`). Vou migrar essas cores para variáveis CSS (`var(--bg-base)`, `var(--text-primary)` etc.) para que reajam à troca de tema. Escopo: arquivos das telas do diagnóstico + Header + Footer.
-- Padrão inicial: **Padrão** (visual atual).
+## 3. Botão "Feedback" + popup
+- Abaixo do link "Case real" no card direito da TelaAbertura, adicionar botão "Deixar feedback".
+- Ao clicar, abre `FeedbackDialog` (modal leve, mesmo padrão do `CaseRealDialog`) com 3 campos obrigatórios:
+  - Nome (texto, max 100)
+  - E-mail (validação)
+  - Mensagem ("descreva aqui", textarea, max 1000)
+- Validação client-side com Zod. Submit grava em nova tabela `feedbacks` no banco.
 
-## 4. Animação de ripple no cursor (tela inicial)
-- Componente `CursorRipple` montado apenas em `TelaAbertura`.
-- Em `mousemove`, throttle (~80ms), cria um `<span>` posicionado no ponto do cursor com keyframe `ripple` (scale 0→4, opacity 0.4→0) duração ~900ms, então remove.
-- Cor da onda usa token de tema (sutil — `rgba(var(--accent-rgb), 0.15)`).
-- Pointer-events none, z-index baixo, não interfere com cliques.
+### Migration (nova tabela)
+```sql
+CREATE TABLE public.feedbacks (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome text NOT NULL,
+  email text NOT NULL,
+  mensagem text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+GRANT INSERT ON public.feedbacks TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.feedbacks TO authenticated;
+GRANT ALL ON public.feedbacks TO service_role;
+ALTER TABLE public.feedbacks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "anon insert feedbacks" ON public.feedbacks FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY "auth read feedbacks" ON public.feedbacks FOR SELECT TO authenticated USING (true);
+```
 
-## 5. Popup "Case Real"
-- Localizar botão/link "Case Real" (presumível em `TelaAbertura` ou `CTAComercial` — confirmar na implementação).
-- Usar `Dialog` do shadcn.
-- Conteúdo: 3 cards de depoimento placeholder marcados com `[EDITAR — nome]`, `[EDITAR — empresa]`, `[EDITAR — depoimento]`, com avatar circular cinza, estrelas e citação. Comentário no topo do array: `// TODO: substituir pelos depoimentos reais`.
+## 4. Animação de ondulação (constante de fundo)
+- Remover `CursorRipple` da TelaAbertura.
+- Criar `BackgroundWaves` — componente fixo `position: absolute inset-0`, com 3-4 SVG/divs circulares em camadas que pulsam continuamente (keyframes `wave-pulse` escala 1→1.4 + opacidade), independente do mouse.
+- **Aplicar em TODAS as telas do flow**: `TelaAbertura`, `TelaPerguntas`, `TelaAnalise`, `TelaResultado` recebem o mesmo `BackgroundWaves` + mesmos blobs animados + grid overlay (extraio para `<PageBackground />` reutilizável).
 
-## 6. Banco de dados (migração)
-Aplicar exatamente o SQL fornecido pelo usuário, com os ajustes obrigatórios da plataforma:
-- Adicionar `GRANT` statements antes de habilitar RLS:
-  - `GRANT INSERT, UPDATE ON ... TO anon` (policies permitem anon insert/update).
-  - `GRANT ALL ON ... TO service_role` em todas as três tabelas.
-  - `GRANT SELECT, INSERT, UPDATE, DELETE ... TO authenticated` (para futuro dashboard).
-- Manter `CHECK (pergunta_numero BETWEEN 1 AND 7)`, índices, FKs e policies como enviadas.
-- Ordem: CREATE TABLE → GRANT → ENABLE RLS → CREATE POLICY → CREATE INDEX.
-- Tabelas já são referenciadas em `useDiagnostico.ts` (`diagnostico_sessions`, `diagnostico_respostas`, `diagnostico_leads`), então após a migração os inserts existentes passam a funcionar.
+## 5. Tema Claro — correções de legibilidade
+Em `src/index.css`, revisar tokens `.theme-claro`:
+- `--page-bg`: gradiente suave azul-claro (`#f0f4ff → #e0e7ff`) em vez do branco puro
+- `--text-primary`: `#0f172a` (forte contraste)
+- `--text-secondary`: `#334155`
+- `--text-muted`: `#475569`
+- `--surface`: `rgba(255,255,255,0.85)` com `border: rgba(15,23,42,0.12)`
+- Headings que usam `text-white` hardcoded em TelaAbertura: migrar para `color: var(--text-primary)` (atualmente ilegíveis no claro).
+- Subtítulos/stats que usam `#93c5fd` ou `rgba(147,197,253,...)` hardcoded → trocar por `var(--text-secondary)`.
+- Botão CTA: manter gradiente azul (funciona nos dois temas).
+- `--logo-filter`: `none` no claro (logo preto sobre fundo claro).
 
-## Detalhes técnicos
-- **Stack**: nenhuma dependência nova exceto possivelmente confirmar shadcn `Dialog` já instalado.
-- **Tokens de tema** (HSL em `index.css`):
-  - `padrao`: bg `220 60% 6%`, fg `213 95% 85%`, accent `217 91% 60%`
-  - `escuro`: bg `0 0% 4%`, fg `0 0% 95%`, accent `217 91% 60%`
-  - `claro`: bg `0 0% 100%`, fg `222 47% 11%`, accent `217 91% 55%`
-- **Arquivos a editar**: `src/components/Header.tsx`, `src/components/Footer.tsx`, `src/features/diagnostico/screens/TelaAbertura.tsx`, `TelaResultado.tsx`, `src/index.css`, `src/App.tsx` (envolver com ThemeProvider).
-- **Arquivos novos**: `src/contexts/ThemeContext.tsx`, `src/components/ThemeToggle.tsx`, `src/components/CursorRipple.tsx`, `src/components/CaseRealDialog.tsx`, `src/assets/focus-logo.png.asset.json`.
-- **Migração Supabase**: uma única chamada com o SQL completo + grants.
+## 6. Envio de PDF por e-mail (com domínio focusinteligente.com.br)
+Fluxo: usuário digita e-mail em `CapturaEmail` → grava em `diagnostico_leads` → invoca edge function `send-diagnostico-pdf`.
+
+### Infra
+1. `setup_email_infra` (cria queue, suppression, etc.)
+2. `scaffold_transactional_email` (cria send-transactional-email + handle-email-unsubscribe + template base) — usuário precisará completar setup do domínio `focusinteligente.com.br` (subdomínio `notify.focusinteligente.com.br` ou similar) via dialog `<presentation-open-email-setup>` se ainda não houver.
+
+### Geração de PDF
+- Edge function nova: `gerar-diagnostico-pdf/index.ts`
+- Usa `npm:pdf-lib` no Deno para montar PDF server-side com:
+  - Header com logo Focus (embed via base64 da asset)
+  - Título "Seu Diagnóstico Focus Indica"
+  - Categoria recomendada + descrição (props do payload)
+  - As 7 respostas do usuário (lookup em `diagnostico_respostas` por session_id)
+  - Cores brand (#2563eb, #1d4ed8)
+  - Rodapé com CTA
+- Retorna PDF bytes em base64.
+
+### Novo template de e-mail
+- `_shared/transactional-email-templates/diagnostico-resultado.tsx` — corpo curto: "Olá! Aqui está seu diagnóstico personalizado. PDF em anexo."
+- **Atenção**: anexos não são suportados pelo sistema de email do Lovable. Solução: salvar o PDF em Supabase Storage (bucket `diagnosticos-pdf`, público com URL assinada) e enviar **link de download** no e-mail.
+
+### Edge function `enviar-diagnostico`
+- Recebe `{ session_id, email, categoria }`
+- Gera PDF (chama `gerar-diagnostico-pdf` ou inline)
+- Faz upload para Storage → obtém URL assinada (7 dias)
+- Invoca `send-transactional-email` com `templateName: 'diagnostico-resultado'`, `templateData: { downloadUrl, categoria }`
+
+### Cliente
+- `CapturaEmail` atualizado para chamar `supabase.functions.invoke('enviar-diagnostico', { body: { session_id, email, categoria } })` após gravar lead.
+
+## Arquivos
+**Novos**: `src/assets/focus-icon.png.asset.json`, `src/components/BackgroundWaves.tsx`, `src/components/PageBackground.tsx`, `src/components/FeedbackDialog.tsx`, `supabase/functions/enviar-diagnostico/index.ts`, `supabase/functions/_shared/transactional-email-templates/diagnostico-resultado.tsx`.
+
+**Editados**: `Header.tsx`, `Footer.tsx`, `index.css` (tema claro), `TelaAbertura.tsx` (botão feedback + PageBackground, remove CursorRipple), `TelaPerguntas.tsx` / `TelaAnalise.tsx` / `TelaResultado.tsx` (PageBackground), `CapturaEmail.tsx` (invoca edge function), `_shared/transactional-email-templates/registry.ts`.
+
+**Removidos**: `CursorRipple.tsx`.
+
+**Migrations**: 1 nova migration para tabela `feedbacks`.
+
+**Infra email**: `setup_email_infra` + `scaffold_transactional_email` + (se necessário) dialog de setup do domínio.
+
+## Ordem de execução
+1. Migration `feedbacks`
+2. Upload do ícone novo
+3. UI: Header, Footer, PageBackground, BackgroundWaves, FeedbackDialog, tema claro
+4. Setup email infra + scaffold transactional + dialog domínio (se necessário)
+5. Template `diagnostico-resultado` + edge function `enviar-diagnostico` + storage bucket
+6. CapturaEmail invoca a function
+7. Deploy edge functions
