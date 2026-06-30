@@ -159,7 +159,11 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
         </div>
 
         {/* Captura email */}
-        <CapturaEmail onSalvar={onSalvarEmail} />
+        <CapturaEmail
+          sessionId={sessionId}
+          categoria={resultado.categoria}
+          onSalvar={onSalvarEmail}
+        />
 
         {/* CTA Comercial */}
         <CTAComercial onRegistrarCTA={onRegistrarCTA} />
