@@ -85,9 +85,19 @@ html.theme-claro {
   0%, 100% { transform: translate(-50%,-50%) scale(1);    opacity: 0.7; }
   50%      { transform: translate(-50%,-50%) scale(1.45); opacity: 1; }
 }
-@keyframes wave-drift {
-  0%, 100% { transform: translate(0, 0); }
-  50%      { transform: translate(40px, -30px); }
+@keyframes wave-travel {
+  0%   { transform: translate(-40vw, -30vh) scale(1); }
+  25%  { transform: translate(40vw, -20vh) scale(1.15); }
+  50%  { transform: translate(35vw, 35vh) scale(1); }
+  75%  { transform: translate(-35vw, 25vh) scale(1.1); }
+  100% { transform: translate(-40vw, -30vh) scale(1); }
+}
+@keyframes wave-travel-alt {
+  0%   { transform: translate(35vw, -25vh) scale(1.1); }
+  25%  { transform: translate(-30vw, -15vh) scale(1); }
+  50%  { transform: translate(-35vw, 30vh) scale(1.15); }
+  75%  { transform: translate(30vw, 20vh) scale(1); }
+  100% { transform: translate(35vw, -25vh) scale(1.1); }
 }
 
 .animate-blob  { animation: blob  14s ease-in-out infinite; }
@@ -108,7 +118,7 @@ html.theme-claro {
   pointer-events: none;
   filter: blur(30px);
 }
-.bg-wave-1 { animation: wave-pulse 9s ease-in-out infinite; }
-.bg-wave-2 { animation: wave-pulse 11s ease-in-out infinite; animation-delay: -2s; }
-.bg-wave-3 { animation: wave-pulse 13s ease-in-out infinite; animation-delay: -4s; }
-.bg-wave-drift { animation: wave-drift 16s ease-in-out infinite; }
+.bg-wave-1 { animation: wave-travel 24s linear infinite; }
+.bg-wave-2 { animation: wave-travel-alt 30s linear infinite; animation-delay: -6s; }
+.bg-wave-3 { animation: wave-travel 34s linear infinite; animation-delay: -12s; }
+.bg-wave-drift { animation: wave-travel-alt 28s linear infinite; animation-delay: -3s; }

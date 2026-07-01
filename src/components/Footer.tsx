@@ -26,7 +26,7 @@ export default function Footer() {
       >
         <span
           style={{
-            fontSize: 18,
+            fontSize: 13,
             fontWeight: 700,
             color: 'var(--text-primary)',
             letterSpacing: '-0.2px',
