@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { type ResultadoDiagnostico } from '../engine/recomendacao';
 import AccordionResultado from '../resultado/AccordionResultado';
 import BlocoPersonalizacao from '../resultado/BlocoPersonalizacao';
 import CapturaEmail from '../resultado/CapturaEmail';
+import PerguntaOrcamento from '../resultado/PerguntaOrcamento';
 import CTAComercial from '../resultado/CTAComercial';
 import Footer from '@/components/Footer';
 import PageBackground from '@/components/PageBackground';
@@ -32,11 +34,13 @@ interface Props {
   respostas: Record<number, string>;
   sessionId: string;
   onSalvarEmail: (email: string) => Promise<void>;
+  onSalvarOrcamento: (orcamento: string) => Promise<void>;
   onRegistrarCTA: () => void;
   onReiniciar: () => void;
 }
 
-export default function TelaResultado({ resultado, respostas, sessionId, onSalvarEmail, onRegistrarCTA, onReiniciar }: Props) {
+export default function TelaResultado({ resultado, respostas, sessionId, onSalvarEmail, onSalvarOrcamento, onRegistrarCTA, onReiniciar }: Props) {
+  const [desbloqueado, setDesbloqueado] = useState(false);
   const tarefaP4 = respostas[4] ?? '';
   const cor = COR_CATEGORIA[resultado.categoria];
   const corTexto = COR_TEXTO[resultado.categoria];
@@ -71,7 +75,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
               <div className="flex items-center gap-3">
                 <span className="text-4xl">{ICONE[resultado.categoria]}</span>
                 <div>
-                  <h2 className="text-2xl font-extrabold text-white">{resultado.titulo}</h2>
+                  <h1 className="text-2xl font-extrabold text-white">{resultado.titulo}</h1>
                   <p className="text-sm text-white/80 mt-0.5">{resultado.subtitulo}</p>
                 </div>
               </div>
@@ -144,29 +148,37 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
           </div>
         </div>
 
-        {/* Personalização P4 */}
+        {/* Personalização P4 — gancho de valor antes do gate */}
         <BlocoPersonalizacao tarefaP4={tarefaP4} categoria={resultado.categoria} />
 
-        {/* Accordion */}
-        <div className="animate-fade-up delay-300">
-          <div className="flex items-center gap-2 mb-3">
-            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(147,197,253,0.5)' }}>
-              Guia de implementação
-            </p>
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+        {/* Gate de e-mail OU conteúdo desbloqueado */}
+        {!desbloqueado ? (
+          <CapturaEmail
+            sessionId={sessionId}
+            categoria={resultado.categoria}
+            onSalvar={onSalvarEmail}
+            onDesbloquear={() => setDesbloqueado(true)}
+          />
+        ) : (
+          <div className="flex flex-col gap-5 animate-fade-up">
+            {/* Guia de implementação */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(147,197,253,0.6)' }}>
+                  Seu guia de implementação
+                </p>
+                <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+              </div>
+              <AccordionResultado itens={acordionItens} />
+            </div>
+
+            {/* Orçamento — capturado depois de entregar valor */}
+            <PerguntaOrcamento onSalvar={onSalvarOrcamento} />
+
+            {/* CTA Comercial — o único CTA forte, no fim do fluxo */}
+            <CTAComercial onRegistrarCTA={onRegistrarCTA} />
           </div>
-          <AccordionResultado itens={acordionItens} />
-        </div>
-
-        {/* Captura email */}
-        <CapturaEmail
-          sessionId={sessionId}
-          categoria={resultado.categoria}
-          onSalvar={onSalvarEmail}
-        />
-
-        {/* CTA Comercial */}
-        <CTAComercial onRegistrarCTA={onRegistrarCTA} />
+        )}
 
         {/* Reiniciar */}
         <div className="text-center pb-2">

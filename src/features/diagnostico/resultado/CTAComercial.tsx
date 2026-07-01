@@ -1,9 +1,9 @@
 interface Props { onRegistrarCTA: () => void; }
 
 const BENEFICIOS = [
-  'Qual ferramenta usar no seu caso específico',
-  'Como configurar nos primeiros 3 dias',
-  'O que medir para saber se funcionou',
+  'A configuração exata para o seu processo — não o genérico',
+  'A integração entre as ferramentas que você já usa',
+  'Manutenção e ajuste quando o fluxo quebrar (e ele quebra)',
 ];
 
 export default function CTAComercial({ onRegistrarCTA }: Props) {
@@ -40,14 +40,16 @@ export default function CTAComercial({ onRegistrarCTA }: Props) {
         </div>
 
         <h3 className="text-xl font-extrabold text-white leading-snug mb-2">
-          Sessão gratuita de 30 minutos
+          As ferramentas resolvem 70%.
           <br />
-          <span style={{ color: '#60a5fa' }}>com um especialista da Focus Custom</span>
+          <span style={{ color: '#60a5fa' }}>Os 30% que quebram é onde a gente entra.</span>
         </h3>
 
         <p className="text-sm leading-relaxed mb-5" style={{ color: '#93c5fd' }}>
-          Você sai da conversa com um <strong className="text-white">plano de ação concreto</strong> para
-          implementar o seu primeiro agente de IA. Sem pressão de venda. Só clareza.
+          Instalar uma ferramenta é fácil. O que derruba a maioria é a <strong className="text-white">integração,
+          a configuração para o seu processo e a manutenção</strong> quando algo para de funcionar.
+          Numa <strong className="text-white">sessão gratuita de 30 minutos</strong>, um especialista da Focus Custom
+          te mostra exatamente como cobrir esses 30%.
         </p>
 
         <div className="flex flex-col gap-2 mb-6">

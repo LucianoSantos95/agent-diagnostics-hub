@@ -39,9 +39,15 @@ async function salvarResposta(sessionId: string, pergunta: number, valor: string
 async function finalizarSessao(sessionId: string, categoria: string) {
   await supabase
     .from('diagnostico_sessions')
-    .update({ completed_at: new Date().toISOString(), categoria_resultado: categoria })
+    .update({
+      completed_at: new Date().toISOString(),
+      categoria_resultado: categoria,
+      resultado_visto_at: new Date().toISOString(),
+    })
     .eq('id', sessionId);
 }
+
+const TOTAL_PERGUNTAS = 6;
 
 export function useDiagnostico() {
   const sessionIdRef = useRef<string>(gerarSessionId());
@@ -72,10 +78,10 @@ export function useDiagnostico() {
 
   const avancar = useCallback(async () => {
     setState(s => {
-      if (s.perguntaAtual < 7) {
+      if (s.perguntaAtual < TOTAL_PERGUNTAS) {
         return { ...s, perguntaAtual: s.perguntaAtual + 1 };
       }
-      // Ãšltima pergunta â†’ vai para anÃ¡lise
+      // Última pergunta → vai para análise
       return { ...s, tela: 'analise' };
     });
   }, []);
@@ -96,6 +102,13 @@ export function useDiagnostico() {
   const salvarEmail = useCallback(async (email: string) => {
     await supabase.from('diagnostico_leads').upsert(
       { session_id: sessionIdRef.current, email, quer_consultoria: false },
+      { onConflict: 'session_id' }
+    );
+  }, []);
+
+  const salvarOrcamento = useCallback(async (orcamento: string) => {
+    await supabase.from('diagnostico_leads').upsert(
+      { session_id: sessionIdRef.current, orcamento },
       { onConflict: 'session_id' }
     );
   }, []);
@@ -128,6 +141,7 @@ export function useDiagnostico() {
     voltar,
     concluirAnalise,
     salvarEmail,
+    salvarOrcamento,
     registrarCTA,
     reiniciar,
   };

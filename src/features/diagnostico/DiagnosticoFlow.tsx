@@ -8,7 +8,7 @@ import TelaResultado from './screens/TelaResultado';
 import Footer from '@/components/Footer';
 
 export default function DiagnosticoFlow() {
-  const { state, iniciar, responder, avancar, voltar, concluirAnalise, salvarEmail, registrarCTA, reiniciar } = useDiagnostico();
+  const { state, iniciar, responder, avancar, voltar, concluirAnalise, salvarEmail, salvarOrcamento, registrarCTA, reiniciar } = useDiagnostico();
 
   const handleConcluirAnalise = useCallback(
     (respostas: Record<number, string>) => concluirAnalise(respostas),
@@ -46,6 +46,7 @@ export default function DiagnosticoFlow() {
           respostas={state.respostas}
           sessionId={state.sessionId}
           onSalvarEmail={salvarEmail}
+          onSalvarOrcamento={salvarOrcamento}
           onRegistrarCTA={registrarCTA}
           onReiniciar={reiniciar}
         />

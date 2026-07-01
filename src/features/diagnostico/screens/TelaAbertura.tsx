@@ -3,6 +3,7 @@ import PageBackground from '@/components/PageBackground';
 import CaseRealDialog from '@/components/CaseRealDialog';
 import FeedbackDialog from '@/components/FeedbackDialog';
 import { MessageSquarePlus } from 'lucide-react';
+import ConteudoSEO from './ConteudoSEO';
 
 interface Props {
   onIniciar: () => void;
@@ -80,7 +81,7 @@ export default function TelaAbertura({ onIniciar }: Props) {
                 style={{ transitionDelay: '220ms' }}
               >
                 <p className="text-lg leading-relaxed max-w-lg" style={{ color: 'var(--text-secondary)' }}>
-                  7 perguntas. Diagnóstico preciso. Você descobre qual agente resolve
+                  6 perguntas. Diagnóstico preciso. Você descobre qual agente resolve
                   o maior gargalo do seu negócio — sem testar ferramentas às cegas.
                 </p>
               </div>
@@ -112,7 +113,7 @@ export default function TelaAbertura({ onIniciar }: Props) {
                 style={{ transitionDelay: '420ms' }}
               >
                 {[
-                  { num: '7', label: 'perguntas' },
+                  { num: '6', label: 'perguntas' },
                   { num: '4', label: 'categorias' },
                   { num: '2min', label: 'duração' },
                 ].map(s => (
@@ -202,6 +203,9 @@ export default function TelaAbertura({ onIniciar }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Conteúdo textual para SEO + GEO */}
+      <ConteudoSEO />
 
       <CaseRealDialog open={caseOpen} onClose={() => setCaseOpen(false)} />
       <FeedbackDialog open={fbOpen} onClose={() => setFbOpen(false)} />

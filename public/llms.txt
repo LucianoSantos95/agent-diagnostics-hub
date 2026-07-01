@@ -1,0 +1,38 @@
+# Diagnóstico de Agente de IA
+
+> Ferramenta gratuita, em português, que ajuda pequenas e médias empresas brasileiras a descobrir
+> qual tipo de agente de inteligência artificial devem implementar primeiro. São 6 perguntas rápidas
+> (cerca de 2 minutos) e o resultado é imediato, sem cadastro obrigatório.
+
+## O que a ferramenta faz
+
+Com base nas respostas, o diagnóstico recomenda uma entre quatro categorias de agente de IA:
+
+- **Agente de Atendimento** — automatiza respostas a clientes via WhatsApp, Instagram ou chat no site.
+- **Agente de Vendas e Follow-up** — mantém contato com leads e reativa oportunidades sem depender de memória.
+- **Agente de Automação e Operação** — conecta sistemas e executa tarefas internas repetitivas.
+- **Agente Financeiro** — automatiza cobranças, lembretes de pagamento e conciliação de recebíveis.
+
+Para cada categoria, entrega: o que a empresa precisa, ferramentas de mercado reais recomendadas
+(ex.: Typebot, ManyChat, Make, Zapier, Asaas), um passo a passo para começar e os erros mais comuns.
+
+## Quem criou
+
+Produto da **Focus Custom**, empresa brasileira que desenvolve agentes de IA personalizados para o
+processo específico de cada negócio. Site: https://focusinteligente.com.br
+
+## Perguntas frequentes
+
+- **O que é um agente de IA?** Um software que executa tarefas de forma autônoma — responder clientes,
+  fazer follow-up, automatizar processos ou gerir cobranças — sem operação manual a cada ação.
+- **Qual a diferença entre chatbot e agente de IA?** O chatbot segue um roteiro fixo; o agente de IA
+  interpreta o contexto, decide a ação e executa a tarefa de ponta a ponta.
+- **Quanto custa?** Ferramentas prontas têm planos gratuitos ou a partir de ~R$50/mês. Agentes
+  sob medida partem de cerca de R$3.000.
+- **Quanto tempo para implementar?** Ferramentas de prateleira: 1 a 2 semanas. Agentes sob medida:
+  15 a 30 dias.
+
+## Links
+
+- Diagnóstico: https://diagnostico.focusinteligente.com.br
+- Site da Focus Custom: https://focusinteligente.com.br

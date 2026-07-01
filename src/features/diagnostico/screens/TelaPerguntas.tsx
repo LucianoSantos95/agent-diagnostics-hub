@@ -64,18 +64,9 @@ const PERGUNTAS: Pergunta[] = [
     placeholder: 'Ex: pararia de passar o dia respondendo mensagens e focaria em vender',
     microcopy: 'Última reta!',
   },
-  {
-    numero: 7,
-    texto: 'Você tem orçamento mensal disponível para uma ferramenta de IA?',
-    tipo: 'multipla',
-    opcoes: [
-      'Ainda não, só quero entender o que existe',
-      'Até R$200/mês',
-      'Entre R$200 e R$800/mês',
-      'Acima de R$800/mês',
-    ],
-  },
 ];
+
+const TOTAL_PERGUNTAS = PERGUNTAS.length;
 
 interface Props {
   perguntaAtual: number;
@@ -119,7 +110,7 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
         <div className="mb-7">
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-semibold" style={{ color: 'rgba(147,197,253,0.7)' }}>
-              Pergunta {perguntaAtual} <span style={{ color: 'rgba(147,197,253,0.4)' }}>de 7</span>
+              Pergunta {perguntaAtual} <span style={{ color: 'rgba(147,197,253,0.4)' }}>de {TOTAL_PERGUNTAS}</span>
             </span>
             {microcopy && (
               <span
@@ -132,7 +123,7 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
           </div>
           {/* Segmented progress */}
           <div className="flex gap-1.5">
-            {Array.from({ length: 7 }, (_, i) => (
+            {Array.from({ length: TOTAL_PERGUNTAS }, (_, i) => (
               <div
                 key={i}
                 className="flex-1 rounded-full transition-all duration-500"
@@ -219,7 +210,7 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
               cursor: 'not-allowed',
             }}
           >
-            {perguntaAtual === 7 ? 'Ver meu resultado →' : 'Continuar →'}
+            {perguntaAtual === TOTAL_PERGUNTAS ? 'Ver meu resultado →' : 'Continuar →'}
           </button>
         </div>
 

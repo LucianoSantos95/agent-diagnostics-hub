@@ -134,17 +134,36 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
 
   const conteudo = CONTEUDO[categoria];
 
-  const porqueMap: Record<Categoria, string> = {
-    atendimento: `Com base nas suas respostas — especialmente o gargalo principal que você identificou${p4 ? ` e a tarefa que mais consome seu tempo ("${p4}")` : ''} — o ponto crítico está na velocidade e consistência do atendimento. ${timeMinimo && altaVolume ? 'Com um time pequeno e mais de 50 contatos por dia, cada minuto de atraso na resposta é uma oportunidade perdida.' : 'Perder clientes no caminho por demora de resposta é um problema resolvível com automação focada.'}`,
-    vendas: `Com base nas suas respostas${p4 ? ` — em especial "${p4}"` : ''} — o gargalo está no acompanhamento de oportunidades que já existem. Leads que ficam sem resposta por mais de 24h têm chance de conversão drasticamente menor. Um agente de follow-up resolve isso sem depender de memória ou disponibilidade.`,
-    operacao: `Com base nas suas respostas${p4 ? ` — incluindo "${p4}" como tarefa mais repetitiva` : ''} — o tempo que você perde em processos manuais internos é o maior freio de crescimento. Automatizar operação libera horas semanais para trabalho que realmente precisa de você.`,
-    financeiro: `Com base nas suas respostas${p4 ? ` — e na tarefa "${p4}" que você destacou` : ''} — a falta de previsibilidade financeira e a cobrança manual são os maiores riscos para a saúde do negócio. Um agente financeiro resolve o operacional e dá clareza sobre o que entra e quando.`,
+  // Contexto dinâmico de time (P2) e volume (P3) — deixa o diagnóstico com cara de "seu"
+  const contextoTime: Record<string, string> = {
+    'Só eu': 'Trabalhando sozinho, cada hora gasta em tarefa repetitiva é uma hora que você não gasta crescendo o negócio',
+    '2 a 5 pessoas': 'Com um time enxuto de 2 a 5 pessoas, você não tem folga para alocar alguém só nisso',
+    '6 a 20 pessoas': 'Com 6 a 20 pessoas, o custo de manter isso manual já pesa na folha e no ritmo da equipe',
+    'Mais de 20 pessoas': 'Com mais de 20 pessoas, processos manuais viram gargalo de coordenação e erro em escala',
   };
+  const contextoVolume: Record<string, string> = {
+    'Menos de 10': 'Mesmo com menos de 10 contatos por dia, a inconsistência é o que custa cliente',
+    'Entre 10 e 50': 'Com 10 a 50 contatos por dia, você já está no volume em que o manual começa a vazar',
+    'Mais de 50': 'Com mais de 50 contatos por dia, é humanamente impossível manter qualidade sem automação',
+  };
+
+  const fraseTime = contextoTime[p2] ?? '';
+  const fraseVolume = contextoVolume[p3] ?? '';
+  const tarefa = p4 ? ` Você destacou "${p4}" como a tarefa que mais consome seu tempo — exatamente o tipo de coisa que esse agente elimina.` : '';
+
+  const porqueBase: Record<Categoria, string> = {
+    atendimento: `O ponto crítico está na velocidade e consistência do atendimento. ${fraseVolume || 'Perder clientes por demora de resposta é resolvível com automação focada'}.`,
+    vendas: `O gargalo está no acompanhamento de oportunidades que já existem. Leads sem resposta por mais de 24h têm chance de conversão drasticamente menor. ${fraseTime || 'Um agente de follow-up resolve isso sem depender de memória'}.`,
+    operacao: `O tempo perdido em processos manuais internos é o maior freio de crescimento. ${fraseTime || 'Automatizar operação libera horas semanais para o trabalho que precisa de você'}.`,
+    financeiro: `A falta de previsibilidade de caixa e a cobrança manual são os maiores riscos para a saúde do negócio. ${fraseTime || 'Um agente financeiro resolve o operacional e dá clareza sobre o que entra e quando'}.`,
+  };
+
+  const porque = `${porqueBase[categoria]}${tarefa}`;
 
   return {
     categoria,
     ...conteudo,
-    porque: porqueMap[categoria],
+    porque,
     avisoToolsGenericas,
   };
 }
