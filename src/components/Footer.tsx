@@ -1,5 +1,3 @@
-import focusLogo from '@/assets/focus-logo.png.asset.json';
-
 export default function Footer() {
   return (
     <footer
@@ -11,7 +9,7 @@ export default function Footer() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10,
+        gap: 8,
         flexWrap: 'wrap',
         background: 'var(--footer-bg)',
       }}
@@ -26,11 +24,17 @@ export default function Footer() {
         style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
         aria-label="Focus"
       >
-        <img
-          src={focusLogo.url}
-          alt="Focus"
-          style={{ height: 44, width: 'auto', filter: 'var(--logo-filter)' }}
-        />
+        <span
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            letterSpacing: '-0.2px',
+            fontFamily: '"Montserrat Alternates", sans-serif',
+          }}
+        >
+          Focus
+        </span>
       </a>
     </footer>
   );

@@ -17,9 +17,9 @@ html.theme-padrao {
   --text-secondary: #93c5fd;
   --text-muted: rgba(147,197,253,0.6);
   --footer-bg: rgba(10,22,40,0.6);
-  --wave-color-1: rgba(59,130,246,0.42);
-  --wave-color-2: rgba(124,58,237,0.34);
-  --wave-color-3: rgba(96,165,250,0.28);
+  --wave-color-1: rgba(59,130,246,0.65);
+  --wave-color-2: rgba(124,58,237,0.55);
+  --wave-color-3: rgba(96,165,250,0.48);
   --grid-line: rgba(255,255,255,0.025);
   --logo-filter: none;
 }
@@ -34,9 +34,9 @@ html.theme-escuro {
   --text-secondary: #d4d4d4;
   --text-muted: rgba(212,212,212,0.55);
   --footer-bg: rgba(0,0,0,0.6);
-  --wave-color-1: rgba(255,255,255,0.18);
-  --wave-color-2: rgba(160,160,160,0.15);
-  --wave-color-3: rgba(255,255,255,0.13);
+  --wave-color-1: rgba(255,255,255,0.32);
+  --wave-color-2: rgba(160,160,160,0.28);
+  --wave-color-3: rgba(255,255,255,0.24);
   --grid-line: rgba(255,255,255,0.02);
   --logo-filter: none;
 }
@@ -51,9 +51,9 @@ html.theme-claro {
   --text-secondary: #1e3a8a;
   --text-muted: #475569;
   --footer-bg: rgba(255,255,255,0.85);
-  --wave-color-1: rgba(37,99,235,0.32);
-  --wave-color-2: rgba(124,58,237,0.26);
-  --wave-color-3: rgba(14,165,233,0.22);
+  --wave-color-1: rgba(37,99,235,0.5);
+  --wave-color-2: rgba(124,58,237,0.42);
+  --wave-color-3: rgba(14,165,233,0.38);
   --grid-line: rgba(15,23,42,0.05);
   --logo-filter: none;
 }

@@ -34,7 +34,7 @@ export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
         <img
           src={focusIcon.url}
           alt="Focus Indica"
-          style={{ height: 32, width: 'auto' }}
+          style={{ height: 48, width: 'auto' }}
         />
         <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px', fontFamily: '"Montserrat Alternates", sans-serif' }}>
           Focus Indica
