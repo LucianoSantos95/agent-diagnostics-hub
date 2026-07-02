@@ -56,7 +56,8 @@ export default function UnsubscribePage() {
   }
 
   return (
-    <PageBackground>
+    <>
+      <PageBackground />
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="max-w-md w-full rounded-2xl border border-border bg-card p-8 shadow-sm">
           <h1 className="text-2xl font-bold text-foreground mb-2">Focus Inteligente</h1>
@@ -94,6 +95,6 @@ export default function UnsubscribePage() {
           {state.kind === 'error' && <p className="text-destructive">{state.message}</p>}
         </div>
       </div>
-    </PageBackground>
+    </>
   )
 }
