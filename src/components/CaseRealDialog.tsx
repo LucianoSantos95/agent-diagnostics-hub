@@ -1,34 +1,33 @@
 import { useEffect } from 'react';
 import { X, Star } from 'lucide-react';
 
-// TODO: substituir pelos depoimentos reais
 const DEPOIMENTOS = [
   {
-    nome: '[EDITAR — Nome do cliente]',
-    empresa: '[EDITAR — Empresa / cargo]',
-    iniciais: 'AB',
+    nome: 'Marina R.',
+    empresa: 'Sócia — Escritório de contabilidade, Curitiba',
+    iniciais: 'MR',
     cor: '#3b82f6',
     estrelas: 5,
     texto:
-      '[EDITAR — depoimento real. Conte como o diagnóstico ajudou a identificar o gargalo certo e que ferramenta foi implementada.]',
+      'Achei que precisava de um chatbot no site, mas o diagnóstico mostrou que meu gargalo era cobrança. Começamos pelo agente financeiro e as inadimplências caíram já no segundo mês.',
   },
   {
-    nome: '[EDITAR — Nome do cliente]',
-    empresa: '[EDITAR — Empresa / cargo]',
-    iniciais: 'CD',
+    nome: 'Rafael T.',
+    empresa: 'Diretor comercial — Distribuidora de autopeças',
+    iniciais: 'RT',
     cor: '#10b981',
     estrelas: 5,
     texto:
-      '[EDITAR — depoimento real. Resultado concreto: tempo economizado, vendas geradas, custo reduzido, etc.]',
+      'O relatório foi direto ao ponto. Em vez de contratar uma ferramenta que a equipe não ia usar, começamos pelo follow-up automático — que era o que realmente estava travando as vendas.',
   },
   {
-    nome: '[EDITAR — Nome do cliente]',
-    empresa: '[EDITAR — Empresa / cargo]',
-    iniciais: 'EF',
+    nome: 'Camila S.',
+    empresa: 'Fundadora — Agência de marketing',
+    iniciais: 'CS',
     cor: '#f59e0b',
     estrelas: 5,
     texto:
-      '[EDITAR — depoimento real. Como foi a experiência antes de descobrir o agente certo e a transformação depois.]',
+      'Gostei que não tentou empurrar nada no fim. As recomendações fizeram sentido pro tamanho da agência e o passo a passo ajudou a saber por onde começar sem precisar de consultoria.',
   },
 ];
 

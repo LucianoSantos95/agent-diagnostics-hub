@@ -1,5 +1,3 @@
-import focusIcon from '@/assets/focus-indica-logo.svg';
-
 export default function Footer() {
   return (
     <footer
@@ -11,7 +9,7 @@ export default function Footer() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 8,
+        gap: 6,
         flexWrap: 'wrap',
         background: 'var(--footer-bg)',
       }}
@@ -23,10 +21,9 @@ export default function Footer() {
         href="https://focusinteligente.com.br"
         target="_blank"
         rel="noopener noreferrer"
-        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+        style={{ textDecoration: 'none' }}
         aria-label="Focus"
       >
-        <img src={focusIcon} alt="" style={{ height: 20, width: 'auto' }} />
         <span
           style={{
             fontSize: 13,
@@ -42,3 +39,4 @@ export default function Footer() {
     </footer>
   );
 }
+
