@@ -9,10 +9,10 @@ const BENEFICIOS = [
 export default function CTAComercial({ onRegistrarCTA }: Props) {
   function handleClick() {
     onRegistrarCTA();
-    window.open(
-      'https://wa.me/5511994921881?text=Ol%C3%A1%2C%20fiz%20o%20diagn%C3%B3stico%20de%20agente%20de%20IA%20e%20quero%20agendar%20minha%20sess%C3%A3o%20gratuita%20de%2030%20minutos.',
-      '_blank'
-    );
+    const mensagem =
+      'Olá! Acabei de fazer o diagnóstico de agente de IA no site da Focus Inteligente e gostaria de agendar minha sessão gratuita de 30 minutos para entender como aplicar isso no meu negócio.';
+    const url = `https://wa.me/5511916742443?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
   }
 
   return (
