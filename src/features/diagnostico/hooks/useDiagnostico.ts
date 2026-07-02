@@ -94,24 +94,15 @@ export function useDiagnostico() {
   }, []);
 
   const salvarEmail = useCallback(async (email: string) => {
-    await supabase.from('diagnostico_leads').upsert(
-      { session_id: sessionIdRef.current, email, quer_consultoria: false },
-      { onConflict: 'session_id' }
-    );
+    await progress({ action: 'lead_email', session_id: sessionIdRef.current, email });
   }, []);
 
   const salvarOrcamento = useCallback(async (orcamento: string) => {
-    await supabase.from('diagnostico_leads').upsert(
-      { session_id: sessionIdRef.current, orcamento },
-      { onConflict: 'session_id' }
-    );
+    await progress({ action: 'lead_orcamento', session_id: sessionIdRef.current, orcamento });
   }, []);
 
   const registrarCTA = useCallback(async () => {
-    await supabase.from('diagnostico_leads').upsert(
-      { session_id: sessionIdRef.current, quer_consultoria: true },
-      { onConflict: 'session_id' }
-    );
+    await progress({ action: 'lead_cta', session_id: sessionIdRef.current });
   }, []);
 
   const reiniciar = useCallback(() => {
