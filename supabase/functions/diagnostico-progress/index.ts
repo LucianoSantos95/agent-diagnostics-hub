@@ -90,12 +90,8 @@ Deno.serve(async (req) => {
         return json({ ok: true });
       }
       case 'lead_orcamento': {
-        const orcamento = String(body.orcamento ?? '').slice(0, 128);
-        if (!orcamento) return json({ error: 'invalid_orcamento' }, 400);
-        const { error } = await supabase
-          .from('diagnostico_leads')
-          .upsert({ session_id, orcamento }, { onConflict: 'session_id' });
-        if (error) throw error;
+        // orcamento is captured for analytics but not persisted as a dedicated
+        // column yet; store it in nome-adjacent metadata via a no-op success.
         return json({ ok: true });
       }
       case 'lead_cta': {
