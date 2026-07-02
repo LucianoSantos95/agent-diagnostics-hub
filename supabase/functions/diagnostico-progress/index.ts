@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
         const now = new Date().toISOString();
         const { error } = await supabase
           .from('diagnostico_sessions')
-          .update({ completed_at: now, categoria_resultado: categoria, resultado_visto_at: now })
+          .update({ completed_at: now, categoria_resultado: categoria })
           .eq('id', session_id);
         if (error) throw error;
         return json({ ok: true });
