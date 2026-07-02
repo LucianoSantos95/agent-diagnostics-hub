@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { supabase } from '@/integrations/supabase/client'
 import PageBackground from '@/components/PageBackground'
+
+const SITE = 'https://diagnostico.focusinteligente.com.br'
 
 type State =
   | { kind: 'loading' }
@@ -57,11 +60,23 @@ export default function UnsubscribePage() {
 
   return (
     <>
+      <Helmet>
+        <title>Cancelar Inscrição de E-mails — Focus Inteligente</title>
+        <meta name="description" content="Cancele o recebimento de e-mails do diagnóstico Focus Inteligente." />
+        <meta name="robots" content="noindex, follow" />
+        <link rel="canonical" href={`${SITE}/unsubscribe`} />
+        <meta property="og:title" content="Cancelar Inscrição de E-mails — Focus Inteligente" />
+        <meta property="og:description" content="Cancele o recebimento de e-mails do diagnóstico Focus Inteligente." />
+        <meta property="og:url" content={`${SITE}/unsubscribe`} />
+        <meta name="twitter:title" content="Cancelar Inscrição de E-mails — Focus Inteligente" />
+        <meta name="twitter:description" content="Cancele o recebimento de e-mails do diagnóstico Focus Inteligente." />
+      </Helmet>
       <PageBackground />
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="max-w-md w-full rounded-2xl border border-border bg-card p-8 shadow-sm">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Focus Inteligente</h1>
-          <p className="text-sm text-muted-foreground mb-6">Cancelar recebimento de e-mails</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Cancelar Inscrição de E-mails</h1>
+          <p className="text-sm text-foreground/80 mb-6">Focus Inteligente — diagnóstico de agente de IA</p>
+
 
           {state.kind === 'loading' && <p>Validando link…</p>}
 
