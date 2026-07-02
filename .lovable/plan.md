@@ -1,40 +1,58 @@
-## Ajustes planejados
+## Objetivo
+Enviar o guia completo do diagnóstico por e-mail usando a infraestrutura nativa de e-mail do Lovable, com um botão para baixar o PDF gerado (via Signed URL do bucket privado `diagnosticos-pdf`).
 
-**1. FAQ com accordion (`ConteudoSEO.tsx`)**
-Transformar cada pergunta em botão clicável. Só a pergunta ativa mostra a resposta (com animação de expandir). Ícone `+`/`−` à direita.
+## Fluxo final
+```text
+Usuário conclui diagnóstico
+        │
+        ▼
+Edge Function `enviar-diagnostico`
+  1. Gera PDF (pdf-lib) com recomendação + respostas
+  2. Sobe PDF no bucket privado `diagnosticos-pdf`
+  3. Cria Signed URL (validade 7 dias)
+  4. Invoca `send-transactional-email` com o template
+        │
+        ▼
+Fila nativa (pgmq) → process-email-queue → entrega
+        │
+        ▼
+Usuário recebe e-mail branded com:
+  - Resumo do diagnóstico
+  - Botão "Baixar guia completo (PDF)"
+```
 
-**2. Bloco "Sobre a Focus" (`ConteudoSEO.tsx`)**
-Reescrever com base em focusinteligente.com.br — foco em *arquitetura de operação*, não no diagnóstico:
+## Passos de implementação
 
-> **Focus Inteligente** desenha operações que trazem clareza, precisão e eficiência ao modo como sua empresa funciona — do mapeamento de processos aos agentes de IA sob medida. Como Lovable Partner oficial, a Focus combina auditoria de fluxos, arquitetura de automação e agentes customizados para eliminar trabalho manual em PMEs e agências. Mais de 50 empresas já operam com Focus.
+1. **Infra de e-mail app (transacional)**
+   - Rodar `email_domain--scaffold_transactional_email` para criar `send-transactional-email`, `handle-email-unsubscribe`, `handle-email-suppression` e o registry de templates.
+   - Criar página de unsubscribe no path retornado pelo scaffold.
 
-Trocar título "Um produto da Focus Indica" → **"Sobre a Focus Inteligente"**. Link mantido.
+2. **Template React Email** em `supabase/functions/_shared/transactional-email-templates/diagnostico-guia.tsx`
+   - Marca Focus Inteligente (cores/tipografia coerentes com o app, body `#ffffff`).
+   - Preview text, saudação, resumo curto do resultado (nível/recomendação principal), botão "Baixar guia completo (PDF)" apontando para `downloadUrl`, aviso de validade do link (7 dias) e assinatura.
+   - Props: `nome?`, `nivel`, `recomendacaoResumo`, `downloadUrl`.
+   - Registrar em `registry.ts` como `diagnostico-guia`.
 
-**3. Rodapé (`Footer.tsx`)**
-Remover a `<img>` do logo. Deixar apenas: `Um produto criado pela **Focus**` (Montserrat Alternates, mesmo tamanho da frase). Link segue apontando para focusinteligente.com.br.
+3. **Ajustar `enviar-diagnostico`**
+   - Manter geração do PDF e upload no bucket `diagnosticos-pdf`.
+   - Remover o envio antigo (com anexo/link improvisado).
+   - Criar Signed URL de 7 dias (`storage.from('diagnosticos-pdf').createSignedUrl(path, 60*60*24*7)`).
+   - Chamar `supabase.functions.invoke('send-transactional-email', { body: { templateName: 'diagnostico-guia', recipientEmail, idempotencyKey: \`diagnostico-\${sessionId}\`, templateData: { nome, nivel, recomendacaoResumo, downloadUrl } } })`.
+   - Retornar `{ ok: true }` para o cliente (sem expor a URL).
 
-**4. Depoimentos fictícios realistas (`CaseRealDialog.tsx`)**
-Substituir os 3 placeholders `[EDITAR — …]` por depoimentos fictícios com tom natural (sem exagero, sem números redondos, sem "revolucionou"). Exemplo de tom:
+4. **Cliente**
+   - Nenhuma mudança de contrato: `CapturaEmail` continua chamando `enviar-diagnostico`. Apenas ajustar mensagem de sucesso ("Enviamos seu guia completo para o e-mail informado").
 
-- *Marina R. — Sócia, contabilidade em Curitiba* — "Achei que precisava de um chatbot, mas o diagnóstico mostrou que meu gargalo era cobrança. Implementamos o agente financeiro primeiro e reduzimos as inadimplências no segundo mês."
-- *Rafael T. — Diretor comercial, distribuidora* — "O relatório foi direto ao ponto. Em vez de gastar com uma ferramenta que a equipe não usaria, começamos pelo follow-up automático — que era o que realmente estava travando as vendas."
-- *Camila S. — Fundadora, agência de marketing* — "Gostei que não tentou vender nada no fim. As recomendações fizeram sentido pro tamanho da agência, e o passo a passo ajudou a saber por onde começar sem contratar consultoria."
+5. **Deploy + teste real**
+   - Deploy das edge functions afetadas.
+   - Disparar um envio de teste com um e-mail real fornecido pelo usuário e verificar entrega + link do PDF funcionando.
 
-Estrelas mantidas (5), avatar com iniciais.
-
-**5. Teste de envio de e-mail**
-A infraestrutura de e-mail ainda não está configurada neste projeto. Para conseguir testar o envio do PDF preciso que você configure o domínio de envio primeiro (uso o subdomínio `notify.focusinteligente.com.br` delegado por NS). Depois disso eu:
-
-1. Rodo o setup da infra de e-mail (fila + cron + tabelas).
-2. Scaffold do `send-transactional-email` + template React Email `diagnostico-resultado` com identidade Focus.
-3. Ajusto a edge function `enviar-diagnostico` para usar esse template.
-4. Faço deploy e disparo um envio de teste real para o e-mail que você me passar.
-
-<presentation-actions>
-<presentation-open-email-setup>Configurar domínio de e-mail</presentation-open-email-setup>
-</presentation-actions>
-
-Sem esse passo o PDF continua sendo gerado e salvo, mas o e-mail não sai da fila.
+## Detalhes técnicos
+- Bucket `diagnosticos-pdf` permanece privado; acesso ao PDF só pela Signed URL do e-mail.
+- Idempotência por `sessionId` evita duplicidade se a Edge Function for reinvocada.
+- Sem anexos (não suportado pela infra nativa) — usamos link assinado, que é o padrão recomendado.
+- Sender: domínio `notify.diagnostico.focusinteligente.com.br` já configurado; se DNS ainda não estiver verificado, os e-mails ficam na fila e saem automaticamente após verificação.
 
 ## Fora de escopo
-Não mexo em cores, animação de fundo, header ou fluxo do diagnóstico.
+- Redesign do PDF em si.
+- Mudanças em outras telas do diagnóstico.
