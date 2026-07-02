@@ -26,25 +26,19 @@ async function criarSessao(sessionId: string) {
   });
 }
 
+async function progress(body: Record<string, unknown>) {
+  await supabase.functions.invoke('diagnostico-progress', { body }).catch(() => null);
+}
+
 async function salvarResposta(sessionId: string, pergunta: number, valor: string) {
   await Promise.all([
-    supabase.from('diagnostico_respostas').upsert(
-      { session_id: sessionId, pergunta_numero: pergunta, resposta_valor: valor },
-      { onConflict: 'session_id,pergunta_numero' }
-    ),
-    supabase.from('diagnostico_sessions').update({ current_step: pergunta }).eq('id', sessionId),
+    progress({ action: 'resposta_upsert', session_id: sessionId, pergunta_numero: pergunta, resposta_valor: valor }),
+    progress({ action: 'session_step', session_id: sessionId, current_step: pergunta }),
   ]);
 }
 
 async function finalizarSessao(sessionId: string, categoria: string) {
-  await supabase
-    .from('diagnostico_sessions')
-    .update({
-      completed_at: new Date().toISOString(),
-      categoria_resultado: categoria,
-      resultado_visto_at: new Date().toISOString(),
-    })
-    .eq('id', sessionId);
+  await progress({ action: 'session_finalize', session_id: sessionId, categoria_resultado: categoria });
 }
 
 const TOTAL_PERGUNTAS = 6;
@@ -100,24 +94,15 @@ export function useDiagnostico() {
   }, []);
 
   const salvarEmail = useCallback(async (email: string) => {
-    await supabase.from('diagnostico_leads').upsert(
-      { session_id: sessionIdRef.current, email, quer_consultoria: false },
-      { onConflict: 'session_id' }
-    );
+    await progress({ action: 'lead_email', session_id: sessionIdRef.current, email });
   }, []);
 
   const salvarOrcamento = useCallback(async (orcamento: string) => {
-    await supabase.from('diagnostico_leads').upsert(
-      { session_id: sessionIdRef.current, orcamento },
-      { onConflict: 'session_id' }
-    );
+    await progress({ action: 'lead_orcamento', session_id: sessionIdRef.current, orcamento });
   }, []);
 
   const registrarCTA = useCallback(async () => {
-    await supabase.from('diagnostico_leads').upsert(
-      { session_id: sessionIdRef.current, quer_consultoria: true },
-      { onConflict: 'session_id' }
-    );
+    await progress({ action: 'lead_cta', session_id: sessionIdRef.current });
   }, []);
 
   const reiniciar = useCallback(() => {

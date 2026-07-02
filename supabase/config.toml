@@ -2,3 +2,9 @@ project_id = "ndctxfvdtgunwpqlvnbr"
 
 [functions.process-email-queue]
 verify_jwt = true
+
+[functions.enviar-diagnostico]
+verify_jwt = false
+
+[functions.diagnostico-progress]
+verify_jwt = false
