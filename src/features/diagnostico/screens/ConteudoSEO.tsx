@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const CATEGORIAS = [
   {
     icone: '💬',
@@ -41,6 +43,7 @@ const FAQ = [
 ];
 
 export default function ConteudoSEO() {
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   return (
     <section
       className="relative z-10 w-full border-t"

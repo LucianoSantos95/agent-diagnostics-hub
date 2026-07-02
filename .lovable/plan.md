@@ -1,39 +1,40 @@
-# Ajustes finos — Focus Indica
+## Ajustes planejados
 
-## 1. Novo logo no header (similar ao site focusinteligente.com.br)
-O site da Focus usa um símbolo limpo e minimalista no estilo monoline com o nome "focus" em peso leve. Vou:
+**1. FAQ com accordion (`ConteudoSEO.tsx`)**
+Transformar cada pergunta em botão clicável. Só a pergunta ativa mostra a resposta (com animação de expandir). Ícone `+`/`−` à direita.
 
-- Gerar um ícone novo via `imagegen` (PNG transparente, ~512×512) no estilo do site: símbolo geométrico minimalista azul/branco, traço fino, fundo limpo.
-- Subir como asset (`src/assets/focus-mark.png.asset.json`) e substituir o ícone atual no `Header.tsx`.
-- Manter o tamanho ~32px de altura no header.
+**2. Bloco "Sobre a Focus" (`ConteudoSEO.tsx`)**
+Reescrever com base em focusinteligente.com.br — foco em *arquitetura de operação*, não no diagnóstico:
 
-## 2. Texto "Focus Indica" em Montserrat Alternates
-- Instalar a fonte: `bun add @fontsource/montserrat-alternates` (pesos 600 e 700).
-- Importar em `src/main.tsx`: `import '@fontsource/montserrat-alternates/600.css'` e `/700.css`.
-- Aplicar `fontFamily: '"Montserrat Alternates", sans-serif'` somente no `<span>` do nome no `Header.tsx`, peso 700, mantendo o tracking atual.
+> **Focus Inteligente** desenha operações que trazem clareza, precisão e eficiência ao modo como sua empresa funciona — do mapeamento de processos aos agentes de IA sob medida. Como Lovable Partner oficial, a Focus combina auditoria de fluxos, arquitetura de automação e agentes customizados para eliminar trabalho manual em PMEs e agências. Mais de 50 empresas já operam com Focus.
 
-## 3. Rodapé mais compacto
-Em `src/components/Footer.tsx`:
-- Logo: `height: 80` → `height: 44`.
-- Padding: `28px 24px` → `14px 24px`.
-- Gap: `14` → `10`.
-- Tamanho do texto "Um produto criado pela": `14` → `13`.
+Trocar título "Um produto da Focus Indica" → **"Sobre a Focus Inteligente"**. Link mantido.
 
-Resultado: rodapé fica numa faixa fina, sem dominar a tela.
+**3. Rodapé (`Footer.tsx`)**
+Remover a `<img>` do logo. Deixar apenas: `Um produto criado pela **Focus**` (Montserrat Alternates, mesmo tamanho da frase). Link segue apontando para focusinteligente.com.br.
 
-## 4. Ondas de fundo mais visíveis
-Em `src/index.css`, aumentar a opacidade dos tokens `--wave-color-*` nos três temas (mantendo a paleta de cada um):
+**4. Depoimentos fictícios realistas (`CaseRealDialog.tsx`)**
+Substituir os 3 placeholders `[EDITAR — …]` por depoimentos fictícios com tom natural (sem exagero, sem números redondos, sem "revolucionou"). Exemplo de tom:
 
-- **Padrão (azul escuro)**: `--wave-color-1` 0.18 → 0.42, `--wave-color-2` 0.14 → 0.34, `--wave-color-3` 0.10 → 0.28.
-- **Escuro**: 0.06 → 0.18, 0.05 → 0.15, 0.04 → 0.13 (sutil, mas perceptível no preto).
-- **Claro**: 0.18 → 0.32, 0.14 → 0.26, 0.12 → 0.22.
+- *Marina R. — Sócia, contabilidade em Curitiba* — "Achei que precisava de um chatbot, mas o diagnóstico mostrou que meu gargalo era cobrança. Implementamos o agente financeiro primeiro e reduzimos as inadimplências no segundo mês."
+- *Rafael T. — Diretor comercial, distribuidora* — "O relatório foi direto ao ponto. Em vez de gastar com uma ferramenta que a equipe não usaria, começamos pelo follow-up automático — que era o que realmente estava travando as vendas."
+- *Camila S. — Fundadora, agência de marketing* — "Gostei que não tentou vender nada no fim. As recomendações fizeram sentido pro tamanho da agência, e o passo a passo ajudou a saber por onde começar sem contratar consultoria."
 
-Também reduzir o `blur` das ondas de `40px` → `30px` em `.bg-wave` para os contornos ficarem mais definidos sem perder o efeito suave, e aumentar o pico do `wave-pulse` de `opacity 0.95` → `1` e escala `1.35` → `1.45`.
+Estrelas mantidas (5), avatar com iniciais.
 
-## Arquivos
-- **Novos**: `src/assets/focus-mark.png.asset.json`
-- **Editados**: `src/main.tsx` (import da fonte), `src/components/Header.tsx` (novo ícone + fonte), `src/components/Footer.tsx` (compactar), `src/index.css` (opacidade das ondas + keyframe).
-- **Removidos**: `src/assets/focus-icon.png.asset.json` (antigo, substituído).
+**5. Teste de envio de e-mail**
+A infraestrutura de e-mail ainda não está configurada neste projeto. Para conseguir testar o envio do PDF preciso que você configure o domínio de envio primeiro (uso o subdomínio `notify.focusinteligente.com.br` delegado por NS). Depois disso eu:
 
-## Sem mudanças
-Lógica do diagnóstico, PDF, feedback, autenticação — nada disso é tocado nesta rodada.
+1. Rodo o setup da infra de e-mail (fila + cron + tabelas).
+2. Scaffold do `send-transactional-email` + template React Email `diagnostico-resultado` com identidade Focus.
+3. Ajusto a edge function `enviar-diagnostico` para usar esse template.
+4. Faço deploy e disparo um envio de teste real para o e-mail que você me passar.
+
+<presentation-actions>
+<presentation-open-email-setup>Configurar domínio de e-mail</presentation-open-email-setup>
+</presentation-actions>
+
+Sem esse passo o PDF continua sendo gerado e salvo, mas o e-mail não sai da fila.
+
+## Fora de escopo
+Não mexo em cores, animação de fundo, header ou fluxo do diagnóstico.
