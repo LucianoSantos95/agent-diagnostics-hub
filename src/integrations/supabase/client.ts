@@ -2,8 +2,15 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Fallback seguro — evita que o app quebre (tela branca) quando as variáveis
+// de ambiente não estão presentes no build. Se faltar env, o site renderiza
+// normalmente e só as chamadas ao Supabase falham em silêncio.
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL ?? 'https://placeholder.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
+  import.meta.env.VITE_SUPABASE_ANON_KEY ??
+  'placeholder';
 
 
 function isNewSupabaseApiKey(value: string): boolean {
