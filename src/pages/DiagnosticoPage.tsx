@@ -71,11 +71,14 @@ export default function DiagnosticoPage() {
   return (
     <>
       <Helmet>
-        <title>Qual Agente de IA Sua Empresa Precisa? Diagnóstico Gratuito em 2 Minutos</title>
+        <title>Diagnóstico de Agente de IA — Grátis em 2 Minutos</title>
         <meta
           name="description"
-          content="Responda 6 perguntas e descubra qual tipo de agente de IA resolve o maior gargalo da sua empresa — atendimento, vendas, operação ou financeiro. Gratuito e sem cadastro."
+          content="6 perguntas para descobrir qual agente de IA sua PME precisa: atendimento, vendas, operação ou financeiro. Grátis, sem cadastro."
         />
+        <meta property="og:title" content="Diagnóstico de Agente de IA — Grátis em 2 Minutos" />
+        <meta property="og:description" content="6 perguntas para descobrir qual agente de IA sua PME precisa: atendimento, vendas, operação ou financeiro. Grátis, sem cadastro." />
+        <meta property="og:url" content={`${SITE}/`} />
         <link rel="canonical" href={`${SITE}/`} />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>

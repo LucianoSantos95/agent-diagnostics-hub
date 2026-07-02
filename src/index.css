@@ -15,7 +15,7 @@ html.theme-padrao {
   --surface-border: rgba(255,255,255,0.1);
   --text-primary: #ffffff;
   --text-secondary: #93c5fd;
-  --text-muted: rgba(147,197,253,0.6);
+  --text-muted: rgba(191,219,254,0.85);
   --footer-bg: rgba(10,22,40,0.6);
   --wave-color-1: rgba(59,130,246,0.65);
   --wave-color-2: rgba(124,58,237,0.55);
@@ -32,7 +32,7 @@ html.theme-escuro {
   --surface-border: rgba(255,255,255,0.08);
   --text-primary: #f5f5f5;
   --text-secondary: #d4d4d4;
-  --text-muted: rgba(212,212,212,0.55);
+  --text-muted: rgba(229,229,229,0.85);
   --footer-bg: rgba(0,0,0,0.6);
   --wave-color-1: rgba(255,255,255,0.32);
   --wave-color-2: rgba(160,160,160,0.28);

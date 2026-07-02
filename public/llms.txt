@@ -21,6 +21,11 @@ Para cada categoria, entrega: o que a empresa precisa, ferramentas de mercado re
 Produto da **Focus Indica**, empresa brasileira que desenvolve agentes de IA personalizados para o
 processo específico de cada negócio. Site: https://focusinteligente.com.br
 
+## Pages
+
+- [Diagnóstico de Agente de IA](/): quiz gratuito de 6 perguntas que recomenda o agente de IA ideal para a empresa.
+- [Focus Inteligente (site institucional)](https://focusinteligente.com.br): empresa que desenvolve os agentes de IA sob medida.
+
 ## Perguntas frequentes
 
 - **O que é um agente de IA?** Um software que executa tarefas de forma autônoma — responder clientes,
@@ -31,8 +36,3 @@ processo específico de cada negócio. Site: https://focusinteligente.com.br
   sob medida partem de cerca de R$3.000.
 - **Quanto tempo para implementar?** Ferramentas de prateleira: 1 a 2 semanas. Agentes sob medida:
   15 a 30 dias.
-
-## Links
-
-- Diagnóstico: https://diagnostico.focusinteligente.com.br
-- Site da Focus Indica: https://focusinteligente.com.br
