@@ -92,27 +92,68 @@ export default function ConteudoSEO() {
           <h2 className="text-2xl sm:text-3xl font-extrabold mb-6" style={{ color: 'var(--text-primary)' }}>
             Perguntas frequentes
           </h2>
-          <div className="flex flex-col gap-5">
-            {FAQ.map(item => (
-              <div key={item.q}>
-                <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{item.q}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.a}</p>
-              </div>
-            ))}
+          <div className="flex flex-col gap-3">
+            {FAQ.map((item, i) => {
+              const open = openFaq === i;
+              return (
+                <div
+                  key={item.q}
+                  className="rounded-2xl border overflow-hidden"
+                  style={{ background: 'var(--surface)', borderColor: 'var(--surface-border)' }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(open ? null : i)}
+                    aria-expanded={open}
+                    className="w-full flex items-center justify-between text-left px-5 py-4 gap-4 transition-colors hover:bg-white/5"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    <span className="text-base font-bold">{item.q}</span>
+                    <span
+                      aria-hidden
+                      className="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full text-lg font-bold transition-transform"
+                      style={{
+                        background: 'var(--surface-soft)',
+                        color: 'var(--text-secondary)',
+                        transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
+                      }}
+                    >
+                      +
+                    </span>
+                  </button>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateRows: open ? '1fr' : '0fr',
+                      transition: 'grid-template-rows 0.25s ease',
+                    }}
+                  >
+                    <div style={{ overflow: 'hidden' }}>
+                      <p
+                        className="text-sm leading-relaxed px-5 pb-4"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        {item.a}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Sobre a Focus */}
         <div className="rounded-2xl p-6 border" style={{ background: 'var(--surface)', borderColor: 'var(--surface-border)' }}>
-          <h2 className="text-xl font-extrabold mb-2" style={{ color: 'var(--text-primary)' }}>Um produto da Focus Indica</h2>
+          <h2 className="text-xl font-extrabold mb-2" style={{ color: 'var(--text-primary)' }}>Sobre a Focus Inteligente</h2>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            A <strong style={{ color: 'var(--text-primary)' }}>Focus Indica</strong> é uma empresa brasileira que desenvolve
-            agentes de inteligência artificial personalizados para o processo específico de cada negócio.
-            Enquanto ferramentas de mercado resolvem parte do problema, a Focus cobre a integração, a
-            configuração sob medida e a manutenção — o que costuma derrubar quem tenta sozinho.{' '}
+            A <strong style={{ color: 'var(--text-primary)' }}>Focus Inteligente</strong> desenha operações que trazem
+            clareza, precisão e eficiência ao modo como sua empresa funciona — do mapeamento de processos aos agentes de IA
+            sob medida. Como Lovable Partner oficial, combina auditoria de fluxos, arquitetura de automação e agentes
+            customizados para eliminar trabalho manual em PMEs e agências. Mais de 50 empresas já operam com Focus.{' '}
             <a href="https://focusinteligente.com.br" target="_blank" rel="noopener noreferrer"
               className="underline" style={{ color: '#2563eb' }}>
-              Conheça a Focus Indica
+              Conheça a Focus Inteligente
             </a>.
           </p>
         </div>
