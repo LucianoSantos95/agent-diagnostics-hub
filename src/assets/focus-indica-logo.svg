@@ -14,8 +14,10 @@
     </filter>
   </defs>
 
+  <!-- Squircle background -->
   <rect x="16" y="16" width="480" height="480" rx="120" fill="url(#fiBg)"/>
 
+  <!-- Concentric target rings -->
   <g fill="none" stroke="#ffffff" stroke-linecap="round">
     <circle cx="256" cy="256" r="188" stroke-opacity="0.18" stroke-width="4"/>
     <circle cx="256" cy="256" r="150" stroke-opacity="0.32" stroke-width="4.5"
@@ -25,10 +27,12 @@
             stroke-dasharray="330 130" stroke-dashoffset="80"/>
   </g>
 
+  <!-- Center checkmark -->
   <path d="M212 258 L242 288 L300 222"
         fill="none" stroke="#ffffff" stroke-width="20"
         stroke-linecap="round" stroke-linejoin="round"/>
 
+  <!-- Diagonal upward arrow with glow -->
   <g filter="url(#fiGlow)">
     <path d="M150 412 L376 150"
           fill="none" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>

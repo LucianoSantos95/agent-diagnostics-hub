@@ -1,4 +1,4 @@
-import focusIcon from '@/assets/focus-mark.png.asset.json';
+import focusIcon from '@/assets/focus-indica-logo.svg';
 import ThemeToggle from './ThemeToggle';
 
 export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
@@ -32,9 +32,9 @@ export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
         aria-label="Voltar ao início"
       >
         <img
-          src={focusIcon.url}
+          src={focusIcon}
           alt="Focus Indica"
-          style={{ height: 48, width: 'auto' }}
+          style={{ height: 40, width: 'auto' }}
         />
         <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px', fontFamily: '"Montserrat Alternates", sans-serif' }}>
           Focus Indica

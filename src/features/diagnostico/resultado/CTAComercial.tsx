@@ -48,7 +48,7 @@ export default function CTAComercial({ onRegistrarCTA }: Props) {
         <p className="text-sm leading-relaxed mb-5" style={{ color: '#93c5fd' }}>
           Instalar uma ferramenta é fácil. O que derruba a maioria é a <strong className="text-white">integração,
           a configuração para o seu processo e a manutenção</strong> quando algo para de funcionar.
-          Numa <strong className="text-white">sessão gratuita de 30 minutos</strong>, um especialista da Focus Custom
+          Numa <strong className="text-white">sessão gratuita de 30 minutos</strong>, um especialista da Focus Indica
           te mostra exatamente como cobrir esses 30%.
         </p>
 

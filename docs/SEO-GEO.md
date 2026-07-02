@@ -6,7 +6,7 @@
 >
 > Domínio-alvo: `https://diagnostico.focusinteligente.com.br`
 > Produto: quiz gratuito de 6 perguntas que diagnostica qual agente de IA uma PME precisa primeiro.
-> Marca: **Focus Custom** (desenvolve agentes de IA sob medida).
+> Marca: **Focus Indica** (desenvolve agentes de IA sob medida).
 
 ---
 
@@ -67,7 +67,7 @@ Aplicados via `react-helmet-async` na página:
 | Schema | Função | Ganho |
 |---|---|---|
 | `FAQPage` | 4 perguntas/respostas | Rich snippet no Google + fonte direta para IA |
-| `Organization` | Define a entidade **Focus Custom** | Knowledge graph, confiança, GEO |
+| `Organization` | Define a entidade **Focus Indica** | Knowledge graph, confiança, GEO |
 | `WebApplication` | Descreve o diagnóstico como ferramenta gratuita | Elegibilidade a rich results |
 
 > **Por que isso importa para GEO:** modelos de IA extraem `FAQPage` e `Organization`
@@ -88,7 +88,7 @@ O quiz sozinho (SPA) não dá conteúdo indexável — a seção resolve isso.
 ### 4.2 Clareza de entidade
 Toda página deixa explícito, em texto:
 - **O que é** o produto (diagnóstico gratuito de 6 perguntas).
-- **Quem faz** (Focus Custom, empresa brasileira de agentes de IA sob medida).
+- **Quem faz** (Focus Indica, empresa brasileira de agentes de IA sob medida).
 - **Para quem** (PMEs brasileiras).
 - **As 4 categorias** nomeadas e definidas (atendimento, vendas, operação, financeiro).
 

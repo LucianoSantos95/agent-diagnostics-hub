@@ -18,7 +18,7 @@ Para cada categoria, entrega: o que a empresa precisa, ferramentas de mercado re
 
 ## Quem criou
 
-Produto da **Focus Custom**, empresa brasileira que desenvolve agentes de IA personalizados para o
+Produto da **Focus Indica**, empresa brasileira que desenvolve agentes de IA personalizados para o
 processo específico de cada negócio. Site: https://focusinteligente.com.br
 
 ## Perguntas frequentes
@@ -35,4 +35,4 @@ processo específico de cada negócio. Site: https://focusinteligente.com.br
 ## Links
 
 - Diagnóstico: https://diagnostico.focusinteligente.com.br
-- Site da Focus Custom: https://focusinteligente.com.br
+- Site da Focus Indica: https://focusinteligente.com.br

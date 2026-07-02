@@ -39,7 +39,7 @@ const faqSchema = {
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'Focus Custom',
+  name: 'Focus Indica',
   url: 'https://focusinteligente.com.br',
   description:
     'Empresa brasileira que desenvolve agentes de inteligência artificial personalizados para o processo específico de cada negócio.',
@@ -64,7 +64,7 @@ const webAppSchema = {
   description:
     'Ferramenta gratuita de 6 perguntas que diagnostica qual tipo de agente de IA uma pequena ou média empresa deve implementar primeiro: atendimento, vendas, operação ou financeiro.',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
-  provider: { '@type': 'Organization', name: 'Focus Custom', url: 'https://focusinteligente.com.br' },
+  provider: { '@type': 'Organization', name: 'Focus Indica', url: 'https://focusinteligente.com.br' },
 }
 
 export default function DiagnosticoPage() {

@@ -37,5 +37,5 @@
   <!-- footer brand -->
   <rect x="80" y="545" width="44" height="44" rx="11" fill="url(#logo)"/>
   <path d="M96 567 L106 577 L120 559" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="138" y="576" font-family="Arial, sans-serif" font-size="26" font-weight="800" fill="#ffffff">Focus<tspan fill="#60a5fa">Custom</tspan></text>
+  <text x="138" y="576" font-family="Arial, sans-serif" font-size="26" font-weight="800" fill="#ffffff">Focus<tspan fill="#60a5fa"> Indica</tspan></text>
 </svg>

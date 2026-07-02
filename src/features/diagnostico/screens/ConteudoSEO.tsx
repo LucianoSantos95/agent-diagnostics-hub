@@ -101,15 +101,15 @@ export default function ConteudoSEO() {
 
         {/* Sobre a Focus */}
         <div className="rounded-2xl p-6 border" style={{ background: 'var(--surface)', borderColor: 'var(--surface-border)' }}>
-          <h2 className="text-xl font-extrabold mb-2" style={{ color: 'var(--text-primary)' }}>Um produto da Focus Custom</h2>
+          <h2 className="text-xl font-extrabold mb-2" style={{ color: 'var(--text-primary)' }}>Um produto da Focus Indica</h2>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            A <strong style={{ color: 'var(--text-primary)' }}>Focus Custom</strong> é uma empresa brasileira que desenvolve
+            A <strong style={{ color: 'var(--text-primary)' }}>Focus Indica</strong> é uma empresa brasileira que desenvolve
             agentes de inteligência artificial personalizados para o processo específico de cada negócio.
             Enquanto ferramentas de mercado resolvem parte do problema, a Focus cobre a integração, a
             configuração sob medida e a manutenção — o que costuma derrubar quem tenta sozinho.{' '}
             <a href="https://focusinteligente.com.br" target="_blank" rel="noopener noreferrer"
               className="underline" style={{ color: '#2563eb' }}>
-              Conheça a Focus Custom
+              Conheça a Focus Indica
             </a>.
           </p>
         </div>
