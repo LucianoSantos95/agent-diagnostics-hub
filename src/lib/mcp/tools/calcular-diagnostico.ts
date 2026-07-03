@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { calcularResultado } from "@/features/diagnostico/engine/recomendacao";
+import { calcularResultado } from "../../../features/diagnostico/engine/recomendacao";
 
 const P1 = z.enum([
   "Atendimento ao cliente — demoro para responder, perco gente no caminho",

@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { calcularResultado, type Categoria } from "@/features/diagnostico/engine/recomendacao";
+import { calcularResultado, type Categoria } from "../../../features/diagnostico/engine/recomendacao";
 
 const CATEGORIAS: Categoria[] = ["atendimento", "vendas", "operacao", "financeiro"];
 
