@@ -3,6 +3,7 @@ import { type ResultadoDiagnostico } from '../engine/recomendacao';
 import AccordionResultado from '../resultado/AccordionResultado';
 import BlocoPersonalizacao from '../resultado/BlocoPersonalizacao';
 import CapturaEmail from '../resultado/CapturaEmail';
+import CaixaFeedback from '../resultado/CaixaFeedback';
 import PerguntaOrcamento from '../resultado/PerguntaOrcamento';
 import CTAComercial from '../resultado/CTAComercial';
 import Footer from '@/components/Footer';
