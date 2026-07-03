@@ -5,7 +5,7 @@ interface Props {
   sessionId: string;
   categoria: string;
   onSalvar: (email: string) => Promise<void>;
-  onDesbloquear: () => void;
+  onDesbloquear: (email: string) => void;
 }
 
 export default function CapturaEmail({ sessionId, categoria, onSalvar, onDesbloquear }: Props) {
@@ -14,19 +14,20 @@ export default function CapturaEmail({ sessionId, categoria, onSalvar, onDesbloq
 
   async function handleEnviar(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
+    const emailTrim = email.trim();
+    if (!emailTrim) return;
     setLoading(true);
     try {
-      await onSalvar(email.trim());
+      await onSalvar(emailTrim);
       // dispara envio do PDF por e-mail (fire and forget — não bloqueia UX)
       supabase.functions
         .invoke('enviar-diagnostico', {
-          body: { session_id: sessionId, email: email.trim(), categoria },
+          body: { session_id: sessionId, email: emailTrim, categoria },
         })
         .catch(() => null);
     } finally {
       setLoading(false);
-      onDesbloquear();
+      onDesbloquear(emailTrim);
     }
   }
 

@@ -3,6 +3,7 @@ import { type ResultadoDiagnostico } from '../engine/recomendacao';
 import AccordionResultado from '../resultado/AccordionResultado';
 import BlocoPersonalizacao from '../resultado/BlocoPersonalizacao';
 import CapturaEmail from '../resultado/CapturaEmail';
+import CaixaFeedback from '../resultado/CaixaFeedback';
 import PerguntaOrcamento from '../resultado/PerguntaOrcamento';
 import CTAComercial from '../resultado/CTAComercial';
 import Footer from '@/components/Footer';
@@ -41,6 +42,7 @@ interface Props {
 
 export default function TelaResultado({ resultado, respostas, sessionId, onSalvarEmail, onSalvarOrcamento, onRegistrarCTA, onReiniciar }: Props) {
   const [desbloqueado, setDesbloqueado] = useState(false);
+  const [emailCapturado, setEmailCapturado] = useState('');
   const tarefaP4 = respostas[4] ?? '';
   const cor = COR_CATEGORIA[resultado.categoria];
   const corTexto = COR_TEXTO[resultado.categoria];
@@ -157,10 +159,16 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
             sessionId={sessionId}
             categoria={resultado.categoria}
             onSalvar={onSalvarEmail}
-            onDesbloquear={() => setDesbloqueado(true)}
+            onDesbloquear={(email) => {
+              setEmailCapturado(email);
+              setDesbloqueado(true);
+            }}
           />
         ) : (
           <div className="flex flex-col gap-5 animate-fade-up">
+            {/* Caixinha de feedback — aparece logo após capturar o e-mail */}
+            <CaixaFeedback email={emailCapturado} />
+
             {/* Guia de implementação */}
             <div>
               <div className="flex items-center gap-2 mb-3">

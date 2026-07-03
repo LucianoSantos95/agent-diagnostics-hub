@@ -1,58 +1,42 @@
-## Objetivo
-Enviar o guia completo do diagnóstico por e-mail usando a infraestrutura nativa de e-mail do Lovable, com um botão para baixar o PDF gerado (via Signed URL do bucket privado `diagnosticos-pdf`).
+## O que muda
 
-## Fluxo final
+Hoje o feedback só existe como um modal acessível pela tela de abertura — na tela de resultado não há nada, então fica "escondido". Vou colocar uma **caixinha de feedback inline** que aparece automaticamente assim que o usuário desbloqueia o guia com o e-mail, posicionada logo antes do guia de implementação.
+
+## Onde entra no fluxo
+
 ```text
-Usuário conclui diagnóstico
-        │
-        ▼
-Edge Function `enviar-diagnostico`
-  1. Gera PDF (pdf-lib) com recomendação + respostas
-  2. Sobe PDF no bucket privado `diagnosticos-pdf`
-  3. Cria Signed URL (validade 7 dias)
-  4. Invoca `send-transactional-email` com o template
-        │
-        ▼
-Fila nativa (pgmq) → process-email-queue → entrega
-        │
-        ▼
-Usuário recebe e-mail branded com:
-  - Resumo do diagnóstico
-  - Botão "Baixar guia completo (PDF)"
+[Email desbloqueado] ──► 📝 Caixinha de feedback (NOVO)
+                    └─► 📋 Guia de implementação (accordion)
+                    └─► 💰 Pergunta de orçamento
+                    └─► 🎯 CTA comercial
 ```
 
-## Passos de implementação
+## Como fica a caixinha
 
-1. **Infra de e-mail app (transacional)**
-   - Rodar `email_domain--scaffold_transactional_email` para criar `send-transactional-email`, `handle-email-unsubscribe`, `handle-email-suppression` e o registry de templates.
-   - Criar página de unsubscribe no path retornado pelo scaffold.
+Um card compacto no mesmo estilo visual dos outros blocos da tela de resultado (mesma paleta, borda suave, `animate-fade-up`):
 
-2. **Template React Email** em `supabase/functions/_shared/transactional-email-templates/diagnostico-guia.tsx`
-   - Marca Focus Inteligente (cores/tipografia coerentes com o app, body `#ffffff`).
-   - Preview text, saudação, resumo curto do resultado (nível/recomendação principal), botão "Baixar guia completo (PDF)" apontando para `downloadUrl`, aviso de validade do link (7 dias) e assinatura.
-   - Props: `nome?`, `nivel`, `recomendacaoResumo`, `downloadUrl`.
-   - Registrar em `registry.ts` como `diagnostico-guia`.
+- Título curto: **"Como foi essa experiência pra você?"**
+- Subtítulo de 1 linha explicando que ajuda a melhorar o diagnóstico
+- Um `textarea` (mensagem, obrigatório, até 2000 chars)
+- Botão **"Enviar feedback"**
+- Após envio: colapsa em um estado de agradecimento discreto ("Recebido, obrigado 🙌"), sem sumir da tela
 
-3. **Ajustar `enviar-diagnostico`**
-   - Manter geração do PDF e upload no bucket `diagnosticos-pdf`.
-   - Remover o envio antigo (com anexo/link improvisado).
-   - Criar Signed URL de 7 dias (`storage.from('diagnosticos-pdf').createSignedUrl(path, 60*60*24*7)`).
-   - Chamar `supabase.functions.invoke('send-transactional-email', { body: { templateName: 'diagnostico-guia', recipientEmail, idempotencyKey: \`diagnostico-\${sessionId}\`, templateData: { nome, nivel, recomendacaoResumo, downloadUrl } } })`.
-   - Retornar `{ ok: true }` para o cliente (sem expor a URL).
+Nome e e-mail **não** são pedidos de novo — o e-mail já foi capturado no passo anterior, então reaproveito ele e uso "Diagnóstico" como nome padrão. Isso reduz atrito drasticamente vs. o modal atual (3 campos).
 
-4. **Cliente**
-   - Nenhuma mudança de contrato: `CapturaEmail` continua chamando `enviar-diagnostico`. Apenas ajustar mensagem de sucesso ("Enviamos seu guia completo para o e-mail informado").
+## Onde grava
 
-5. **Deploy + teste real**
-   - Deploy das edge functions afetadas.
-   - Disparar um envio de teste com um e-mail real fornecido pelo usuário e verificar entrega + link do PDF funcionando.
+Mesma tabela `feedbacks` que o `FeedbackDialog` já usa, mesmo schema (`nome`, `email`, `mensagem`) — só que preenchidos automaticamente com o contexto que já temos.
 
 ## Detalhes técnicos
-- Bucket `diagnosticos-pdf` permanece privado; acesso ao PDF só pela Signed URL do e-mail.
-- Idempotência por `sessionId` evita duplicidade se a Edge Function for reinvocada.
-- Sem anexos (não suportado pela infra nativa) — usamos link assinado, que é o padrão recomendado.
-- Sender: domínio `notify.diagnostico.focusinteligente.com.br` já configurado; se DNS ainda não estiver verificado, os e-mails ficam na fila e saem automaticamente após verificação.
+
+- Novo componente `src/features/diagnostico/resultado/CaixaFeedback.tsx` recebendo `email: string` como prop.
+- `TelaResultado.tsx`: guardar o e-mail no `useState` local no `CapturaEmail.onDesbloquear(email)` (mudar a assinatura para passar o e-mail) e renderizar `<CaixaFeedback email={emailCapturado} />` como primeiro filho do bloco desbloqueado, antes do accordion.
+- `CapturaEmail.tsx`: `onDesbloquear` passa a receber o e-mail já validado.
+- Validação com Zod no client antes do insert (mesmo padrão do `FeedbackDialog`).
+- `FeedbackDialog` no rodapé/tela de abertura **continua existindo** — quem quiser deixar feedback antes de fazer o diagnóstico ainda pode.
 
 ## Fora de escopo
-- Redesign do PDF em si.
-- Mudanças em outras telas do diagnóstico.
+
+- Não vou mexer no design do `FeedbackDialog` existente.
+- Não vou remover o acesso ao feedback pela tela de abertura.
+- Sem nova tabela, sem edge function nova.
