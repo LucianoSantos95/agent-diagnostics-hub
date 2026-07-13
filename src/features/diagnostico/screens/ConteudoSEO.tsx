@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+
 
 const CATEGORIAS = [
   {
@@ -140,6 +142,30 @@ export default function ConteudoSEO() {
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        {/* Guias relacionados */}
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold mb-6" style={{ color: 'var(--text-primary)' }}>
+            Guias práticos para PMEs
+          </h2>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { to: '/chatbot-para-empresas', titulo: 'Chatbot para empresas', desc: 'Quando vale a pena e quanto custa no Brasil.' },
+              { to: '/automacao-de-atendimento', titulo: 'Automação de atendimento', desc: 'Por onde começar sem gastar errado.' },
+              { to: '/ia-para-pequenas-empresas', titulo: 'IA para pequenas empresas', desc: 'As 4 frentes que rendem em PME.' },
+            ].map((g) => (
+              <Link
+                key={g.to}
+                to={g.to}
+                className="rounded-2xl p-5 border transition-all hover:scale-[1.02]"
+                style={{ background: 'var(--surface)', borderColor: 'var(--surface-border)', textDecoration: 'none' }}
+              >
+                <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{g.titulo} →</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{g.desc}</p>
+              </Link>
+            ))}
           </div>
         </div>
 
