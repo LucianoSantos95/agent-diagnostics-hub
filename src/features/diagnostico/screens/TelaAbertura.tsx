@@ -81,8 +81,9 @@ export default function TelaAbertura({ onIniciar }: Props) {
                 style={{ transitionDelay: '220ms' }}
               >
                 <p className="text-lg leading-relaxed max-w-lg" style={{ color: 'var(--text-secondary)' }}>
-                  6 perguntas. Diagnóstico preciso. Você descobre qual agente resolve
-                  o maior gargalo do seu negócio — sem testar ferramentas às cegas.
+                  Chatbot no WhatsApp, automação de atendimento ou IA para vendas?
+                  6 perguntas revelam qual agente de IA resolve o maior gargalo da sua
+                  pequena empresa — sem testar ferramentas às cegas.
                 </p>
               </div>
 
