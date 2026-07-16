@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { z } from 'zod';
-import { Check } from 'lucide-react';
+import { Check, MessageCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 const schema = z.object({
@@ -43,10 +43,11 @@ export default function CaixaFeedback({ email }: Props) {
 
   return (
     <div
-      className="rounded-2xl px-5 py-5 border animate-fade-up"
+      className="rounded-2xl px-5 py-5 border animate-fade-up relative overflow-hidden"
       style={{
-        background: 'rgba(129,140,248,0.06)',
-        borderColor: 'rgba(129,140,248,0.22)',
+        background: 'linear-gradient(135deg, rgba(245,158,11,0.10), rgba(245,158,11,0.04))',
+        borderColor: 'rgba(245,158,11,0.35)',
+        boxShadow: '0 10px 40px -20px rgba(245,158,11,0.4)',
       }}
     >
       {enviado ? (
@@ -68,12 +69,20 @@ export default function CaixaFeedback({ email }: Props) {
         </div>
       ) : (
         <>
-          <p
-            className="text-xs font-bold uppercase tracking-widest mb-1"
-            style={{ color: '#a5b4fc' }}
-          >
-            Sua opinião conta
-          </p>
+          <div className="flex items-center gap-2 mb-1">
+            <span
+              className="inline-flex items-center justify-center w-7 h-7 rounded-lg animate-glow-pulse"
+              style={{ background: 'rgba(245,158,11,0.2)', border: '1px solid rgba(245,158,11,0.4)' }}
+            >
+              <MessageCircle size={14} color="#f59e0b" />
+            </span>
+            <p
+              className="text-xs font-bold uppercase tracking-widest"
+              style={{ color: '#f59e0b' }}
+            >
+              Sua opinião conta
+            </p>
+          </div>
           <p className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
             Como foi essa experiência pra você?
           </p>
@@ -104,17 +113,18 @@ export default function CaixaFeedback({ email }: Props) {
             <button
               type="submit"
               disabled={loading}
-              className="self-start text-sm font-bold px-5 py-2.5 rounded-xl text-white transition-all hover:scale-[1.02] active:scale-95"
+              className="self-start inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl text-white transition-all hover:scale-[1.03] active:scale-95"
               style={{
                 background: loading
-                  ? 'rgba(79,70,229,0.5)'
-                  : 'linear-gradient(135deg, #4f46e5, #4338ca)',
-                boxShadow: '0 4px 18px rgba(79,70,229,0.3)',
+                  ? 'rgba(245,158,11,0.5)'
+                  : 'linear-gradient(135deg, #f59e0b, #d97706)',
+                boxShadow: '0 6px 24px rgba(245,158,11,0.45), inset 0 1px 0 rgba(255,255,255,0.25)',
                 cursor: loading ? 'wait' : 'pointer',
                 border: 'none',
               }}
             >
-              {loading ? 'Enviando...' : 'Enviar feedback'}
+              <MessageCircle size={16} />
+              {loading ? 'Enviando...' : 'Deixar feedback'}
             </button>
           </form>
         </>
