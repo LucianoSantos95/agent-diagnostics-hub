@@ -1,6 +1,10 @@
 import { IA_GERAL } from '../engine/ferramentasGerais';
 
-export default function FerramentasIAGeral() {
+interface Props { tarefaP4?: string }
+
+export default function FerramentasIAGeral({ tarefaP4 }: Props = {}) {
+  const p4 = tarefaP4?.trim();
+
   return (
     <div className="animate-fade-up">
       <div className="flex items-center gap-2 mb-3">
