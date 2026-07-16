@@ -89,9 +89,16 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
               <circle cx="130" cy="130" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.6)" strokeWidth="0.8" />
             </svg>
             {/* Corner mark */}
-            <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-70">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-white/80">Diagnóstico · 01</span>
+            <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-80">
+              <span
+                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{
+                  background: resultado.confianca === 'alta' ? '#34d399' : resultado.confianca === 'media' ? '#fbbf24' : '#f87171',
+                }}
+              />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-white/85">
+                Confiança {resultado.confianca === 'alta' ? 'alta' : resultado.confianca === 'media' ? 'média' : 'a validar'}
+              </span>
             </div>
             <div className="relative z-10">
               <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.24em] text-white/70 mb-3">
