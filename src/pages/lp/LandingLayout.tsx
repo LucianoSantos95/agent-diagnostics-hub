@@ -19,6 +19,8 @@ interface LandingLayoutProps {
   blocos: { titulo: string; conteudo: ReactNode }[];
   faq: FaqItem[];
   ctaTexto?: string;
+  heroImage?: string;
+  heroImageAlt?: string;
 }
 
 const BASE_URL = 'https://diagnostico.focusinteligente.com.br';
@@ -32,6 +34,8 @@ export default function LandingLayout({
   blocos,
   faq,
   ctaTexto = 'Descubra em 2 minutos qual agente sua empresa precisa',
+  heroImage,
+  heroImageAlt,
 }: LandingLayoutProps) {
   const url = `${BASE_URL}${slug}`;
 
