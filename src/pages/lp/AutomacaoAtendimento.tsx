@@ -1,4 +1,5 @@
 import LandingLayout, { type FaqItem } from './LandingLayout';
+import heroImage from '@/assets/lp-atendimento-hero.jpg';
 
 const faq: FaqItem[] = [
   {
@@ -34,7 +35,9 @@ export default function AutomacaoAtendimento() {
       slug="/automacao-de-atendimento"
       title="Automação de atendimento: guia prático para PMEs no WhatsApp"
       metaDescription="Automação de atendimento no WhatsApp para pequenas empresas: quando vale, quanto custa, como escolher entre chatbot, agente de IA e roteamento inteligente. Passo a passo."
-      h1={<>Automação de atendimento: <span style={{ color: '#4f46e5' }}>o que automatizar primeiro</span> na sua PME</>}
+      heroImage={heroImage}
+      heroImageAlt="Interface de automação de atendimento com fluxos conectados em ambiente indigo"
+      h1={<>Automação de atendimento: <span style={{ color: '#a5b4fc' }}>o que automatizar primeiro</span> na sua PME</>}
       intro={
         <>
           Automação de atendimento não é "trocar humano por robô" — é tirar o
