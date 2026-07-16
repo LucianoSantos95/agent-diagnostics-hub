@@ -165,7 +165,7 @@ export default function LandingLayout({
             </Link>
           </section>
 
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-4 max-w-3xl">
             <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
               Perguntas frequentes
             </h2>
