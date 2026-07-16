@@ -36,7 +36,7 @@ export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
           alt="Focus Indica"
           style={{ height: 40, width: 'auto' }}
         />
-        <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px', fontFamily: '"Montserrat Alternates", sans-serif' }}>
+        <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px', fontFamily: '"Sora", sans-serif' }}>
           Focus Indica
         </span>
       </a>

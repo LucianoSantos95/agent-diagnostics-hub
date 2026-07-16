@@ -30,7 +30,7 @@ export default function Footer() {
             fontWeight: 700,
             color: 'var(--text-primary)',
             letterSpacing: '-0.2px',
-            fontFamily: '"Montserrat Alternates", sans-serif',
+            fontFamily: '"Sora", sans-serif',
           }}
         >
           Focus
