@@ -116,9 +116,24 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
           {/* Por que você precisa */}
           <div className="px-6 py-5 border-t" style={{ background: 'rgba(15,15,42,0.55)', borderColor: 'rgba(255,255,255,0.06)' }}>
             <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.24em] mb-2" style={{ color: corTexto }}>
-              Por que esse agente?
+              {resultado.confianca === 'alta' ? 'Por que esse agente?' : resultado.confianca === 'media' ? 'Por que essa prioridade?' : 'Por que essa hipótese?'}
             </p>
             <p className="text-sm leading-relaxed" style={{ color: '#cbd5e1' }}>{resultado.porque}</p>
+            {resultado.confianca !== 'alta' && (
+              <p
+                className="mt-3 text-xs leading-relaxed px-3 py-2 rounded-lg border"
+                style={{
+                  color: resultado.confianca === 'media' ? '#fde68a' : '#fecaca',
+                  background: resultado.confianca === 'media' ? 'rgba(245,158,11,0.08)' : 'rgba(248,113,113,0.08)',
+                  borderColor: resultado.confianca === 'media' ? 'rgba(245,158,11,0.25)' : 'rgba(248,113,113,0.28)',
+                }}
+              >
+                <span className="font-mono font-bold uppercase tracking-widest text-[10px] mr-2">
+                  {resultado.confianca === 'media' ? 'Nota' : 'Atenção'}
+                </span>
+                {resultado.confiancaExplicacao}
+              </p>
+            )}
           </div>
         </div>
 
