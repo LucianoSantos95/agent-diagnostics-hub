@@ -21,36 +21,38 @@ export default function DiagnosticoFlow() {
     <div>
       <Header onLogoClick={reiniciar} />
 
-      {state.tela === 'abertura' && <TelaAbertura onIniciar={iniciar} />}
+      <main>
+        {state.tela === 'abertura' && <TelaAbertura onIniciar={iniciar} />}
 
-      {state.tela === 'perguntas' && (
-        <TelaPerguntas
-          perguntaAtual={state.perguntaAtual}
-          respostas={state.respostas}
-          onResponder={responder}
-          onAvancar={avancar}
-          onVoltar={voltar}
-        />
-      )}
+        {state.tela === 'perguntas' && (
+          <TelaPerguntas
+            perguntaAtual={state.perguntaAtual}
+            respostas={state.respostas}
+            onResponder={responder}
+            onAvancar={avancar}
+            onVoltar={voltar}
+          />
+        )}
 
-      {state.tela === 'analise' && (
-        <TelaAnalise
-          respostas={state.respostas}
-          onConcluir={handleConcluirAnalise}
-        />
-      )}
+        {state.tela === 'analise' && (
+          <TelaAnalise
+            respostas={state.respostas}
+            onConcluir={handleConcluirAnalise}
+          />
+        )}
 
-      {state.tela === 'resultado' && state.resultado && (
-        <TelaResultado
-          resultado={state.resultado}
-          respostas={state.respostas}
-          sessionId={state.sessionId}
-          onSalvarEmail={salvarEmail}
-          onSalvarOrcamento={salvarOrcamento}
-          onRegistrarCTA={registrarCTA}
-          onReiniciar={reiniciar}
-        />
-      )}
+        {state.tela === 'resultado' && state.resultado && (
+          <TelaResultado
+            resultado={state.resultado}
+            respostas={state.respostas}
+            sessionId={state.sessionId}
+            onSalvarEmail={salvarEmail}
+            onSalvarOrcamento={salvarOrcamento}
+            onRegistrarCTA={registrarCTA}
+            onReiniciar={reiniciar}
+          />
+        )}
+      </main>
 
       {showFooter && <Footer />}
     </div>
