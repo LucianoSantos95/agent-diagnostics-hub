@@ -33,8 +33,8 @@ export default function ChatbotEmpresas() {
   return (
     <LandingLayout
       slug="/chatbot-para-empresas"
-      title="Chatbot para empresas: quando vale a pena e quanto custa em 2026"
-      metaDescription="Chatbot para empresa: para quais tipos de negócio funciona, custos reais no Brasil (R$ 500–2.000/mês), diferença para agente de IA e como escolher a plataforma. Guia para PMEs."
+      title="Chatbot para empresas: quando vale a pena e o custo"
+      metaDescription="Chatbot para empresa: quando funciona, custos reais no Brasil (R$500–2000/mês), diferença para agente de IA e como escolher. Guia para PMEs."
       heroImage={heroImage}
       heroImageAlt="Rede de fluxos de conversação em blueprint indigo representando chatbot corporativo"
       h1={<>Chatbot para empresas: <span style={{ color: '#a5b4fc' }}>quando vale a pena</span> e quanto custa</>}

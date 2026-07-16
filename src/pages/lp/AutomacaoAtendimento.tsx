@@ -33,8 +33,8 @@ export default function AutomacaoAtendimento() {
   return (
     <LandingLayout
       slug="/automacao-de-atendimento"
-      title="Automação de atendimento: guia prático para PMEs no WhatsApp"
-      metaDescription="Automação de atendimento no WhatsApp para pequenas empresas: quando vale, quanto custa, como escolher entre chatbot, agente de IA e roteamento inteligente. Passo a passo."
+      title="Automação de atendimento no WhatsApp: guia para PMEs"
+      metaDescription="Automação de atendimento no WhatsApp para PMEs: quando vale, custos e como escolher entre chatbot, agente de IA e roteamento. Passo a passo."
       heroImage={heroImage}
       heroImageAlt="Interface de automação de atendimento com fluxos conectados em ambiente indigo"
       h1={<>Automação de atendimento: <span style={{ color: '#a5b4fc' }}>o que automatizar primeiro</span> na sua PME</>}

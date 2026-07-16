@@ -104,9 +104,9 @@ export default function TelaAbertura({ onIniciar }: Props) {
                     <Check size={12} strokeWidth={3} style={{ color: 'var(--accent)' }} />
                   </div>
                   <div>
-                    <h4 className="font-display font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+                    <h3 className="font-display font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
                       {f.t}
-                    </h4>
+                    </h3>
                     <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                       {f.d}
                     </p>

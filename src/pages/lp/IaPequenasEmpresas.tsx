@@ -33,7 +33,7 @@ export default function IaPequenasEmpresas() {
   return (
     <LandingLayout
       slug="/ia-para-pequenas-empresas"
-      title="IA para pequenas empresas: por onde começar em 2026 (sem gastar errado)"
+      title="IA para pequenas empresas: por onde começar"
       metaDescription="IA para pequenas empresas: como escolher entre chatbot, agente de vendas, automação operacional e IA financeira. Custos reais no Brasil e passo a passo para PMEs."
       heroImage={heroImage}
       heroImageAlt="Pequena empresa em blueprint indigo recebendo fluxos de automação e IA"
