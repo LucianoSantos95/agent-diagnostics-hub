@@ -135,7 +135,7 @@ export default function LandingLayout({
           </section>
 
           <section
-            className="rounded-2xl border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 justify-between"
+            className="rounded-2xl border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 justify-between max-w-3xl"
             style={{
               background: 'var(--surface)',
               borderColor: 'var(--surface-border)',
