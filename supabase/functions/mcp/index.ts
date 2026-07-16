@@ -102,19 +102,53 @@ var P1_MAP = {
   "Opera\xE7\xE3o interna \u2014 processo manual, retrabalho, tarefa repetitiva": "operacao",
   "Financeiro \u2014 n\xE3o sei prever caixa, cobran\xE7a de cliente \xE9 manual": "financeiro"
 };
+var NOME_CATEGORIA = {
+  atendimento: "atendimento",
+  vendas: "vendas e follow-up",
+  operacao: "opera\xE7\xE3o interna",
+  financeiro: "financeiro"
+};
+var PONTE_META = {
+  atendimento: "Um agente de atendimento \xE9 o caminho mais curto at\xE9 l\xE1 \u2014 libera as horas que hoje somem respondendo o mesmo tipo de mensagem.",
+  vendas: "Um agente de follow-up encurta esse caminho \u2014 mant\xE9m o contato quente sem depender da sua mem\xF3ria, para voc\xEA chegar l\xE1 com pipeline cheio.",
+  operacao: "Automatizar opera\xE7\xE3o libera exatamente as horas semanais que hoje somem no repetitivo \u2014 \xE9 o que te tira de operador para dono.",
+  financeiro: "Um agente financeiro cria previsibilidade \u2014 sem isso, essa meta fica sempre a um m\xEAs de dist\xE2ncia."
+};
+function truncar(texto, max) {
+  const limpo = texto.trim();
+  return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}\u2026` : limpo;
+}
+function classificarPerfil(p5) {
+  if (p5 === "Sim, testei mas n\xE3o deu certo") return "testou-falhou";
+  if (p5 === "Sim, uso algo hoje mas quero melhorar") return "ja-usa";
+  return "iniciante";
+}
+var INTRO_PERFIL = {
+  iniciante: `Como \xE9 sua primeira vez com IA, comece pelo mais simples poss\xEDvel \u2014 resista ao impulso de montar tudo de uma vez. O objetivo das primeiras 2 semanas \xE9 entender a ferramenta funcionando de verdade, n\xE3o impressionar ningu\xE9m.
+
+`,
+  "testou-falhou": `J\xE1 que uma tentativa anterior n\xE3o deu certo, o ponto de virada aqui \xE9 escopo: rode um \xFAnico caso de uso ponta a ponta antes de expandir. A maioria das tentativas falha por tentar automatizar cedo demais, coisas demais.
+
+`,
+  "ja-usa": `Como voc\xEA j\xE1 usa alguma coisa hoje, foque em integra\xE7\xE3o e evolu\xE7\xE3o do que existe \u2014 n\xE3o em recome\xE7ar. Mapeie onde a ferramenta atual entrega valor e onde ela para, e trate esse gap como o pr\xF3ximo agente.
+
+`
+};
 function calcularResultado(respostas) {
   const p1 = respostas[1] ?? "";
   const p2 = respostas[2] ?? "";
   const p3 = respostas[3] ?? "";
   const p4 = respostas[4] ?? "";
   const p5 = respostas[5] ?? "";
-  let categoria = P1_MAP[p1] ?? "atendimento";
+  const p6 = respostas[6] ?? "";
+  const categoriaOriginal = P1_MAP[p1] ?? "atendimento";
+  let categoria = categoriaOriginal;
   const timeMinimo = p2 === "S\xF3 eu" || p2 === "2 a 5 pessoas";
   const altaVolume = p3 === "Mais de 50";
-  if (timeMinimo && altaVolume && categoria !== "atendimento") {
-    categoria = "atendimento";
-  }
-  const avisoToolsGenericas = p5 === "Sim, testei mas n\xE3o deu certo";
+  const overrideAtendimento = timeMinimo && altaVolume && categoriaOriginal !== "atendimento";
+  if (overrideAtendimento) categoria = "atendimento";
+  const perfilExperiencia = classificarPerfil(p5);
+  const avisoToolsGenericas = perfilExperiencia === "testou-falhou";
   const conteudo = CONTEUDO[categoria];
   const contextoTime = {
     "S\xF3 eu": "Trabalhando sozinho, cada hora gasta em tarefa repetitiva \xE9 uma hora que voc\xEA n\xE3o gasta crescendo o neg\xF3cio",
@@ -129,19 +163,32 @@ function calcularResultado(respostas) {
   };
   const fraseTime = contextoTime[p2] ?? "";
   const fraseVolume = contextoVolume[p3] ?? "";
-  const tarefa = p4 ? ` Voc\xEA destacou "${p4}" como a tarefa que mais consome seu tempo \u2014 exatamente o tipo de coisa que esse agente elimina.` : "";
+  const p4Curto = truncar(p4, 120);
+  const tarefa = p4Curto ? ` Voc\xEA destacou "${p4Curto}" como a tarefa que mais consome seu tempo \u2014 exatamente o tipo de coisa que esse agente elimina.` : "";
   const porqueBase = {
-    atendimento: `O ponto cr\xEDtico est\xE1 na velocidade e consist\xEAncia do atendimento. ${fraseVolume || "Perder clientes por demora de resposta \xE9 resolv\xEDvel com automa\xE7\xE3o focada"}.`,
-    vendas: `O gargalo est\xE1 no acompanhamento de oportunidades que j\xE1 existem. Leads sem resposta por mais de 24h t\xEAm chance de convers\xE3o drasticamente menor. ${fraseTime || "Um agente de follow-up resolve isso sem depender de mem\xF3ria"}.`,
-    operacao: `O tempo perdido em processos manuais internos \xE9 o maior freio de crescimento. ${fraseTime || "Automatizar opera\xE7\xE3o libera horas semanais para o trabalho que precisa de voc\xEA"}.`,
+    atendimento: `O ponto cr\xEDtico est\xE1 na velocidade e consist\xEAncia do atendimento. ${fraseVolume || fraseTime || "Perder clientes por demora de resposta \xE9 resolv\xEDvel com automa\xE7\xE3o focada"}.`,
+    vendas: `O gargalo est\xE1 no acompanhamento de oportunidades que j\xE1 existem. Leads sem resposta por mais de 24h t\xEAm chance de convers\xE3o drasticamente menor. ${fraseTime || fraseVolume || "Um agente de follow-up resolve isso sem depender de mem\xF3ria"}.`,
+    operacao: `O tempo perdido em processos manuais internos \xE9 o maior freio de crescimento. ${fraseTime || fraseVolume || "Automatizar opera\xE7\xE3o libera horas semanais para o trabalho que precisa de voc\xEA"}.`,
     financeiro: `A falta de previsibilidade de caixa e a cobran\xE7a manual s\xE3o os maiores riscos para a sa\xFAde do neg\xF3cio. ${fraseTime || "Um agente financeiro resolve o operacional e d\xE1 clareza sobre o que entra e quando"}.`
   };
-  const porque = `${porqueBase[categoria]}${tarefa}`;
+  let prefacio = "";
+  if (overrideAtendimento) {
+    const gargaloTexto = NOME_CATEGORIA[categoriaOriginal];
+    prefacio = `Voc\xEA marcou ${gargaloTexto} como gargalo, mas com ${p2.toLowerCase()} e ${p3.toLowerCase()} contatos por dia, o atendimento vira o freio real antes de qualquer outra coisa \u2014 por isso o diagn\xF3stico foi ajustado. `;
+  }
+  const porque = `${prefacio}${porqueBase[categoria]}${tarefa}`;
+  const metaTresMeses = truncar(p6, 220);
+  const pontePessoal = PONTE_META[categoria];
+  const comoComecar = `${INTRO_PERFIL[perfilExperiencia]}${conteudo.comoComecar}`;
   return {
     categoria,
     ...conteudo,
+    comoComecar,
     porque,
-    avisoToolsGenericas
+    avisoToolsGenericas,
+    perfilExperiencia,
+    metaTresMeses,
+    pontePessoal
   };
 }
 
