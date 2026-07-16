@@ -19,27 +19,34 @@ export default function CTAComercial({ onRegistrarCTA }: Props) {
     <div
       className="rounded-2xl overflow-hidden relative"
       style={{
-        background: 'linear-gradient(135deg, #0f2244 0%, #1e3a5f 100%)',
-        border: '1px solid rgba(79,70,229,0.3)',
+        background: 'linear-gradient(135deg, #0a0a1a 0%, #141432 50%, #1e1e5a 100%)',
+        border: '1px solid rgba(79,70,229,0.35)',
+        boxShadow: '0 30px 80px -30px rgba(79,70,229,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
       }}
     >
       {/* Top glow */}
       <div
         className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(79,70,229,0.6), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(165,180,252,0.8), transparent)' }}
+      />
+      {/* Ambient radial */}
+      <div
+        className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(79,70,229,0.35) 0%, transparent 70%)' }}
       />
 
-      <div className="px-6 pt-7 pb-5">
+      <div className="relative px-6 pt-7 pb-5">
         <div className="flex items-center gap-2 mb-4">
           <span
-            className="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
-            style={{ background: 'rgba(79,70,229,0.15)', color: '#a5b4fc', border: '1px solid rgba(79,70,229,0.25)' }}
+            className="text-[10px] font-mono font-bold uppercase tracking-[0.24em] px-2.5 py-1 rounded-full inline-flex items-center gap-1.5"
+            style={{ background: 'rgba(79,70,229,0.18)', color: '#c4b5fd', border: '1px solid rgba(79,70,229,0.35)' }}
           >
-            🎁 Oferta exclusiva
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-300 animate-pulse" />
+            Oferta exclusiva
           </span>
         </div>
 
-        <h3 className="text-xl font-extrabold text-white leading-snug mb-2">
+        <h3 className="font-display text-2xl md:text-[26px] font-extrabold text-white leading-[1.15] tracking-tight mb-3">
           As ferramentas resolvem 70%.
           <br />
           <span style={{ color: '#a5b4fc' }}>Os 30% que quebram é onde a gente entra.</span>
