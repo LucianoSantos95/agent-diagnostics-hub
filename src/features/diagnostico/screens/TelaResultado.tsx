@@ -6,6 +6,9 @@ import CapturaEmail from '../resultado/CapturaEmail';
 import CaixaFeedback from '../resultado/CaixaFeedback';
 import PerguntaOrcamento from '../resultado/PerguntaOrcamento';
 import CTAComercial from '../resultado/CTAComercial';
+import StackRecomendada from '../resultado/StackRecomendada';
+import FerramentasIAGeral from '../resultado/FerramentasIAGeral';
+import CombinacoesLogicas from '../resultado/CombinacoesLogicas';
 import Footer from '@/components/Footer';
 import PageBackground from '@/components/PageBackground';
 
