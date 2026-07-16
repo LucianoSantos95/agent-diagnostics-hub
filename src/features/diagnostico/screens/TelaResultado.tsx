@@ -199,13 +199,14 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
         </div>
 
         {/* Stack completa por categoria */}
-        <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} />
+        <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} tamanhoTime={respostas[2] ?? ''} volumeDia={respostas[3] ?? ''} />
 
         {/* Combinações lógicas — como as ferramentas se encaixam */}
-        <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} />
+        <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} tarefaP4={tarefaP4} />
 
         {/* IA de uso geral — bloco fixo, útil para qualquer negócio */}
-        <FerramentasIAGeral />
+        <FerramentasIAGeral tarefaP4={tarefaP4} />
+
 
         {/* Personalização P4 — gancho de valor antes do gate */}
         <BlocoPersonalizacao tarefaP4={tarefaP4} categoria={resultado.categoria} />
