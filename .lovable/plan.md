@@ -1,74 +1,107 @@
 
-# Redesign profissional do diagnóstico
+# Plano de Implementação
 
-Escopo: abertura, perguntas, análise, resultado e as 3 landing pages SEO. Fonte de verdade visual = seu arquivo Figma (via MCP local) quando estiver conectado. Caso ainda não esteja, uso a skill `redesign` para gerar 3 direções renderizadas e você escolhe uma antes de eu implementar.
+## Pré-requisito: Figma MCP
+O Figma MCP ainda **não está conectado**. Assim que você:
+1. Abrir Figma Desktop → Dev Mode (Shift+D) → "Enable desktop MCP server"
+2. Ativar em Settings → Connectors → Local MCP servers no Lovable
+3. Colar o link do frame de referência
 
-## Pré-requisito
+…eu extraio anima/logo direto do seu arquivo. Enquanto isso, sigo com o que **não** depende do Figma (itens 1–4 abaixo). O item 5 (refinamento fino do logo/animações via referência sua) fica em espera até o frame chegar.
 
-Habilitar o Figma MCP local (Figma Desktop → Dev Mode → Enable desktop MCP server → conectar em Settings → Connectors no Lovable). Sem isso o passo "Extração do Figma" abaixo é substituído pelo fluxo `redesign`.
+---
 
-## Fase 1 — Fundação do design system
+## 1. Logo "Focus Indica" — conceito orbital novo
+**Arquivo:** `src/assets/focus-indica-logo.svg` (substituir)
 
-Antes de mexer em qualquer tela, consolido o sistema em `src/index.css` + `tailwind.config.js`:
+- Símbolo geométrico abstrato alinhado à estética *architectural tech*:
+  - Núcleo sólido em `#4f46e5` (indigo accent)
+  - 2 anéis orbitais concêntricos (traços finos, dashed)
+  - 1 partícula orbital destacada (indicando "foco/direção")
+- Sem gradiente rosa/roxo antigo — paleta 100% Midnight Indigo
+- Versão que funciona em dark e light (via `currentColor` nos traços)
 
-1. **Extração do Figma** (se conectado): leio tokens de cor, tipografia, espaçamento, radius, sombras e componentes do arquivo que você indicar. Mapeio 1:1 para variáveis CSS semânticas (`--background`, `--foreground`, `--primary`, `--surface`, `--text-*`, gradientes, sombras).
-2. **Fallback sem Figma**: rodo a skill `redesign` — 3 perguntas visuais (paleta, tipografia, layout) + 3 direções renderizadas para você escolher. A direção escolhida vira o sistema.
-3. **Tipografia**: substituo qualquer default genérico por um par distintivo (display + body) carregado via Google Fonts.
-4. **Motion**: adiciono `framer-motion` e defino 3–4 primitivas de animação (fade-up, stagger, hover-lift, page-enter) para uso consistente.
+## 2. Header dinâmico com scroll
+**Arquivo:** `src/components/Header.tsx`
 
-Entregável: tokens novos + preview visual do sistema aplicado num componente-piloto (botão + card) antes de propagar.
+- Hook `useScrollY()` novo para detectar posição
+- Ao passar de **80px**:
+  - Altura reduz `60px → 48px` (transição 300ms)
+  - Badge "Diagnóstico gratuito" faz fade-out + slide
+  - Wordmark "Focus Indica" anima kerning: `letter-spacing: -0.3px → -1.2px` (letras se aproximam)
+  - Fundo ganha `backdrop-blur` mais intenso + borda mais sutil
+- Já respeita `var(--text-primary)` e `var(--surface)`, então **acompanha o tema** automaticamente (dark/light toggle já funciona nos tokens)
 
-## Fase 2 — Telas do diagnóstico
+## 3. Botão "Deixar feedback" com cor chamativa
+**Arquivos:** `src/features/diagnostico/resultado/CaixaFeedback.tsx` + `src/components/FeedbackDialog.tsx` (trigger)
 
-Refino, uma por uma, mantendo toda a lógica de negócio intacta (`useDiagnostico`, engine, edge functions, captura de e-mail/orçamento). Só CSS/JSX/motion.
+- Novo estilo do CTA de feedback:
+  - Fundo `#F59E0B` (amber vibrante) com glow sutil `box-shadow: 0 0 24px rgba(245,158,11,0.4)`
+  - Texto branco, peso 600
+  - Micro-animação `animate-glow-pulse` (já existe no CSS) no hover
+  - Ícone de balão de fala à esquerda
+- Contrasta com o resto (que é todo indigo/violeta), puxando o olho
 
-1. **TelaAbertura** — hero com hierarquia clara, CTA mais assertivo, prova social/contadores se fizerem sentido, animação de entrada.
-2. **TelaPerguntas** — progresso mais elegante, transições entre perguntas, tratamento visual distinto para múltipla escolha vs. texto livre, foco em legibilidade mobile.
-3. **TelaAnalise** — micro-storytelling durante o "carregamento" (steps animados em vez de spinner genérico).
-4. **TelaResultado** — refinamento do hero por categoria, hierarquia dos blocos (ferramentas → gate de e-mail → guia → orçamento → CTA), tratamento premium do CTA comercial. Este é o ponto de maior conversão, recebe atenção extra.
+## 4. Tela de Resultado — expansão de ferramentas + combinações
+**Arquivo:** `src/features/diagnostico/screens/TelaResultado.tsx` + novo `src/features/diagnostico/resultado/StackRecomendada.tsx` + dados em `src/features/diagnostico/engine/recomendacao.ts`
 
-## Fase 3 — Landing pages SEO
+Adicionar 3 blocos novos abaixo do bloco atual "Ferramentas recomendadas":
 
-`LandingLayout` + as 3 páginas (`AutomacaoAtendimento`, `ChatbotEmpresas`, `IaPequenasEmpresas`):
+### 4a. Stack Completa por Categoria
+Kit de 4–6 ferramentas cobrindo o fluxo inteiro da categoria escolhida. Ex. para "atendimento":
+- Agente: Typebot
+- Automação: Make
+- CRM: RD Station
+- Analytics: PostHog
+- IA geral: ChatGPT
 
-- Editorial-grade: hero com tipografia grande, sumário lateral em desktop, blocos com respiração, FAQ em accordion refinado.
-- Ilustração/imagem hero gerada sob medida por LP (imagegen) — evita cara de template.
-- CTA final destacado, mas sem gritar.
-- Mantém o JSON-LD FAQ e o SEO atual intactos.
+### 4b. Ferramentas Gerais de IA (bloco fixo, aparece em todas categorias)
+ChatGPT, Claude, Gemini, Perplexity — cada uma com:
+- Nome + link
+- **"Como usar no seu negócio"** (2–3 frases práticas específicas por ferramenta)
+- Ex.: *"Claude é forte em textos longos — use para revisar contratos, escrever propostas comerciais e sumarizar reuniões"*
 
-## Fase 4 — Componentes compartilhados
+### 4c. Combinações Lógicas (fluxos)
+3 combinações prontas mostrando **como as ferramentas se encaixam**:
+- **Fluxo 1** — "Captação → Qualificação → Venda": Instagram → ManyChat → Typebot → RD Station CRM → ChatGPT (redação de proposta)
+- **Fluxo 2** — "Atendimento 24/7 com escalonamento humano": Typebot (bot) → Make (roteamento) → WhatsApp humano → Notion (registro)
+- **Fluxo 3** — "Operação com IA de bolso": Google Sheets → Make → Claude API → Slack (notificação)
 
-- **Header** e **Footer**: alinhar ao novo sistema (não redesenhar do zero, só refinar).
-- **PageBackground**: ajustar cores das ondas/grid às novas variáveis para não destoar.
-- **Dialogs** (`FeedbackDialog`, `CaseRealDialog`): padronizar com o novo radius/sombra/tipografia.
+Cada fluxo em card horizontal com setas entre os passos.
 
-## Fora de escopo
+## 5. Animações refinadas (aguardando Figma)
+Quando o frame chegar via MCP:
+- Extraio timing curves, delays e durations do seu arquivo
+- Aplico em: entrada da TelaAbertura (orbital), transição TelaPerguntas→TelaAnalise, reveal do TelaResultado
 
-- Lógica do diagnóstico, engine de recomendação, edge functions, e-mails transacionais, MCP server, banco.
-- Adicionar/remover perguntas ou categorias.
-- Autenticação.
+Até lá, mantenho os `animate-glow-pulse`, `animate-float-y` e `fade-in` já presentes.
+
+---
 
 ## Detalhes técnicos
 
-- Zero cor hardcoded em componentes — tudo via tokens semânticos no CSS.
-- Todo componente novo/refatorado usa `framer-motion` para entrada/hover consistentes.
-- Mobile-first; verifico em 375px, 768px e 1280px.
-- Após cada fase, screenshot via Playwright para validação visual antes de seguir.
-
-## Ordem de execução sugerida
-
 ```text
-Fase 1 (fundação)  →  validação visual
-   ↓
-Fase 2.4 (Resultado — maior impacto)  →  validação
-   ↓
-Fase 2.1 (Abertura)  →  validação
-   ↓
-Fase 2.2 + 2.3 (Perguntas + Análise)
-   ↓
-Fase 3 (LPs)
-   ↓
-Fase 4 (polimento compartilhado)
+Arquivos a criar:
+- src/hooks/useScrollY.ts
+- src/features/diagnostico/resultado/StackRecomendada.tsx
+- src/features/diagnostico/resultado/FerramentasIAGeral.tsx
+- src/features/diagnostico/resultado/CombinacoesLogicas.tsx
+
+Arquivos a editar:
+- src/assets/focus-indica-logo.svg (redesenho completo)
+- src/components/Header.tsx (scroll dynamics + kerning)
+- src/features/diagnostico/resultado/CaixaFeedback.tsx (CTA amber)
+- src/features/diagnostico/screens/TelaResultado.tsx (composição dos novos blocos)
+- src/features/diagnostico/engine/recomendacao.ts (dados de stack/combos por categoria)
 ```
 
-Confirmando o plano: se o Figma já estiver conectado quando você aprovar, começo pela extração dos tokens. Se não, disparo o fluxo `redesign` para você escolher a direção visual antes de qualquer código.
+O logo (SVG) usa `currentColor` + variável `--accent`, então já responde ao toggle de tema. O header lê `var(--surface)`/`var(--text-primary)` — troca de cor com o tema é automática.
+
+## Ordem de execução
+1. Logo novo (item 1) — visível em toda navegação
+2. Header dinâmico (item 2) — impacto imediato de percepção
+3. Feedback amber (item 3) — mudança pontual
+4. Expansão TelaResultado (item 4) — maior volume de conteúdo
+5. (Depois do Figma) refinamento de animações (item 5)
+
+Aprova para eu implementar do 1 ao 4 agora?
