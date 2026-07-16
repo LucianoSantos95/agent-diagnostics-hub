@@ -1,4 +1,4 @@
-import focusIcon from '@/assets/focus-indica-logo.svg';
+import FocusIndicaLogo from '@/components/FocusIndicaLogo';
 import ThemeToggle from './ThemeToggle';
 import { useScrollY } from '@/hooks/useScrollY';
 
@@ -43,15 +43,11 @@ export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
         }}
         aria-label="Voltar ao início"
       >
-        <img
-          src={focusIcon}
-          alt="Focus Indica"
-          style={{
-            height: past ? 30 : 40,
-            width: 'auto',
-            transition: 'height 300ms cubic-bezier(0.4,0,0.2,1)',
-          }}
+        <FocusIndicaLogo
+          size={past ? 30 : 40}
+          className="transition-all duration-300"
         />
+
         <span
           style={{
             fontSize: past ? 15 : 17,
