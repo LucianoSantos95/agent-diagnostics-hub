@@ -6,6 +6,9 @@ import CapturaEmail from '../resultado/CapturaEmail';
 import CaixaFeedback from '../resultado/CaixaFeedback';
 import PerguntaOrcamento from '../resultado/PerguntaOrcamento';
 import CTAComercial from '../resultado/CTAComercial';
+import StackRecomendada from '../resultado/StackRecomendada';
+import FerramentasIAGeral from '../resultado/FerramentasIAGeral';
+import CombinacoesLogicas from '../resultado/CombinacoesLogicas';
 import Footer from '@/components/Footer';
 import PageBackground from '@/components/PageBackground';
 
@@ -169,6 +172,15 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
             ))}
           </div>
         </div>
+
+        {/* Stack completa por categoria */}
+        <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} />
+
+        {/* Combinações lógicas — como as ferramentas se encaixam */}
+        <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} />
+
+        {/* IA de uso geral — bloco fixo, útil para qualquer negócio */}
+        <FerramentasIAGeral />
 
         {/* Personalização P4 — gancho de valor antes do gate */}
         <BlocoPersonalizacao tarefaP4={tarefaP4} categoria={resultado.categoria} />

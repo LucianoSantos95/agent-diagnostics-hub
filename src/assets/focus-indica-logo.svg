@@ -1,12 +1,12 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
-    <linearGradient id="fiBg" x1="40" y1="40" x2="472" y2="472" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#2563EB"/>
-      <stop offset="0.5" stop-color="#6D28D9"/>
-      <stop offset="1" stop-color="#B428D6"/>
-    </linearGradient>
-    <filter id="fiGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="5" result="b"/>
+    <radialGradient id="fiCore" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#818cf8"/>
+      <stop offset="0.6" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#4338ca"/>
+    </radialGradient>
+    <filter id="fiGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
       <feMerge>
         <feMergeNode in="b"/>
         <feMergeNode in="SourceGraphic"/>
@@ -14,30 +14,39 @@
     </filter>
   </defs>
 
-  <!-- Squircle background -->
-  <rect x="16" y="16" width="480" height="480" rx="120" fill="url(#fiBg)"/>
+  <!-- Outer orbit (dashed, wide) -->
+  <circle cx="256" cy="256" r="220" fill="none"
+          stroke="currentColor" stroke-opacity="0.28" stroke-width="3"
+          stroke-dasharray="2 10" stroke-linecap="round"/>
 
-  <!-- Concentric target rings -->
-  <g fill="none" stroke="#ffffff" stroke-linecap="round">
-    <circle cx="256" cy="256" r="188" stroke-opacity="0.18" stroke-width="4"/>
-    <circle cx="256" cy="256" r="150" stroke-opacity="0.32" stroke-width="4.5"
-            stroke-dasharray="720 220" stroke-dashoffset="120"/>
-    <circle cx="256" cy="256" r="112" stroke-opacity="0.55" stroke-width="5"/>
-    <circle cx="256" cy="256" r="74" stroke-opacity="0.85" stroke-width="6"
-            stroke-dasharray="330 130" stroke-dashoffset="80"/>
-  </g>
+  <!-- Mid orbit (thin solid arc, rotated) -->
+  <circle cx="256" cy="256" r="164" fill="none"
+          stroke="currentColor" stroke-opacity="0.45" stroke-width="3"
+          stroke-dasharray="380 200" stroke-dashoffset="60"
+          transform="rotate(-30 256 256)" stroke-linecap="round"/>
 
-  <!-- Center checkmark -->
-  <path d="M212 258 L242 288 L300 222"
-        fill="none" stroke="#ffffff" stroke-width="20"
-        stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Inner orbit -->
+  <circle cx="256" cy="256" r="110" fill="none"
+          stroke="currentColor" stroke-opacity="0.55" stroke-width="3.5"
+          stroke-dasharray="4 8" stroke-linecap="round"/>
 
-  <!-- Diagonal upward arrow with glow -->
+  <!-- Orbital particle (outer) - focused indigo -->
   <g filter="url(#fiGlow)">
-    <path d="M150 412 L376 150"
-          fill="none" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>
-    <path d="M344 150 L378 148 L376 184"
-          fill="none" stroke="#ffffff" stroke-width="20"
-          stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="440" cy="220" r="10" fill="#4f46e5"/>
   </g>
+
+  <!-- Orbital particle (mid) - accent -->
+  <circle cx="112" cy="330" r="7" fill="#818cf8" opacity="0.85"/>
+
+  <!-- Directional arc pointing to core (subtle) -->
+  <path d="M 380 130 Q 320 180 290 220" fill="none"
+        stroke="#818cf8" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+
+  <!-- Core node -->
+  <circle cx="256" cy="256" r="46" fill="url(#fiCore)"/>
+  <circle cx="256" cy="256" r="46" fill="none"
+          stroke="#a5b4fc" stroke-width="2" stroke-opacity="0.6"/>
+
+  <!-- Inner spark -->
+  <circle cx="256" cy="256" r="16" fill="#ffffff" fill-opacity="0.85"/>
 </svg>

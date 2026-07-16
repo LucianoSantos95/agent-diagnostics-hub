@@ -1,0 +1,51 @@
+import { IA_GERAL } from '../engine/ferramentasGerais';
+
+export default function FerramentasIAGeral() {
+  return (
+    <div className="animate-fade-up">
+      <div className="flex items-center gap-2 mb-3">
+        <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#a5b4fc' }}>
+          IA de uso geral · qualquer negócio adota
+        </p>
+        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+      </div>
+      <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+        Independente do agente que você vai montar, essas ferramentas resolvem 80% do trabalho manual do dia a dia. Cada uma é forte em uma coisa diferente.
+      </p>
+      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+        {IA_GERAL.map((t) => (
+          <a
+            key={t.nome}
+            href={t.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl p-4 border transition-all hover:scale-[1.01] hover:border-indigo-400/40"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              borderColor: 'rgba(255,255,255,0.08)',
+              textDecoration: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{t.nome}</p>
+              <span className="text-xs" style={{ color: 'rgba(199,210,254,0.5)' }}>↗</span>
+            </div>
+            <p
+              className="text-[11px] font-mono uppercase tracking-widest"
+              style={{ color: '#818cf8' }}
+            >
+              {t.forte}
+            </p>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Como usar no seu negócio: </span>
+              {t.comoUsar}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
