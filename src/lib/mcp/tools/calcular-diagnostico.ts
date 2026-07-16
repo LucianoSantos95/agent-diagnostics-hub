@@ -31,6 +31,11 @@ export default defineTool({
       .max(200)
       .describe("Resposta da pergunta 4: tarefa manual que mais consome tempo (texto livre)."),
     ja_tentou_automatizar: P5.describe("Resposta da pergunta 5: histórico de tentativas com automação."),
+    meta_tres_meses: z
+      .string()
+      .max(300)
+      .optional()
+      .describe("Resposta da pergunta 6 (opcional): o que mudaria no dia a dia daqui a 3 meses se der certo."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: (input) => {
@@ -40,6 +45,7 @@ export default defineTool({
       3: input.volume_contatos_dia,
       4: input.tarefa_que_mais_consome,
       5: input.ja_tentou_automatizar,
+      6: input.meta_tres_meses ?? "",
     };
     const resultado = calcularResultado(respostas);
     return {
