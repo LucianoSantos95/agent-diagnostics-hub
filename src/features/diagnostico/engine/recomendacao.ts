@@ -1,5 +1,6 @@
 export type Categoria = 'atendimento' | 'vendas' | 'operacao' | 'financeiro';
 export type PerfilExperiencia = 'iniciante' | 'testou-falhou' | 'ja-usa';
+export type Confianca = 'alta' | 'media' | 'baixa';
 
 export interface Ferramenta {
   nome: string;
@@ -22,12 +23,47 @@ export interface ResultadoDiagnostico {
   perfilExperiencia: PerfilExperiencia;
   metaTresMeses: string;
   pontePessoal: string;
+  confianca: Confianca;
+  confiancaExplicacao: string;
 }
 
-const CONTEUDO: Record<Categoria, Omit<ResultadoDiagnostico, 'categoria' | 'porque' | 'avisoToolsGenericas' | 'perfilExperiencia' | 'metaTresMeses' | 'pontePessoal'>> = {
+type ConteudoBase = Omit<
+  ResultadoDiagnostico,
+  | 'categoria'
+  | 'porque'
+  | 'avisoToolsGenericas'
+  | 'perfilExperiencia'
+  | 'metaTresMeses'
+  | 'pontePessoal'
+  | 'confianca'
+  | 'confiancaExplicacao'
+  | 'titulo'
+  | 'subtitulo'
+>;
+
+const NOME_AGENTE: Record<Categoria, string> = {
+  atendimento: 'Agente de Atendimento',
+  vendas: 'Agente de Vendas e Follow-up',
+  operacao: 'Agente de Automação e Operação',
+  financeiro: 'Agente Financeiro',
+};
+
+const NOME_FRENTE: Record<Categoria, string> = {
+  atendimento: 'atendimento ao cliente',
+  vendas: 'vendas e follow-up',
+  operacao: 'operação interna',
+  financeiro: 'gestão financeira',
+};
+
+const SUBTITULO: Record<Categoria, string> = {
+  atendimento: 'Seu maior gargalo está em responder clientes com velocidade e consistência.',
+  vendas: 'Seu maior gargalo está em manter o contato com leads quentes sem deixar oportunidade esfriar.',
+  operacao: 'Seu maior gargalo está em tarefas repetitivas internas que consomem tempo sem gerar valor direto.',
+  financeiro: 'Seu maior gargalo está na previsibilidade de caixa e na cobrança manual de clientes.',
+};
+
+const CONTEUDO: Record<Categoria, ConteudoBase> = {
   atendimento: {
-    titulo: 'Agente de Atendimento',
-    subtitulo: 'Seu maior gargalo está em responder clientes com velocidade e consistência.',
     oQuePrecisa: `Um agente de atendimento automatiza respostas para as dúvidas mais frequentes dos seus clientes — via WhatsApp, Instagram ou chat no site — sem precisar de um humano disponível 24h. Ele responde na hora, filtra o que precisa de atenção real e só escala para você o que não consegue resolver. O resultado prático: menos tempo perdido em perguntas repetitivas e nenhum cliente ignorado por demora.`,
     ferramentas: [
       { nome: 'Typebot', url: 'https://typebot.io', descricao: 'Fluxos de conversa visuais + WhatsApp', plano: 'Gratuito' },
@@ -47,8 +83,6 @@ Você não precisa automatizar tudo de uma vez — comece pelo que mais repete.`
 - **Não monitorar**: ativar e esquecer → falhas acumulam sem que ninguém perceba`,
   },
   vendas: {
-    titulo: 'Agente de Vendas e Follow-up',
-    subtitulo: 'Seu maior gargalo está em manter o contato com leads quentes sem deixar oportunidade esfriar.',
     oQuePrecisa: `Um agente de vendas e follow-up automatiza a sequência de contatos com leads que já demonstraram interesse — mandando a mensagem certa, no momento certo, sem depender da sua memória ou disponibilidade. Ele identifica quem parou de responder, reativa contatos frios e libera você para focar nas negociações que realmente precisam de atenção humana.`,
     ferramentas: [
       { nome: 'RD Station CRM', url: 'https://www.rdstation.com/crm/', descricao: 'CRM brasileiro com follow-up', plano: 'Gratuito' },
@@ -68,8 +102,6 @@ Comece com 1 sequência, não 10.`,
 - **Automatizar sem CRM**: usar planilha para controlar follow-up → inevitavelmente perde contatos`,
   },
   operacao: {
-    titulo: 'Agente de Automação e Operação',
-    subtitulo: 'Seu maior gargalo está em tarefas repetitivas internas que consomem tempo sem gerar valor direto.',
     oQuePrecisa: `Um agente de automação operacional conecta sistemas, move dados entre ferramentas e executa tarefas repetitivas sem precisar de ninguém para apertar o botão. Relatórios que você gera manualmente toda semana, notificações que você envia por fora, dados que você copia de uma planilha para outra — tudo isso pode rodar sozinho, em horário programado ou acionado por um evento.`,
     ferramentas: [
       { nome: 'Make', url: 'https://make.com', descricao: 'Automação visual entre centenas de apps', plano: 'Grátis 1k ops/mês' },
@@ -89,8 +121,6 @@ Automatize uma tarefa de cada vez. Complexidade acumulada quebra tudo.`,
 - **Over-engineering**: criar fluxo complexo para problema que um lembrete no celular resolveria`,
   },
   financeiro: {
-    titulo: 'Agente Financeiro',
-    subtitulo: 'Seu maior gargalo está na previsibilidade de caixa e na cobrança manual de clientes.',
     oQuePrecisa: `Um agente financeiro automatiza o envio de cobranças, lembretes de pagamento e conciliação básica de recebíveis — eliminando o trabalho de perseguir clientes inadimplentes manualmente e dando visibilidade real sobre o que entra e quando. Não substitui um contador, mas resolve o operacional financeiro que hoje consome seu tempo.`,
     ferramentas: [
       { nome: 'Asaas', url: 'https://asaas.com', descricao: 'Cobranças automáticas: boleto, PIX, cartão', plano: 'Gratuito' },
@@ -132,6 +162,27 @@ const PONTE_META: Record<Categoria, string> = {
   financeiro: 'Um agente financeiro cria previsibilidade — sem isso, essa meta fica sempre a um mês de distância.',
 };
 
+// Palavras-chave por categoria — usadas pra medir se a P4 (tarefa livre) confirma a P1.
+const KEYWORDS: Record<Categoria, RegExp[]> = {
+  atendimento: [
+    /respond/i, /atend/i, /client/i, /whats?app/i, /instagram|dm\b|direct/i,
+    /d[uú]vida/i, /suporte/i, /chat/i, /mensagem/i,
+  ],
+  vendas: [
+    /lead/i, /follow[- ]?up/i, /proposta/i, /or[çc]amento/i, /cotar|cota[çc][aã]o/i,
+    /vend/i, /prospect/i, /cobrar resposta/i, /fechar/i, /pipeline|funil/i,
+  ],
+  operacao: [
+    /planilha/i, /relat[oó]rio/i, /cadastr/i, /copiar|copio|copia/i, /processo/i,
+    /repetitiv/i, /dado|dados/i, /import(a|ar)/i, /export(a|ar)/i, /integr/i,
+    /nota fiscal|nfe/i,
+  ],
+  financeiro: [
+    /cobran[çc]/i, /boleto/i, /pix/i, /caixa/i, /inadimpl/i, /fluxo de caixa/i,
+    /fatura/i, /pag(a|amento)/i, /recebiv/i, /financ/i, /conta[s]? a (pagar|receber)/i,
+  ],
+};
+
 function truncar(texto: string, max: number): string {
   const limpo = texto.trim();
   return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}…` : limpo;
@@ -148,6 +199,96 @@ const INTRO_PERFIL: Record<PerfilExperiencia, string> = {
   'testou-falhou': `Já que uma tentativa anterior não deu certo, o ponto de virada aqui é escopo: rode um único caso de uso ponta a ponta antes de expandir. A maioria das tentativas falha por tentar automatizar cedo demais, coisas demais.\n\n`,
   'ja-usa': `Como você já usa alguma coisa hoje, foque em integração e evolução do que existe — não em recomeçar. Mapeie onde a ferramenta atual entrega valor e onde ela para, e trate esse gap como o próximo agente.\n\n`,
 };
+
+interface Sinais {
+  p4MatchCategoriaOriginal: number; // matches em P1
+  p4MatchOutraCategoria: Categoria | null; // se P4 casa mais com outra categoria
+  p4Vago: boolean;
+  overrideDisparado: boolean;
+}
+
+function contarMatches(p4: string, categoria: Categoria): number {
+  if (!p4) return 0;
+  return KEYWORDS[categoria].reduce((acc, re) => acc + (re.test(p4) ? 1 : 0), 0);
+}
+
+function analisarSinais(p4: string, categoriaOriginal: Categoria, override: boolean): Sinais {
+  const p4Trim = p4.trim();
+  const p4Vago = p4Trim.length < 15;
+
+  const matchesOriginal = contarMatches(p4Trim, categoriaOriginal);
+
+  // Categoria com maior match em P4 (fora a original)
+  let melhorOutra: Categoria | null = null;
+  let melhorScore = 0;
+  (Object.keys(KEYWORDS) as Categoria[]).forEach((cat) => {
+    if (cat === categoriaOriginal) return;
+    const m = contarMatches(p4Trim, cat);
+    if (m > melhorScore) { melhorScore = m; melhorOutra = cat; }
+  });
+
+  const p4MatchOutraCategoria = melhorOutra && melhorScore > matchesOriginal ? melhorOutra : null;
+
+  return {
+    p4MatchCategoriaOriginal: matchesOriginal,
+    p4MatchOutraCategoria,
+    p4Vago,
+    overrideDisparado: override,
+  };
+}
+
+function classificarConfianca(sinais: Sinais): { nivel: Confianca; explicacao: string } {
+  const { p4MatchCategoriaOriginal, p4MatchOutraCategoria, p4Vago, overrideDisparado } = sinais;
+
+  if (overrideDisparado) {
+    return {
+      nivel: 'baixa',
+      explicacao: 'Seu gargalo declarado difere do que o volume/time indica como prioridade real. Trate esse resultado como hipótese e valide antes de investir.',
+    };
+  }
+  if (p4MatchOutraCategoria) {
+    return {
+      nivel: 'baixa',
+      explicacao: `A tarefa que você descreveu como mais consumidora aponta mais pra ${NOME_FRENTE[p4MatchOutraCategoria]} do que pro gargalo que marcou. Vale revalidar qual é a dor prioritária.`,
+    };
+  }
+  if (p4MatchCategoriaOriginal >= 2) {
+    return {
+      nivel: 'alta',
+      explicacao: 'Suas respostas convergem: gargalo declarado, tarefa que consome tempo e contexto do time apontam pra mesma frente.',
+    };
+  }
+  if (p4MatchCategoriaOriginal === 1 && !p4Vago) {
+    return {
+      nivel: 'alta',
+      explicacao: 'A tarefa que consome seu tempo confirma o gargalo que você marcou.',
+    };
+  }
+  if (p4Vago) {
+    return {
+      nivel: 'media',
+      explicacao: 'Seu gargalo está claro, mas a descrição da tarefa foi curta demais pra confirmar. Um bate-papo rápido resolve.',
+    };
+  }
+  return {
+    nivel: 'media',
+    explicacao: 'Sinais consistentes com o gargalo declarado, mas sem palavras-chave que confirmem por completo.',
+  };
+}
+
+function montarTitulo(categoria: Categoria, confianca: Confianca): string {
+  if (confianca === 'alta') return NOME_AGENTE[categoria];
+  if (confianca === 'media') return `Prioridade: ${NOME_FRENTE[categoria]}`;
+  return `Hipótese inicial: ${NOME_FRENTE[categoria]}`;
+}
+
+function montarSubtitulo(categoria: Categoria, confianca: Confianca): string {
+  const base = SUBTITULO[categoria];
+  if (confianca === 'baixa') {
+    return 'Suas respostas apontam pra mais de uma direção. O caminho abaixo é uma hipótese pra validar — não a resposta definitiva.';
+  }
+  return base;
+}
 
 export function calcularResultado(respostas: Record<number, string>): ResultadoDiagnostico {
   const p1 = respostas[1] ?? '';
@@ -168,6 +309,10 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
   const perfilExperiencia = classificarPerfil(p5);
   const avisoToolsGenericas = perfilExperiencia === 'testou-falhou';
 
+  // Análise de confiança usa a categoria original declarada pelo usuário
+  const sinais = analisarSinais(p4, categoriaOriginal, overrideAtendimento);
+  const { nivel: confianca, explicacao: confiancaExplicacao } = classificarConfianca(sinais);
+
   const conteudo = CONTEUDO[categoria];
 
   const contextoTime: Record<string, string> = {
@@ -185,22 +330,37 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
   const fraseTime = contextoTime[p2] ?? '';
   const fraseVolume = contextoVolume[p3] ?? '';
   const p4Curto = truncar(p4, 120);
-  const tarefa = p4Curto ? ` Você destacou "${p4Curto}" como a tarefa que mais consome seu tempo — exatamente o tipo de coisa que esse agente elimina.` : '';
 
-  const porqueBase: Record<Categoria, string> = {
-    atendimento: `O ponto crítico está na velocidade e consistência do atendimento. ${fraseVolume || fraseTime || 'Perder clientes por demora de resposta é resolvível com automação focada'}.`,
-    vendas: `O gargalo está no acompanhamento de oportunidades que já existem. Leads sem resposta por mais de 24h têm chance de conversão drasticamente menor. ${fraseTime || fraseVolume || 'Um agente de follow-up resolve isso sem depender de memória'}.`,
-    operacao: `O tempo perdido em processos manuais internos é o maior freio de crescimento. ${fraseTime || fraseVolume || 'Automatizar operação libera horas semanais para o trabalho que precisa de você'}.`,
-    financeiro: `A falta de previsibilidade de caixa e a cobrança manual são os maiores riscos para a saúde do negócio. ${fraseTime || 'Um agente financeiro resolve o operacional e dá clareza sobre o que entra e quando'}.`,
-  };
+  // ---- Monta `porque` conforme a confiança ----
+  const nomeAgente = NOME_AGENTE[categoria];
+  const nomeFrente = NOME_FRENTE[categoria];
 
-  let prefacio = '';
-  if (overrideAtendimento) {
-    const gargaloTexto = NOME_CATEGORIA[categoriaOriginal];
-    prefacio = `Você marcou ${gargaloTexto} como gargalo, mas com ${p2.toLowerCase()} e ${p3.toLowerCase()} contatos por dia, o atendimento vira o freio real antes de qualquer outra coisa — por isso o diagnóstico foi ajustado. `;
+  let porque = '';
+
+  if (confianca === 'alta') {
+    const porqueBase: Record<Categoria, string> = {
+      atendimento: `O ponto crítico está na velocidade e consistência do atendimento. ${fraseVolume || fraseTime || 'Perder clientes por demora de resposta é resolvível com automação focada'}.`,
+      vendas: `O gargalo está no acompanhamento de oportunidades que já existem. Leads sem resposta por mais de 24h têm chance de conversão drasticamente menor. ${fraseTime || fraseVolume || 'Um agente de follow-up resolve isso sem depender de memória'}.`,
+      operacao: `O tempo perdido em processos manuais internos é o maior freio de crescimento. ${fraseTime || fraseVolume || 'Automatizar operação libera horas semanais para o trabalho que precisa de você'}.`,
+      financeiro: `A falta de previsibilidade de caixa e a cobrança manual são os maiores riscos para a saúde do negócio. ${fraseTime || 'Um agente financeiro resolve o operacional e dá clareza sobre o que entra e quando'}.`,
+    };
+    const tarefa = p4Curto ? ` Você destacou "${p4Curto}" como a tarefa que mais consome seu tempo — exatamente o tipo de coisa que o ${nomeAgente} elimina.` : '';
+    porque = `${porqueBase[categoria]}${tarefa}`;
+  } else if (confianca === 'media') {
+    const tarefa = p4Curto ? ` Você destacou "${p4Curto}" como consumidor de tempo — trate essa como a primeira frente.` : '';
+    porque = `Suas respostas apontam que a frente de ${nomeFrente} é onde vale começar. ${fraseTime || fraseVolume || ''}${tarefa} Antes de nomear "agente X", vale rodar uma frente de automação nessa direção e ver o que aparece.`.trim();
+  } else {
+    // baixa
+    if (overrideAtendimento) {
+      const gargaloTexto = NOME_CATEGORIA[categoriaOriginal];
+      porque = `Você marcou ${gargaloTexto} como gargalo, mas com ${p2.toLowerCase()} e ${p3.toLowerCase()} contatos por dia, o atendimento provavelmente é o freio real antes de qualquer outra coisa. É uma hipótese — não uma sentença. O caminho abaixo assume ${nomeFrente} como ponto de partida, mas o mais honesto aqui é validar isso numa conversa antes de escolher ferramenta.`;
+    } else if (sinais.p4MatchOutraCategoria) {
+      const outra = NOME_FRENTE[sinais.p4MatchOutraCategoria];
+      porque = `Você marcou ${NOME_CATEGORIA[categoriaOriginal]} como gargalo, mas a tarefa que descreveu ("${p4Curto}") soa mais como ${outra}. Isso não invalida o diagnóstico — só indica que há duas frentes ativas. O plano abaixo cobre ${nomeFrente}; ${outra} entra como segunda camada.`;
+    } else {
+      porque = `Suas respostas apontam pra ${nomeFrente}, mas com sinais fracos. Trate o conteúdo abaixo como hipótese de trabalho — as ferramentas gerais que aparecem na sequência já rendem enquanto você valida o gargalo real.`;
+    }
   }
-
-  const porque = `${prefacio}${porqueBase[categoria]}${tarefa}`;
 
   const metaTresMeses = truncar(p6, 220);
   const pontePessoal = PONTE_META[categoria];
@@ -209,6 +369,8 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
 
   return {
     categoria,
+    titulo: montarTitulo(categoria, confianca),
+    subtitulo: montarSubtitulo(categoria, confianca),
     ...conteudo,
     comoComecar,
     porque,
@@ -216,5 +378,7 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
     perfilExperiencia,
     metaTresMeses,
     pontePessoal,
+    confianca,
+    confiancaExplicacao,
   };
 }

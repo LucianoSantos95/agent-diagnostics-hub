@@ -67,3 +67,23 @@ Legenda de prioridade: **[A]** Alta (quebra promessa de valor ou schema), **[M]*
 | **B** | Passar P2/P3/P4 para Stack/Combinações | blocos novos |
 
 Nenhum código do motor foi alterado nesta auditoria — apenas o logo. Aguardando aprovação para aplicar os fixes acima.
+
+---
+
+## Regras de citação do agente (2026-07-16)
+
+O motor calcula um nível de `confianca` (`alta` | `media` | `baixa`) a partir das respostas antes de nomear qualquer agente.
+
+- **Sinais que sobem confiança**: palavras-chave da categoria detectadas na P4 (dicionário por categoria em `recomendacao.ts`).
+- **Sinais que descem confiança**: override P1→atendimento acionado, P4 apontando pra outra categoria, ou P4 vaga (<15 chars).
+
+Regras de texto:
+
+| Confiança | `titulo` | `porque` | Blocos extras (Stack + Combinações) |
+| --- | --- | --- | --- |
+| alta | "Agente de X" | cita o agente pelo nome | mostra |
+| media | "Prioridade: X" | fala em "frente de automação" | oculta |
+| baixa | "Hipótese inicial: X" | admite conflito e sugere validar | oculta |
+
+O hero exibe um selo colorido (verde/amarelo/vermelho) e uma nota explicando o conflito quando a confiança não é alta. Ferramentas gerais e IA de uso geral continuam aparecendo em todos os casos — são úteis independentemente da categoria.
+

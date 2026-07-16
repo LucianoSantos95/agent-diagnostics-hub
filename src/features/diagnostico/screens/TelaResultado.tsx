@@ -89,9 +89,16 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
               <circle cx="130" cy="130" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.6)" strokeWidth="0.8" />
             </svg>
             {/* Corner mark */}
-            <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-70">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-white/80">Diagnóstico · 01</span>
+            <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-80">
+              <span
+                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{
+                  background: resultado.confianca === 'alta' ? '#34d399' : resultado.confianca === 'media' ? '#fbbf24' : '#f87171',
+                }}
+              />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-white/85">
+                Confiança {resultado.confianca === 'alta' ? 'alta' : resultado.confianca === 'media' ? 'média' : 'a validar'}
+              </span>
             </div>
             <div className="relative z-10">
               <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.24em] text-white/70 mb-3">
@@ -109,9 +116,24 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
           {/* Por que você precisa */}
           <div className="px-6 py-5 border-t" style={{ background: 'rgba(15,15,42,0.55)', borderColor: 'rgba(255,255,255,0.06)' }}>
             <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.24em] mb-2" style={{ color: corTexto }}>
-              Por que esse agente?
+              {resultado.confianca === 'alta' ? 'Por que esse agente?' : resultado.confianca === 'media' ? 'Por que essa prioridade?' : 'Por que essa hipótese?'}
             </p>
             <p className="text-sm leading-relaxed" style={{ color: '#cbd5e1' }}>{resultado.porque}</p>
+            {resultado.confianca !== 'alta' && (
+              <p
+                className="mt-3 text-xs leading-relaxed px-3 py-2 rounded-lg border"
+                style={{
+                  color: resultado.confianca === 'media' ? '#fde68a' : '#fecaca',
+                  background: resultado.confianca === 'media' ? 'rgba(245,158,11,0.08)' : 'rgba(248,113,113,0.08)',
+                  borderColor: resultado.confianca === 'media' ? 'rgba(245,158,11,0.25)' : 'rgba(248,113,113,0.28)',
+                }}
+              >
+                <span className="font-mono font-bold uppercase tracking-widest text-[10px] mr-2">
+                  {resultado.confianca === 'media' ? 'Nota' : 'Atenção'}
+                </span>
+                {resultado.confiancaExplicacao}
+              </p>
+            )}
           </div>
         </div>
 
@@ -198,11 +220,14 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
           </div>
         </div>
 
-        {/* Stack completa por categoria */}
-        <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} tamanhoTime={respostas[2] ?? ''} volumeDia={respostas[3] ?? ''} />
-
-        {/* Combinações lógicas — como as ferramentas se encaixam */}
-        <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} tarefaP4={tarefaP4} />
+        {/* Stack completa e Combinações — só quando o diagnóstico tem confiança alta.
+            Em confiança média/baixa, esses blocos pressupõem certeza demais. */}
+        {resultado.confianca === 'alta' && (
+          <>
+            <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} tamanhoTime={respostas[2] ?? ''} volumeDia={respostas[3] ?? ''} />
+            <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} tarefaP4={tarefaP4} />
+          </>
+        )}
 
         {/* IA de uso geral — bloco fixo, útil para qualquer negócio */}
         <FerramentasIAGeral tarefaP4={tarefaP4} />

@@ -186,11 +186,12 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
           {perguntaAtual > 1 && (
             <button
               onClick={handleVoltar}
-              className="flex-none px-5 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+              className="flex-none px-5 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
               style={{
-                background: 'rgba(255,255,255,0.07)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                color: '#c7d2fe',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(165,180,252,0.32)',
+                color: '#e2e8f0',
+                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.04)',
               }}
             >
               ← Voltar
