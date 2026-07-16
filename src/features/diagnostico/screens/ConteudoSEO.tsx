@@ -178,7 +178,7 @@ export default function ConteudoSEO() {
             sob medida. Como Lovable Partner oficial, combina auditoria de fluxos, arquitetura de automação e agentes
             customizados para eliminar trabalho manual em PMEs e agências. Mais de 50 empresas já operam com Focus.{' '}
             <a href="https://focusinteligente.com.br" target="_blank" rel="noopener noreferrer"
-              className="underline" style={{ color: '#2563eb' }}>
+              className="underline" style={{ color: '#4f46e5' }}>
               Conheça a Focus Inteligente
             </a>.
           </p>

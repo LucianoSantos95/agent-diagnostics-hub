@@ -34,7 +34,7 @@ export default function ChatbotEmpresas() {
       slug="/chatbot-para-empresas"
       title="Chatbot para empresas: quando vale a pena e quanto custa em 2026"
       metaDescription="Chatbot para empresa: para quais tipos de negócio funciona, custos reais no Brasil (R$ 500–2.000/mês), diferença para agente de IA e como escolher a plataforma. Guia para PMEs."
-      h1={<>Chatbot para empresas: <span style={{ color: '#2563eb' }}>quando vale a pena</span> e quanto custa</>}
+      h1={<>Chatbot para empresas: <span style={{ color: '#4f46e5' }}>quando vale a pena</span> e quanto custa</>}
       intro={
         <>
           Um chatbot bem colocado tira 40 a 70% do peso do atendimento repetitivo — mas

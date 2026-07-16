@@ -20,20 +20,20 @@ export default function CTAComercial({ onRegistrarCTA }: Props) {
       className="rounded-2xl overflow-hidden relative"
       style={{
         background: 'linear-gradient(135deg, #0f2244 0%, #1e3a5f 100%)',
-        border: '1px solid rgba(59,130,246,0.3)',
+        border: '1px solid rgba(79,70,229,0.3)',
       }}
     >
       {/* Top glow */}
       <div
         className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(79,70,229,0.6), transparent)' }}
       />
 
       <div className="px-6 pt-7 pb-5">
         <div className="flex items-center gap-2 mb-4">
           <span
             className="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.25)' }}
+            style={{ background: 'rgba(79,70,229,0.15)', color: '#a5b4fc', border: '1px solid rgba(79,70,229,0.25)' }}
           >
             🎁 Oferta exclusiva
           </span>
@@ -42,10 +42,10 @@ export default function CTAComercial({ onRegistrarCTA }: Props) {
         <h3 className="text-xl font-extrabold text-white leading-snug mb-2">
           As ferramentas resolvem 70%.
           <br />
-          <span style={{ color: '#60a5fa' }}>Os 30% que quebram é onde a gente entra.</span>
+          <span style={{ color: '#a5b4fc' }}>Os 30% que quebram é onde a gente entra.</span>
         </h3>
 
-        <p className="text-sm leading-relaxed mb-5" style={{ color: '#93c5fd' }}>
+        <p className="text-sm leading-relaxed mb-5" style={{ color: '#c7d2fe' }}>
           Instalar uma ferramenta é fácil. O que derruba a maioria é a <strong className="text-white">integração,
           a configuração para o seu processo e a manutenção</strong> quando algo para de funcionar.
           Numa <strong className="text-white">sessão gratuita de 30 minutos</strong>, um especialista da Focus Indica
@@ -77,7 +77,7 @@ export default function CTAComercial({ onRegistrarCTA }: Props) {
           </span>
         </button>
 
-        <p className="text-xs text-center mt-3" style={{ color: 'rgba(147,197,253,0.4)' }}>
+        <p className="text-xs text-center mt-3" style={{ color: 'rgba(199,210,254,0.4)' }}>
           Agenda em até 24h · Sem compromisso · 100% gratuito
         </p>
       </div>

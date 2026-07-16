@@ -136,7 +136,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">{f.nome}</p>
-                  <span className="text-xs" style={{ color: 'rgba(147,197,253,0.5)' }}>↗</span>
+                  <span className="text-xs" style={{ color: 'rgba(199,210,254,0.5)' }}>↗</span>
                 </div>
                 <p className="text-xs leading-snug" style={{ color: '#94a3b8' }}>{f.descricao}</p>
                 <span
@@ -172,7 +172,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
             {/* Guia de implementação */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(147,197,253,0.6)' }}>
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(199,210,254,0.6)' }}>
                   Seu guia de implementação
                 </p>
                 <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
@@ -193,7 +193,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
           <button
             onClick={onReiniciar}
             className="text-sm underline transition-colors hover:text-blue-300"
-            style={{ color: 'rgba(147,197,253,0.4)' }}
+            style={{ color: 'rgba(199,210,254,0.4)' }}
           >
             Refazer com outras respostas
           </button>

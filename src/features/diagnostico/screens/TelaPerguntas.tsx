@@ -109,8 +109,8 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
         {/* Progresso */}
         <div className="mb-7">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-semibold" style={{ color: 'rgba(147,197,253,0.7)' }}>
-              Pergunta {perguntaAtual} <span style={{ color: 'rgba(147,197,253,0.4)' }}>de {TOTAL_PERGUNTAS}</span>
+            <span className="text-sm font-semibold" style={{ color: 'rgba(199,210,254,0.7)' }}>
+              Pergunta {perguntaAtual} <span style={{ color: 'rgba(199,210,254,0.4)' }}>de {TOTAL_PERGUNTAS}</span>
             </span>
             {microcopy && (
               <span
@@ -130,11 +130,11 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
                 style={{
                   height: i === perguntaAtual - 1 ? 5 : 4,
                   background: i < perguntaAtual
-                    ? 'linear-gradient(90deg, #3b82f6, #818cf8)'
+                    ? 'linear-gradient(90deg, #4f46e5, #a5b4fc)'
                     : i === perguntaAtual - 1
-                      ? 'rgba(59,130,246,0.4)'
+                      ? 'rgba(79,70,229,0.4)'
                       : 'rgba(255,255,255,0.1)',
-                  boxShadow: i < perguntaAtual ? '0 0 8px rgba(99,102,241,0.4)' : 'none',
+                  boxShadow: i < perguntaAtual ? '0 0 8px rgba(79,70,229,0.4)' : 'none',
                 }}
               />
             ))}
@@ -157,7 +157,7 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
         >
           <div
             className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold mb-4"
-            style={{ background: 'rgba(59,130,246,0.2)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.3)' }}
+            style={{ background: 'rgba(79,70,229,0.2)', color: '#a5b4fc', border: '1px solid rgba(79,70,229,0.3)' }}
           >
             {perguntaVisivel}
           </div>
@@ -190,7 +190,7 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
               style={{
                 background: 'rgba(255,255,255,0.07)',
                 border: '1px solid rgba(255,255,255,0.12)',
-                color: '#93c5fd',
+                color: '#c7d2fe',
               }}
             >
               ← Voltar
@@ -201,9 +201,9 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
             disabled={!podeAvancar}
             className="flex-1 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-[1.02] active:scale-95"
             style={podeAvancar ? {
-              background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+              background: 'linear-gradient(135deg, #4f46e5, #4338ca)',
               color: '#fff',
-              boxShadow: '0 4px 24px rgba(37,99,235,0.45)',
+              boxShadow: '0 4px 24px rgba(79,70,229,0.45)',
             } : {
               background: 'rgba(255,255,255,0.06)',
               color: 'rgba(255,255,255,0.28)',

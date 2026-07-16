@@ -45,8 +45,8 @@ export default function CaixaFeedback({ email }: Props) {
     <div
       className="rounded-2xl px-5 py-5 border animate-fade-up"
       style={{
-        background: 'rgba(96,165,250,0.06)',
-        borderColor: 'rgba(96,165,250,0.22)',
+        background: 'rgba(129,140,248,0.06)',
+        borderColor: 'rgba(129,140,248,0.22)',
       }}
     >
       {enviado ? (
@@ -70,7 +70,7 @@ export default function CaixaFeedback({ email }: Props) {
         <>
           <p
             className="text-xs font-bold uppercase tracking-widest mb-1"
-            style={{ color: '#60a5fa' }}
+            style={{ color: '#a5b4fc' }}
           >
             Sua opinião conta
           </p>
@@ -107,9 +107,9 @@ export default function CaixaFeedback({ email }: Props) {
               className="self-start text-sm font-bold px-5 py-2.5 rounded-xl text-white transition-all hover:scale-[1.02] active:scale-95"
               style={{
                 background: loading
-                  ? 'rgba(37,99,235,0.5)'
-                  : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-                boxShadow: '0 4px 18px rgba(37,99,235,0.3)',
+                  ? 'rgba(79,70,229,0.5)'
+                  : 'linear-gradient(135deg, #4f46e5, #4338ca)',
+                boxShadow: '0 4px 18px rgba(79,70,229,0.3)',
                 cursor: loading ? 'wait' : 'pointer',
                 border: 'none',
               }}

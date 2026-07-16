@@ -122,7 +122,7 @@ export default function FeedbackDialog({ open, onClose }: Props) {
               onClick={onClose}
               style={{
                 marginTop: 18, padding: '10px 22px', borderRadius: 10, border: 'none',
-                background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', color: '#fff',
+                background: 'linear-gradient(135deg,#4f46e5,#4338ca)', color: '#fff',
                 fontWeight: 700, fontSize: 13, cursor: 'pointer',
               }}
             >
@@ -131,7 +131,7 @@ export default function FeedbackDialog({ open, onClose }: Props) {
           </div>
         ) : (
           <>
-            <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#60a5fa', marginBottom: 4 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#a5b4fc', marginBottom: 4 }}>
               Sua opinião conta
             </p>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 16px' }}>
@@ -167,9 +167,9 @@ export default function FeedbackDialog({ open, onClose }: Props) {
                 disabled={loading}
                 style={{
                   marginTop: 4, padding: '12px 18px', borderRadius: 12, border: 'none',
-                  background: loading ? 'rgba(37,99,235,0.5)' : 'linear-gradient(135deg,#2563eb,#1d4ed8)',
+                  background: loading ? 'rgba(79,70,229,0.5)' : 'linear-gradient(135deg,#4f46e5,#4338ca)',
                   color: '#fff', fontWeight: 700, fontSize: 14, cursor: loading ? 'wait' : 'pointer',
-                  boxShadow: '0 4px 18px rgba(37,99,235,0.35)',
+                  boxShadow: '0 4px 18px rgba(79,70,229,0.35)',
                 }}
               >
                 {loading ? 'Enviando...' : 'Enviar feedback'}
