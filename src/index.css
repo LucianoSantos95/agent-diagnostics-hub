@@ -179,3 +179,57 @@ html.theme-claro {
   transition: all .3s ease;
 }
 .btn-primary:hover { box-shadow: 0 0 50px var(--accent-glow), 0 0 80px rgba(79,70,229,0.25); transform: translateY(-1px); }
+
+/* ============ Focus Indica logo — animações ============ */
+@keyframes fi-spin { to { transform: rotate(360deg); } }
+@keyframes fi-spin-reverse { to { transform: rotate(-360deg); } }
+@keyframes fi-pulse-core {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.045); }
+}
+@keyframes fi-pulse-halo {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+@keyframes fi-blink {
+  0%, 100% { opacity: 0.95; }
+  50% { opacity: 0.55; }
+}
+
+.fi-logo { display: inline-block; }
+.fi-logo .fi-orbit-main {
+  animation: fi-spin 24s linear infinite;
+  transform-origin: 256px 256px;
+  transform-box: fill-box;
+}
+.fi-logo .fi-orbit-outer {
+  animation: fi-spin-reverse 40s linear infinite;
+  transform-origin: 256px 256px;
+  transform-box: fill-box;
+}
+.fi-logo .fi-core {
+  animation: fi-pulse-core 3.6s ease-in-out infinite;
+  transform-origin: 256px 256px;
+  transform-box: fill-box;
+}
+.fi-logo .fi-halo {
+  animation: fi-pulse-halo 3.6s ease-in-out infinite;
+  transform-origin: 256px 256px;
+  transform-box: fill-box;
+}
+.fi-logo .fi-crosshair,
+.fi-logo .fi-crosshair-dot {
+  animation: fi-blink 3.6s ease-in-out infinite;
+}
+
+/* Hover: acelera a órbita principal */
+.fi-logo-root:hover .fi-orbit-main { animation-duration: 8s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fi-logo .fi-orbit-main,
+  .fi-logo .fi-orbit-outer,
+  .fi-logo .fi-core,
+  .fi-logo .fi-halo,
+  .fi-logo .fi-crosshair,
+  .fi-logo .fi-crosshair-dot { animation: none !important; }
+}
