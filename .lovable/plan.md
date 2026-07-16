@@ -1,48 +1,57 @@
-# Plano: Logo visível + Auditoria de coerência
+# Recomendação: aplicar os 2 fixes críticos + 2 melhorias de alto retorno
 
-## Parte 1 — Redesenhar logo (`src/assets/focus-indica-logo.svg`)
+Priorizo o que dá mais valor com menor risco. Deixo de fora o que é polimento.
 
-Problema: o logo atual usa `currentColor` com opacidades baixas (0.28–0.55) em traços finos (2–3px). Fica **quase invisível** no header (32–36px) e em fundos escuros.
+## Fix 1 — [A] Usar a P6 no resultado
 
-Nova versão — mesma linguagem orbital, muito mais legível:
+Hoje ela é coletada e jogada fora. É o dado mais motivacional que temos.
 
-- **Núcleo dominante**: círculo central maior (raio 80 em vez de 46), gradiente indigo sólido (`#6366f1 → #4f46e5`), com halo suave para dar presença.
-- **Órbita única, contínua e grossa**: um anel elíptico inclinado (~20°) com stroke 8px e opacidade 0.9 em `#a5b4fc` — desenho reconhecível a 16px.
-- **2 partículas orbitais sólidas**: uma grande (`#f59e0b` âmbar — combina com o novo botão de feedback), uma pequena (`#818cf8`). Cores sólidas, sem opacidade.
-- **Foco visual** ("Focus"): pequeno crosshair/mira sobre o núcleo, remetendo ao nome.
-- **Sem `currentColor`** nos elementos principais — cores fixas garantem contraste em light e dark. Órbita externa decorativa fica em `currentColor` opacidade 0.2 (apenas ornamento).
-- viewBox 0 0 512 512 mantido para não quebrar imports.
+- Adicionar card **"Sua meta em 3 meses"** logo abaixo do hero em `TelaResultado.tsx`, exibindo o texto do usuário entre aspas + uma ponte por categoria (ex.: *"Esse agente encurta o caminho porque libera as horas que hoje somem em atendimento repetitivo"*).
+- Passar `respostas[6]` do `DiagnosticoFlow` até `TelaResultado` (já temos `respostas` lá — só usar).
+- Também citar no `porque` do motor (uma linha adicional se P6 tiver conteúdo).
 
-Resultado: leitura clara a partir de 20px, identidade "orbital + foco" preservada, harmoniza com a paleta indigo + âmbar já em uso.
+## Fix 2 — [A] Alinhar enum P5 entre tela e MCP tool
 
-## Parte 2 — Auditoria: perguntas ↔ conteúdo entregue
+`src/lib/mcp/tools/calcular-diagnostico.ts` rejeita 2 de 3 respostas reais.
 
-Vou revisar contra `recomendacao.ts` (motor), `TelaPerguntas.tsx` (6 perguntas) e a tela de resultado.
+- Substituir o enum Z de P5 pelas 3 strings exatas de `TelaPerguntas.tsx`:
+  - `"Não, seria minha primeira vez"`
+  - `"Sim, testei mas não deu certo"`
+  - `"Sim, uso algo hoje mas quero melhorar"`
 
-### Achados preliminares (a confirmar durante a auditoria)
+## Fix 3 — [M] Explicar o override P1 → atendimento
 
-1. **P6 nunca é usada.** A pergunta 6 ("Se desse certo, o que mudaria em 3 meses?") é coletada mas **não aparece em lugar nenhum do resultado**. Precisa ser usada — proposta: exibir em `BlocoPersonalizacao` como "Sua meta em 3 meses: …" e citar no `porque`.
+Quando time pequeno + >50 contatos/dia força atendimento sobre outra escolha, o usuário fica confuso.
 
-2. **P5 só dispara `avisoToolsGenericas` para 1 das 3 opções.** "Uso algo hoje mas quero melhorar" e "Não, seria minha primeira vez" são ignoradas. Proposta: tom do texto se adapta (iniciante vs. já-usa).
+- Em `recomendacao.ts`, quando o override dispara, prefixar o `porque` com uma linha do tipo: *"Você marcou {gargaloOriginal}, mas com {p2} e {p3}, o atendimento vira o freio real antes de qualquer outra coisa — por isso o diagnóstico foi ajustado."*
+- Guardar o `gargaloOriginal` antes de sobrescrever `categoria`.
 
-3. **Divergência de enum P5 entre `TelaPerguntas` e a tool MCP** (`calcular-diagnostico.ts`):
-   - Tela: "Não, seria minha primeira vez" / "Sim, testei mas não deu certo" / "Sim, uso algo hoje mas quero melhorar"
-   - MCP: "Sim, testei mas não deu certo" / "Não, nunca tentei" / "Uso algumas coisas soltas"
-   → o schema Zod da MCP rejeita respostas reais do site. Alinhar os dois.
+## Fix 4 — [M] Ramificar tom por P5
 
-4. **P2 (time) só influencia o `porque` de vendas/operacao/financeiro.** Em atendimento, `porqueBase` usa `fraseVolume` mas ignora `fraseTime` mesmo em cenários small-team. OK conceitualmente, mas vale citar time também.
+Aproveitar as 3 respostas de P5, não só uma.
 
-5. **Regra de override (time pequeno + alto volume → atendimento)**: hoje sobrescreve silenciosamente. Proposta: manter override, mas incluir 1 linha no `porque` explicando por que virou atendimento mesmo tendo marcado outro gargalo — senão o usuário estranha.
+- `avisoToolsGenericas` continua ligado só para "testei mas não deu certo".
+- Adicionar `perfilExperiencia: 'iniciante' | 'testou-falhou' | 'ja-usa'` no resultado.
+- `comoComecar` ganha uma frase de abertura diferente por perfil (iniciante = mais didático; já-usa = focar em integração; testou-falhou = mantém aviso amarelo atual).
 
-6. **Novos blocos (Stack/Combinações/IA Geral)** não olham para P2/P3/P4 — são estáticos por categoria. Não é bug, mas a promessa "personalizado" pesa. Marcar como melhoria futura ou passar `p2/p3` para eles.
+## O que fico fora de escopo (por enquanto)
 
-### Entregável da auditoria
+- **[B]** Truncar P4 no `porque` — só entra se você reportar quebra de layout.
+- **[B]** Passar P2/P3/P4 para Stack/Combinações/IA Geral — retorno menor, mexe em 3 componentes novos. Faz sentido em uma segunda rodada.
 
-Um arquivo `docs/AUDITORIA-PERGUNTAS.md` listando: cada pergunta → o que é feito hoje com a resposta → gaps → recomendação de fix (com prioridade Alta/Média/Baixa). **Sem alterar código do motor nessa etapa** — só o logo é modificado agora. Os fixes de motor ficam para uma próxima aprovação, para você decidir quais aplicar.
+## Arquivos afetados
 
-## Arquivos
+- `src/features/diagnostico/engine/recomendacao.ts` (P6, override, P5)
+- `src/features/diagnostico/screens/TelaResultado.tsx` (card meta 3 meses)
+- `src/lib/mcp/tools/calcular-diagnostico.ts` (enum P5)
+- possivelmente `src/features/diagnostico/resultado/BlocoPersonalizacao.tsx` se fizer mais sentido colocar a meta lá em vez de card separado — decido durante a implementação.
 
-- Editar: `src/assets/focus-indica-logo.svg`
-- Criar: `docs/AUDITORIA-PERGUNTAS.md`
+## Ordem
 
-Ordem: 1) logo → 2) auditoria em markdown.
+1. Motor (`recomendacao.ts`) — adiciona `perfilExperiencia`, override explicado, uso de P6.
+2. UI — card de meta 3 meses no resultado.
+3. MCP tool — realinhar enum.
+4. Verificar build.
+
+Aprova essa fatia? Se quiser incluir os itens [B] também, é só dizer.  
+Pode incluir os itens [B] também
