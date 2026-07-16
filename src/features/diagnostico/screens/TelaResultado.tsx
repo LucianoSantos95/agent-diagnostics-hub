@@ -220,11 +220,14 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
           </div>
         </div>
 
-        {/* Stack completa por categoria */}
-        <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} tamanhoTime={respostas[2] ?? ''} volumeDia={respostas[3] ?? ''} />
-
-        {/* Combinações lógicas — como as ferramentas se encaixam */}
-        <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} tarefaP4={tarefaP4} />
+        {/* Stack completa e Combinações — só quando o diagnóstico tem confiança alta.
+            Em confiança média/baixa, esses blocos pressupõem certeza demais. */}
+        {resultado.confianca === 'alta' && (
+          <>
+            <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} tamanhoTime={respostas[2] ?? ''} volumeDia={respostas[3] ?? ''} />
+            <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} tarefaP4={tarefaP4} />
+          </>
+        )}
 
         {/* IA de uso geral — bloco fixo, útil para qualquer negócio */}
         <FerramentasIAGeral tarefaP4={tarefaP4} />
