@@ -1,107 +1,48 @@
+# Plano: Logo visível + Auditoria de coerência
 
-# Plano de Implementação
+## Parte 1 — Redesenhar logo (`src/assets/focus-indica-logo.svg`)
 
-## Pré-requisito: Figma MCP
-O Figma MCP ainda **não está conectado**. Assim que você:
-1. Abrir Figma Desktop → Dev Mode (Shift+D) → "Enable desktop MCP server"
-2. Ativar em Settings → Connectors → Local MCP servers no Lovable
-3. Colar o link do frame de referência
+Problema: o logo atual usa `currentColor` com opacidades baixas (0.28–0.55) em traços finos (2–3px). Fica **quase invisível** no header (32–36px) e em fundos escuros.
 
-…eu extraio anima/logo direto do seu arquivo. Enquanto isso, sigo com o que **não** depende do Figma (itens 1–4 abaixo). O item 5 (refinamento fino do logo/animações via referência sua) fica em espera até o frame chegar.
+Nova versão — mesma linguagem orbital, muito mais legível:
 
----
+- **Núcleo dominante**: círculo central maior (raio 80 em vez de 46), gradiente indigo sólido (`#6366f1 → #4f46e5`), com halo suave para dar presença.
+- **Órbita única, contínua e grossa**: um anel elíptico inclinado (~20°) com stroke 8px e opacidade 0.9 em `#a5b4fc` — desenho reconhecível a 16px.
+- **2 partículas orbitais sólidas**: uma grande (`#f59e0b` âmbar — combina com o novo botão de feedback), uma pequena (`#818cf8`). Cores sólidas, sem opacidade.
+- **Foco visual** ("Focus"): pequeno crosshair/mira sobre o núcleo, remetendo ao nome.
+- **Sem `currentColor`** nos elementos principais — cores fixas garantem contraste em light e dark. Órbita externa decorativa fica em `currentColor` opacidade 0.2 (apenas ornamento).
+- viewBox 0 0 512 512 mantido para não quebrar imports.
 
-## 1. Logo "Focus Indica" — conceito orbital novo
-**Arquivo:** `src/assets/focus-indica-logo.svg` (substituir)
+Resultado: leitura clara a partir de 20px, identidade "orbital + foco" preservada, harmoniza com a paleta indigo + âmbar já em uso.
 
-- Símbolo geométrico abstrato alinhado à estética *architectural tech*:
-  - Núcleo sólido em `#4f46e5` (indigo accent)
-  - 2 anéis orbitais concêntricos (traços finos, dashed)
-  - 1 partícula orbital destacada (indicando "foco/direção")
-- Sem gradiente rosa/roxo antigo — paleta 100% Midnight Indigo
-- Versão que funciona em dark e light (via `currentColor` nos traços)
+## Parte 2 — Auditoria: perguntas ↔ conteúdo entregue
 
-## 2. Header dinâmico com scroll
-**Arquivo:** `src/components/Header.tsx`
+Vou revisar contra `recomendacao.ts` (motor), `TelaPerguntas.tsx` (6 perguntas) e a tela de resultado.
 
-- Hook `useScrollY()` novo para detectar posição
-- Ao passar de **80px**:
-  - Altura reduz `60px → 48px` (transição 300ms)
-  - Badge "Diagnóstico gratuito" faz fade-out + slide
-  - Wordmark "Focus Indica" anima kerning: `letter-spacing: -0.3px → -1.2px` (letras se aproximam)
-  - Fundo ganha `backdrop-blur` mais intenso + borda mais sutil
-- Já respeita `var(--text-primary)` e `var(--surface)`, então **acompanha o tema** automaticamente (dark/light toggle já funciona nos tokens)
+### Achados preliminares (a confirmar durante a auditoria)
 
-## 3. Botão "Deixar feedback" com cor chamativa
-**Arquivos:** `src/features/diagnostico/resultado/CaixaFeedback.tsx` + `src/components/FeedbackDialog.tsx` (trigger)
+1. **P6 nunca é usada.** A pergunta 6 ("Se desse certo, o que mudaria em 3 meses?") é coletada mas **não aparece em lugar nenhum do resultado**. Precisa ser usada — proposta: exibir em `BlocoPersonalizacao` como "Sua meta em 3 meses: …" e citar no `porque`.
 
-- Novo estilo do CTA de feedback:
-  - Fundo `#F59E0B` (amber vibrante) com glow sutil `box-shadow: 0 0 24px rgba(245,158,11,0.4)`
-  - Texto branco, peso 600
-  - Micro-animação `animate-glow-pulse` (já existe no CSS) no hover
-  - Ícone de balão de fala à esquerda
-- Contrasta com o resto (que é todo indigo/violeta), puxando o olho
+2. **P5 só dispara `avisoToolsGenericas` para 1 das 3 opções.** "Uso algo hoje mas quero melhorar" e "Não, seria minha primeira vez" são ignoradas. Proposta: tom do texto se adapta (iniciante vs. já-usa).
 
-## 4. Tela de Resultado — expansão de ferramentas + combinações
-**Arquivo:** `src/features/diagnostico/screens/TelaResultado.tsx` + novo `src/features/diagnostico/resultado/StackRecomendada.tsx` + dados em `src/features/diagnostico/engine/recomendacao.ts`
+3. **Divergência de enum P5 entre `TelaPerguntas` e a tool MCP** (`calcular-diagnostico.ts`):
+   - Tela: "Não, seria minha primeira vez" / "Sim, testei mas não deu certo" / "Sim, uso algo hoje mas quero melhorar"
+   - MCP: "Sim, testei mas não deu certo" / "Não, nunca tentei" / "Uso algumas coisas soltas"
+   → o schema Zod da MCP rejeita respostas reais do site. Alinhar os dois.
 
-Adicionar 3 blocos novos abaixo do bloco atual "Ferramentas recomendadas":
+4. **P2 (time) só influencia o `porque` de vendas/operacao/financeiro.** Em atendimento, `porqueBase` usa `fraseVolume` mas ignora `fraseTime` mesmo em cenários small-team. OK conceitualmente, mas vale citar time também.
 
-### 4a. Stack Completa por Categoria
-Kit de 4–6 ferramentas cobrindo o fluxo inteiro da categoria escolhida. Ex. para "atendimento":
-- Agente: Typebot
-- Automação: Make
-- CRM: RD Station
-- Analytics: PostHog
-- IA geral: ChatGPT
+5. **Regra de override (time pequeno + alto volume → atendimento)**: hoje sobrescreve silenciosamente. Proposta: manter override, mas incluir 1 linha no `porque` explicando por que virou atendimento mesmo tendo marcado outro gargalo — senão o usuário estranha.
 
-### 4b. Ferramentas Gerais de IA (bloco fixo, aparece em todas categorias)
-ChatGPT, Claude, Gemini, Perplexity — cada uma com:
-- Nome + link
-- **"Como usar no seu negócio"** (2–3 frases práticas específicas por ferramenta)
-- Ex.: *"Claude é forte em textos longos — use para revisar contratos, escrever propostas comerciais e sumarizar reuniões"*
+6. **Novos blocos (Stack/Combinações/IA Geral)** não olham para P2/P3/P4 — são estáticos por categoria. Não é bug, mas a promessa "personalizado" pesa. Marcar como melhoria futura ou passar `p2/p3` para eles.
 
-### 4c. Combinações Lógicas (fluxos)
-3 combinações prontas mostrando **como as ferramentas se encaixam**:
-- **Fluxo 1** — "Captação → Qualificação → Venda": Instagram → ManyChat → Typebot → RD Station CRM → ChatGPT (redação de proposta)
-- **Fluxo 2** — "Atendimento 24/7 com escalonamento humano": Typebot (bot) → Make (roteamento) → WhatsApp humano → Notion (registro)
-- **Fluxo 3** — "Operação com IA de bolso": Google Sheets → Make → Claude API → Slack (notificação)
+### Entregável da auditoria
 
-Cada fluxo em card horizontal com setas entre os passos.
+Um arquivo `docs/AUDITORIA-PERGUNTAS.md` listando: cada pergunta → o que é feito hoje com a resposta → gaps → recomendação de fix (com prioridade Alta/Média/Baixa). **Sem alterar código do motor nessa etapa** — só o logo é modificado agora. Os fixes de motor ficam para uma próxima aprovação, para você decidir quais aplicar.
 
-## 5. Animações refinadas (aguardando Figma)
-Quando o frame chegar via MCP:
-- Extraio timing curves, delays e durations do seu arquivo
-- Aplico em: entrada da TelaAbertura (orbital), transição TelaPerguntas→TelaAnalise, reveal do TelaResultado
+## Arquivos
 
-Até lá, mantenho os `animate-glow-pulse`, `animate-float-y` e `fade-in` já presentes.
+- Editar: `src/assets/focus-indica-logo.svg`
+- Criar: `docs/AUDITORIA-PERGUNTAS.md`
 
----
-
-## Detalhes técnicos
-
-```text
-Arquivos a criar:
-- src/hooks/useScrollY.ts
-- src/features/diagnostico/resultado/StackRecomendada.tsx
-- src/features/diagnostico/resultado/FerramentasIAGeral.tsx
-- src/features/diagnostico/resultado/CombinacoesLogicas.tsx
-
-Arquivos a editar:
-- src/assets/focus-indica-logo.svg (redesenho completo)
-- src/components/Header.tsx (scroll dynamics + kerning)
-- src/features/diagnostico/resultado/CaixaFeedback.tsx (CTA amber)
-- src/features/diagnostico/screens/TelaResultado.tsx (composição dos novos blocos)
-- src/features/diagnostico/engine/recomendacao.ts (dados de stack/combos por categoria)
-```
-
-O logo (SVG) usa `currentColor` + variável `--accent`, então já responde ao toggle de tema. O header lê `var(--surface)`/`var(--text-primary)` — troca de cor com o tema é automática.
-
-## Ordem de execução
-1. Logo novo (item 1) — visível em toda navegação
-2. Header dinâmico (item 2) — impacto imediato de percepção
-3. Feedback amber (item 3) — mudança pontual
-4. Expansão TelaResultado (item 4) — maior volume de conteúdo
-5. (Depois do Figma) refinamento de animações (item 5)
-
-Aprova para eu implementar do 1 ao 4 agora?
+Ordem: 1) logo → 2) auditoria em markdown.

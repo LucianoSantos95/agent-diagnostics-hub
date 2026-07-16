@@ -1,52 +1,45 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
-    <radialGradient id="fiCore" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#818cf8"/>
-      <stop offset="0.6" stop-color="#4f46e5"/>
+    <radialGradient id="fiCore" cx="0.5" cy="0.45" r="0.6">
+      <stop offset="0" stop-color="#a5b4fc"/>
+      <stop offset="0.55" stop-color="#6366f1"/>
       <stop offset="1" stop-color="#4338ca"/>
     </radialGradient>
-    <filter id="fiGlow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="6" result="b"/>
-      <feMerge>
-        <feMergeNode in="b"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <radialGradient id="fiHalo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#6366f1" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
-  <!-- Outer orbit (dashed, wide) -->
-  <circle cx="256" cy="256" r="220" fill="none"
-          stroke="currentColor" stroke-opacity="0.28" stroke-width="3"
-          stroke-dasharray="2 10" stroke-linecap="round"/>
+  <!-- Órbita externa decorativa (segue o tema) -->
+  <circle cx="256" cy="256" r="232" fill="none"
+          stroke="currentColor" stroke-opacity="0.2" stroke-width="4"
+          stroke-dasharray="2 12" stroke-linecap="round"/>
 
-  <!-- Mid orbit (thin solid arc, rotated) -->
-  <circle cx="256" cy="256" r="164" fill="none"
-          stroke="currentColor" stroke-opacity="0.45" stroke-width="3"
-          stroke-dasharray="380 200" stroke-dashoffset="60"
-          transform="rotate(-30 256 256)" stroke-linecap="round"/>
+  <!-- Halo do núcleo -->
+  <circle cx="256" cy="256" r="150" fill="url(#fiHalo)"/>
 
-  <!-- Inner orbit -->
-  <circle cx="256" cy="256" r="110" fill="none"
-          stroke="currentColor" stroke-opacity="0.55" stroke-width="3.5"
-          stroke-dasharray="4 8" stroke-linecap="round"/>
-
-  <!-- Orbital particle (outer) - focused indigo -->
-  <g filter="url(#fiGlow)">
-    <circle cx="440" cy="220" r="10" fill="#4f46e5"/>
+  <!-- Órbita principal: anel elíptico inclinado, sólido e grosso -->
+  <g transform="rotate(-22 256 256)">
+    <ellipse cx="256" cy="256" rx="200" ry="96" fill="none"
+             stroke="#a5b4fc" stroke-width="10" stroke-opacity="0.95" stroke-linecap="round"/>
+    <!-- Partícula grande (âmbar, casa com o CTA de feedback) -->
+    <circle cx="456" cy="256" r="22" fill="#f59e0b"/>
+    <circle cx="456" cy="256" r="22" fill="none" stroke="#fbbf24" stroke-width="3" stroke-opacity="0.7"/>
+    <!-- Partícula pequena (indigo claro) -->
+    <circle cx="56" cy="256" r="12" fill="#818cf8"/>
   </g>
 
-  <!-- Orbital particle (mid) - accent -->
-  <circle cx="112" cy="330" r="7" fill="#818cf8" opacity="0.85"/>
+  <!-- Núcleo dominante -->
+  <circle cx="256" cy="256" r="86" fill="url(#fiCore)"/>
+  <circle cx="256" cy="256" r="86" fill="none" stroke="#c7d2fe" stroke-width="3" stroke-opacity="0.65"/>
 
-  <!-- Directional arc pointing to core (subtle) -->
-  <path d="M 380 130 Q 320 180 290 220" fill="none"
-        stroke="#818cf8" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
-
-  <!-- Core node -->
-  <circle cx="256" cy="256" r="46" fill="url(#fiCore)"/>
-  <circle cx="256" cy="256" r="46" fill="none"
-          stroke="#a5b4fc" stroke-width="2" stroke-opacity="0.6"/>
-
-  <!-- Inner spark -->
-  <circle cx="256" cy="256" r="16" fill="#ffffff" fill-opacity="0.85"/>
+  <!-- Crosshair / mira (remete a "Focus") -->
+  <g stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-opacity="0.95">
+    <line x1="256" y1="196" x2="256" y2="220"/>
+    <line x1="256" y1="292" x2="256" y2="316"/>
+    <line x1="196" y1="256" x2="220" y2="256"/>
+    <line x1="292" y1="256" x2="316" y2="256"/>
+  </g>
+  <circle cx="256" cy="256" r="10" fill="#ffffff"/>
 </svg>
