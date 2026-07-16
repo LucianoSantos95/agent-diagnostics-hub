@@ -1,60 +1,74 @@
-# Trazer mais gente para o diagnóstico
 
-## O diagnóstico dos dados (Semrush, mercado BR)
+# Redesign profissional do diagnóstico
 
-O site hoje tem **8 palavras-chave ranqueando e ~0 tráfego orgânico** no Brasil. O motivo é claro: você está otimizado para termos que ninguém busca.
+Escopo: abertura, perguntas, análise, resultado e as 3 landing pages SEO. Fonte de verdade visual = seu arquivo Figma (via MCP local) quando estiver conectado. Caso ainda não esteja, uso a skill `redesign` para gerar 3 direções renderizadas e você escolhe uma antes de eu implementar.
 
-| Termo atual do site | Volume/mês | Termos que PMEs realmente buscam | Volume/mês | Dificuldade |
-|---|---|---|---|---|
-| "diagnóstico de ia" | ~0 | **agente de ia** | 3.600 | 38 (viável) |
-| "agente de ia para empresas" | 10 | **chatbot para empresas** | 210 | **14 (muito fácil)** |
-| | | **automação de atendimento** | 170 | 20 (fácil) |
-| | | **atendimento automatizado whatsapp** | 140 | 21 (fácil) |
-| | | **chatbot atendimento whatsapp** | 110 | 35 (viável) |
-| | | **ia para pequenas empresas** | 50 | 0 (muito fácil) |
+## Pré-requisito
 
-**Conclusão importante:** nenhum *conector* traz tráfego. Conectores movem leads *depois* que eles chegam. O que traz tráfego é conteúdo/páginas otimizadas para os termos certos. O conector **Semrush** faz sentido depois — para acompanhar posição desses termos dentro do próprio app — mas não é o próximo passo.
+Habilitar o Figma MCP local (Figma Desktop → Dev Mode → Enable desktop MCP server → conectar em Settings → Connectors no Lovable). Sem isso o passo "Extração do Figma" abaixo é substituído pelo fluxo `redesign`.
 
-## O plano (3 etapas, ordem importa)
+## Fase 1 — Fundação do design system
 
-### Etapa 1 — Reorientar a página inicial (rápido, alto impacto)
+Antes de mexer em qualquer tela, consolido o sistema em `src/index.css` + `tailwind.config.js`:
 
-Hoje o `<title>` e `<meta description>` do `index.html` giram em torno de "Diagnóstico de Agente de IA". Trocar o eixo para os termos que **têm volume e são vencíveis**, sem mudar o produto:
+1. **Extração do Figma** (se conectado): leio tokens de cor, tipografia, espaçamento, radius, sombras e componentes do arquivo que você indicar. Mapeio 1:1 para variáveis CSS semânticas (`--background`, `--foreground`, `--primary`, `--surface`, `--text-*`, gradientes, sombras).
+2. **Fallback sem Figma**: rodo a skill `redesign` — 3 perguntas visuais (paleta, tipografia, layout) + 3 direções renderizadas para você escolher. A direção escolhida vira o sistema.
+3. **Tipografia**: substituo qualquer default genérico por um par distintivo (display + body) carregado via Google Fonts.
+4. **Motion**: adiciono `framer-motion` e defino 3–4 primitivas de animação (fade-up, stagger, hover-lift, page-enter) para uso consistente.
 
-- `<title>` novo: algo como *"Qual agente de IA sua PME precisa? Descubra em 2 minutos"* — encaixa "agente de IA" (3.600/mês) e sinaliza público PME.
-- `<meta description>`: mencionar chatbot, atendimento no WhatsApp, automação de vendas — os termos com KDI baixo.
-- H1 e subtítulo da `TelaAbertura`: mesma reorientação, sem redesenhar a tela.
+Entregável: tokens novos + preview visual do sistema aplicado num componente-piloto (botão + card) antes de propagar.
 
-### Etapa 2 — Criar 3 landing pages temáticas (o que realmente move o ponteiro)
+## Fase 2 — Telas do diagnóstico
 
-Cada uma otimizada para um dos termos vencíveis, com CTA para o diagnóstico. Rotas novas no React Router, sem tocar no fluxo do diagnóstico:
+Refino, uma por uma, mantendo toda a lógica de negócio intacta (`useDiagnostico`, engine, edge functions, captura de e-mail/orçamento). Só CSS/JSX/motion.
 
-1. `/chatbot-para-empresas` → alvo "chatbot para empresas" (KDI 14, 210/mês) + "chatbot atendimento whatsapp".
-2. `/automacao-de-atendimento` → alvo "automação de atendimento" (KDI 20) + "atendimento automatizado whatsapp".
-3. `/ia-para-pequenas-empresas` → alvo "ia para pequenas empresas" (KDI 0) + "inteligência artificial para empresas".
+1. **TelaAbertura** — hero com hierarquia clara, CTA mais assertivo, prova social/contadores se fizerem sentido, animação de entrada.
+2. **TelaPerguntas** — progresso mais elegante, transições entre perguntas, tratamento visual distinto para múltipla escolha vs. texto livre, foco em legibilidade mobile.
+3. **TelaAnalise** — micro-storytelling durante o "carregamento" (steps animados em vez de spinner genérico).
+4. **TelaResultado** — refinamento do hero por categoria, hierarquia dos blocos (ferramentas → gate de e-mail → guia → orçamento → CTA), tratamento premium do CTA comercial. Este é o ponto de maior conversão, recebe atenção extra.
 
-Cada landing tem: H1 exato com o termo, 3-4 blocos explicativos (o que é, quando faz sentido, custo típico, exemplos), FAQ curta (SEO de "People Also Ask") e CTA "Descubra em 2 minutos qual agente sua empresa precisa" apontando para `/`. Sem backend novo — só páginas.
+## Fase 3 — Landing pages SEO
 
-Cada rota entra no `sitemap.xml` e no fluxo de metadados por rota (via `react-helmet-async`, que ainda não está no projeto e precisa ser adicionado).
+`LandingLayout` + as 3 páginas (`AutomacaoAtendimento`, `ChatbotEmpresas`, `IaPequenasEmpresas`):
 
-### Etapa 3 — Só então: conector Semrush para monitorar (opcional)
+- Editorial-grade: hero com tipografia grande, sumário lateral em desktop, blocos com respiração, FAQ em accordion refinado.
+- Ilustração/imagem hero gerada sob medida por LP (imagegen) — evita cara de template.
+- CTA final destacado, mas sem gritar.
+- Mantém o JSON-LD FAQ e o SEO atual intactos.
 
-Depois que as 3 landings estiverem no ar por ~30 dias, aí sim o conector **Semrush** justifica: painel interno no app mostrando posição atual de cada termo-alvo, evolução mensal e novas oportunidades de conteúdo. **Não faz sentido conectar agora** porque não há o que monitorar (0 tráfego, 3 termos ranqueando).
+## Fase 4 — Componentes compartilhados
 
-## Detalhes técnicos
-
-- Etapa 1: edita `index.html`, `src/features/diagnostico/screens/TelaAbertura.tsx`. Sem novas dependências.
-- Etapa 2: adiciona `react-helmet-async`, cria `src/pages/lp/ChatbotEmpresas.tsx`, `AutomacaoAtendimento.tsx`, `IaPequenasEmpresas.tsx`; adiciona rotas em `App.tsx`; atualiza `public/sitemap.xml` (ou converte para o script gerador se você preferir).
-- Etapa 2 usa apenas componentes shadcn/ui e tokens que já existem em `index.css` — nenhum redesign.
-- Etapa 3 (se acontecer): `standard_connectors--connect` para Semrush + uma rota `/admin/seo` protegida.
+- **Header** e **Footer**: alinhar ao novo sistema (não redesenhar do zero, só refinar).
+- **PageBackground**: ajustar cores das ondas/grid às novas variáveis para não destoar.
+- **Dialogs** (`FeedbackDialog`, `CaseRealDialog`): padronizar com o novo radius/sombra/tipografia.
 
 ## Fora de escopo
 
-- Redesign visual do app.
-- Alterar o fluxo do diagnóstico ou o cálculo da recomendação.
-- Google Ads / mídia paga (é outra conversa; SEO orgânico primeiro rende antes de gastar em ads).
-- Conectar CRM/Slack/Sheets agora — leads já são capturados; o gargalo é *chegar até o formulário*.
+- Lógica do diagnóstico, engine de recomendação, edge functions, e-mails transacionais, MCP server, banco.
+- Adicionar/remover perguntas ou categorias.
+- Autenticação.
 
-## O que eu preciso de você
+## Detalhes técnicos
 
-Antes de implementar, confirme se topa **começar pela Etapa 1** (rápida, low-risk) e me diga se quer que eu **já entregue as 3 landings da Etapa 2 no mesmo turno** ou prefere revisar a Etapa 1 primeiro.
+- Zero cor hardcoded em componentes — tudo via tokens semânticos no CSS.
+- Todo componente novo/refatorado usa `framer-motion` para entrada/hover consistentes.
+- Mobile-first; verifico em 375px, 768px e 1280px.
+- Após cada fase, screenshot via Playwright para validação visual antes de seguir.
+
+## Ordem de execução sugerida
+
+```text
+Fase 1 (fundação)  →  validação visual
+   ↓
+Fase 2.4 (Resultado — maior impacto)  →  validação
+   ↓
+Fase 2.1 (Abertura)  →  validação
+   ↓
+Fase 2.2 + 2.3 (Perguntas + Análise)
+   ↓
+Fase 3 (LPs)
+   ↓
+Fase 4 (polimento compartilhado)
+```
+
+Confirmando o plano: se o Figma já estiver conectado quando você aprovar, começo pela extração dos tokens. Se não, disparo o fluxo `redesign` para você escolher a direção visual antes de qualquer código.
