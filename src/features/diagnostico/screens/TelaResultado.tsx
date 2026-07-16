@@ -16,18 +16,20 @@ const ICONE: Record<string, string> = {
   financeiro: '💰',
 };
 
+// Paleta Midnight Indigo — cada categoria carrega o mesmo DNA indigo
+// com um acento cromático sutil que preserva diferenciação sem quebrar o sistema.
 const COR_CATEGORIA: Record<string, string> = {
-  atendimento: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
-  vendas: 'linear-gradient(135deg, #10b981, #059669)',
-  operacao: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-  financeiro: 'linear-gradient(135deg, #f59e0b, #d97706)',
+  atendimento: 'linear-gradient(135deg, #1e1e5a 0%, #3b3fa8 55%, #4f46e5 100%)',
+  vendas: 'linear-gradient(135deg, #14324a 0%, #1e5566 55%, #2dd4a8 100%)',
+  operacao: 'linear-gradient(135deg, #1e1e5a 0%, #4338ca 55%, #7c3aed 100%)',
+  financeiro: 'linear-gradient(135deg, #2d1f4a 0%, #6b3fa8 55%, #c9a84c 100%)',
 };
 
 const COR_TEXTO: Record<string, string> = {
-  atendimento: '#38bdf8',
-  vendas: '#34d399',
-  operacao: '#a78bfa',
-  financeiro: '#fbbf24',
+  atendimento: '#a5b4fc',
+  vendas: '#5cbdb9',
+  operacao: '#c4b5fd',
+  financeiro: '#e8b84a',
 };
 
 interface Props {
@@ -63,29 +65,47 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8 flex flex-col gap-5">
 
         {/* Header resultado — hero section */}
-        <div className="rounded-2xl overflow-hidden border animate-fade-up" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+        <div className="rounded-2xl overflow-hidden border animate-fade-up" style={{ borderColor: 'rgba(255,255,255,0.08)', boxShadow: '0 24px 60px -30px rgba(79,70,229,0.4)' }}>
           {/* Topo colorido */}
-          <div className="px-6 py-6 relative overflow-hidden" style={{ background: cor }}>
-            <div className="absolute inset-0 opacity-20" style={{
-              backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
+          <div className="px-6 py-7 relative overflow-hidden" style={{ background: cor }}>
+            {/* Grid técnico */}
+            <div className="absolute inset-0 opacity-[0.14]" style={{
+              backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
+              backgroundSize: '28px 28px',
             }} />
+            {/* Artefato geométrico orbital — mesmo DNA da TelaAbertura */}
+            <svg
+              className="absolute -right-16 -top-16 opacity-30 pointer-events-none"
+              width="260" height="260" viewBox="0 0 260 260" fill="none" aria-hidden="true"
+            >
+              <circle cx="130" cy="130" r="120" stroke="rgba(255,255,255,0.35)" strokeWidth="0.8" strokeDasharray="2 6" />
+              <circle cx="130" cy="130" r="88" stroke="rgba(255,255,255,0.5)" strokeWidth="0.8" />
+              <circle cx="130" cy="130" r="56" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" strokeDasharray="3 4" />
+              <circle cx="130" cy="42" r="3" fill="rgba(255,255,255,0.9)" />
+              <circle cx="218" cy="130" r="2" fill="rgba(255,255,255,0.7)" />
+              <circle cx="130" cy="130" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.6)" strokeWidth="0.8" />
+            </svg>
+            {/* Corner mark */}
+            <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-70">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-white/80">Diagnóstico · 01</span>
+            </div>
             <div className="relative z-10">
-              <p className="text-xs font-semibold uppercase tracking-widest text-white/70 mb-1">
+              <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.24em] text-white/70 mb-3">
                 Seu diagnóstico
               </p>
               <div className="flex items-center gap-3">
                 <span className="text-4xl">{ICONE[resultado.categoria]}</span>
                 <div>
-                  <h1 className="text-2xl font-extrabold text-white">{resultado.titulo}</h1>
-                  <p className="text-sm text-white/80 mt-0.5">{resultado.subtitulo}</p>
+                  <h1 className="font-display text-2xl md:text-3xl font-extrabold text-white leading-tight tracking-tight">{resultado.titulo}</h1>
+                  <p className="text-sm text-white/80 mt-1">{resultado.subtitulo}</p>
                 </div>
               </div>
             </div>
           </div>
           {/* Por que você precisa */}
-          <div className="px-6 py-5" style={{ background: 'rgba(255,255,255,0.04)' }}>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: corTexto }}>
+          <div className="px-6 py-5 border-t" style={{ background: 'rgba(15,15,42,0.55)', borderColor: 'rgba(255,255,255,0.06)' }}>
+            <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.24em] mb-2" style={{ color: corTexto }}>
               Por que esse agente?
             </p>
             <p className="text-sm leading-relaxed" style={{ color: '#cbd5e1' }}>{resultado.porque}</p>

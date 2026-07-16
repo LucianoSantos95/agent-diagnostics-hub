@@ -52,19 +52,25 @@ export default function TelaAnalise({ respostas, onConcluir }: Props) {
 
       <div className="relative z-10 flex flex-col items-center gap-8 max-w-sm w-full">
 
-        {/* Ring */}
-        <div className="relative w-28 h-28">
-          <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="7" />
+        {/* Ring + núcleo orbital */}
+        <div className="relative w-40 h-40">
+          {/* Halo ambiente */}
+          <div
+            className="absolute inset-0 rounded-full blur-2xl opacity-70"
+            style={{ background: 'radial-gradient(circle, rgba(79,70,229,0.45) 0%, transparent 65%)' }}
+          />
+          {/* Anel de progresso */}
+          <svg viewBox="0 0 100 100" className="relative w-full h-full -rotate-90">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
             <circle
               cx="50" cy="50" r="44"
               fill="none"
               stroke="url(#ring-grad)"
-              strokeWidth="7"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeDasharray={circunferencia}
               strokeDashoffset={offset}
-              style={{ transition: 'stroke-dashoffset 0.08s linear' }}
+              style={{ transition: 'stroke-dashoffset 0.08s linear', filter: 'drop-shadow(0 0 6px rgba(79,70,229,0.6))' }}
             />
             <defs>
               <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -73,9 +79,30 @@ export default function TelaAnalise({ respostas, onConcluir }: Props) {
               </linearGradient>
             </defs>
           </svg>
+
+          {/* Núcleo geométrico orbital — DNA da TelaAbertura */}
+          <svg
+            viewBox="0 0 100 100"
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            aria-hidden="true"
+          >
+            <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(165,180,252,0.25)" strokeWidth="0.4" strokeDasharray="1 3" className="animate-spin" style={{ animationDuration: '18s', transformOrigin: '50% 50%' }} />
+            <circle cx="50" cy="50" r="26" fill="none" stroke="rgba(165,180,252,0.35)" strokeWidth="0.4" />
+            <circle cx="50" cy="50" r="18" fill="none" stroke="rgba(165,180,252,0.28)" strokeWidth="0.4" strokeDasharray="2 2" className="animate-spin" style={{ animationDuration: '9s', animationDirection: 'reverse', transformOrigin: '50% 50%' }} />
+            {/* Órbita marcadores */}
+            <circle cx="50" cy="16" r="1.2" fill="#a5b4fc">
+              <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="6s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="76" cy="50" r="0.9" fill="#c4b5fd">
+              <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="-360 50 50" dur="9s" repeatCount="indefinite" />
+            </circle>
+          </svg>
+
+          {/* Percentual central */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xl font-bold text-white">
-              {Math.round(progresso * 100)}%
+            <span className="font-display text-2xl font-extrabold text-white tabular-nums tracking-tight">
+              {Math.round(progresso * 100)}
+              <span className="text-sm font-semibold text-indigo-200/70 ml-0.5">%</span>
             </span>
           </div>
         </div>

@@ -19,6 +19,8 @@ interface LandingLayoutProps {
   blocos: { titulo: string; conteudo: ReactNode }[];
   faq: FaqItem[];
   ctaTexto?: string;
+  heroImage?: string;
+  heroImageAlt?: string;
 }
 
 const BASE_URL = 'https://diagnostico.focusinteligente.com.br';
@@ -32,6 +34,8 @@ export default function LandingLayout({
   blocos,
   faq,
   ctaTexto = 'Descubra em 2 minutos qual agente sua empresa precisa',
+  heroImage,
+  heroImageAlt,
 }: LandingLayoutProps) {
   const url = `${BASE_URL}${slug}`;
 
@@ -64,31 +68,60 @@ export default function LandingLayout({
       <Header />
 
       <main className="relative z-10 flex-1">
-        <article className="max-w-3xl mx-auto px-6 py-12 lg:py-20 flex flex-col gap-10">
-          <header className="flex flex-col gap-5">
-            <span
-              className="inline-flex self-start items-center gap-2 border text-xs font-semibold px-4 py-2 rounded-full"
-              style={{
-                background: 'var(--surface-soft)',
-                borderColor: 'var(--surface-border)',
-                color: 'var(--text-secondary)',
-              }}
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Guia prático · leitura de 4 min
-            </span>
-            <h1
-              className="text-4xl sm:text-5xl font-extrabold leading-[1.1] tracking-tight"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              {h1}
-            </h1>
-            <div className="text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              {intro}
+        <article className="max-w-6xl mx-auto px-6 py-12 lg:py-20 flex flex-col gap-12">
+          <header className={`grid gap-10 items-center ${heroImage ? 'lg:grid-cols-[1.05fr_1fr]' : ''}`}>
+            <div className="flex flex-col gap-5 max-w-2xl">
+              <span
+                className="inline-flex self-start items-center gap-2 border text-[10px] font-mono font-semibold uppercase tracking-[0.24em] px-3.5 py-2 rounded-full"
+                style={{
+                  background: 'var(--surface-soft)',
+                  borderColor: 'var(--surface-border)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                Guia prático · leitura de 4 min
+              </span>
+              <h1
+                className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                {h1}
+              </h1>
+              <div className="text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                {intro}
+              </div>
             </div>
+            {heroImage && (
+              <div className="relative">
+                <div
+                  className="absolute -inset-6 rounded-[2rem] blur-3xl opacity-60 pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(79,70,229,0.35) 0%, transparent 65%)' }}
+                />
+                <div
+                  className="relative rounded-2xl overflow-hidden border"
+                  style={{
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    boxShadow: '0 40px 100px -30px rgba(79,70,229,0.45)',
+                  }}
+                >
+                  <img
+                    src={heroImage}
+                    alt={heroImageAlt ?? ''}
+                    width={1600}
+                    height={1200}
+                    className="w-full h-auto block"
+                  />
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(10,10,26,0.4) 100%)' }}
+                  />
+                </div>
+              </div>
+            )}
           </header>
 
-          <section className="flex flex-col gap-8">
+          <section className="flex flex-col gap-8 max-w-3xl">
             {blocos.map((b) => (
               <div key={b.titulo} className="flex flex-col gap-3">
                 <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
@@ -102,7 +135,7 @@ export default function LandingLayout({
           </section>
 
           <section
-            className="rounded-2xl border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 justify-between"
+            className="rounded-2xl border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 justify-between max-w-3xl"
             style={{
               background: 'var(--surface)',
               borderColor: 'var(--surface-border)',
@@ -132,7 +165,7 @@ export default function LandingLayout({
             </Link>
           </section>
 
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-4 max-w-3xl">
             <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
               Perguntas frequentes
             </h2>
