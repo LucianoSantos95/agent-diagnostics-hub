@@ -4,10 +4,12 @@ import type { Categoria } from '../engine/recomendacao';
 interface Props {
   categoria: Categoria;
   corTexto: string;
+  tarefaP4?: string;
 }
 
-export default function CombinacoesLogicas({ categoria, corTexto }: Props) {
+export default function CombinacoesLogicas({ categoria, corTexto, tarefaP4 }: Props) {
   const combos = COMBINACOES[categoria];
+  const p4 = tarefaP4?.trim();
   return (
     <div className="animate-fade-up">
       <div className="flex items-center gap-2 mb-3">
@@ -19,6 +21,16 @@ export default function CombinacoesLogicas({ categoria, corTexto }: Props) {
       <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
         Uma ferramenta sozinha resolve pouco. Aqui estão 3 fluxos prontos mostrando como agente + automação + IA geral se conectam pra virar resultado.
       </p>
+      {p4 && (
+        <p
+          className="text-xs mb-3 px-3 py-2 rounded-lg border"
+          style={{ color: '#a5b4fc', background: 'rgba(79,70,229,0.08)', borderColor: 'rgba(79,70,229,0.22)' }}
+        >
+          <span className="font-mono font-bold uppercase tracking-widest text-[10px] mr-2">No seu caso</span>
+          "{p4.length > 100 ? `${p4.slice(0, 100).trimEnd()}…` : p4}" — pelo menos um destes fluxos resolve exatamente esse padrão.
+        </p>
+      )}
+
       <div className="flex flex-col gap-3">
         {combos.map((c, idx) => (
           <div
