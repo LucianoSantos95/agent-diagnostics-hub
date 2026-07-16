@@ -79,7 +79,7 @@ export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
             background: 'var(--surface-soft)',
             border: '1px solid var(--surface-border)',
             borderRadius: 999,
-            padding: '4px 10px',
+            padding: past ? '4px 0' : '4px 10px',
             opacity: past ? 0 : 1,
             transform: past ? 'translateX(12px) scale(0.9)' : 'translateX(0) scale(1)',
             pointerEvents: past ? 'none' : 'auto',
@@ -87,7 +87,6 @@ export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             transition: 'opacity 250ms ease, transform 300ms cubic-bezier(0.4,0,0.2,1), max-width 300ms cubic-bezier(0.4,0,0.2,1), padding 300ms ease',
-            padding: past ? '4px 0' : '4px 10px',
           }}
         >
           Diagnóstico gratuito
