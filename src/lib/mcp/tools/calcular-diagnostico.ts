@@ -10,7 +10,11 @@ const P1 = z.enum([
 ]);
 const P2 = z.enum(["Só eu", "2 a 5 pessoas", "6 a 20 pessoas", "Mais de 20 pessoas"]);
 const P3 = z.enum(["Menos de 10", "Entre 10 e 50", "Mais de 50"]);
-const P5 = z.enum(["Sim, testei mas não deu certo", "Não, nunca tentei", "Uso algumas coisas soltas"]);
+const P5 = z.enum([
+  "Não, seria minha primeira vez",
+  "Sim, testei mas não deu certo",
+  "Sim, uso algo hoje mas quero melhorar",
+]);
 
 export default defineTool({
   name: "calcular_diagnostico",

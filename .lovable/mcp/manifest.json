@@ -62,9 +62,9 @@
             "ja_tentou_automatizar": {
               "type": "string",
               "enum": [
+                "Não, seria minha primeira vez",
                 "Sim, testei mas não deu certo",
-                "Não, nunca tentei",
-                "Uso algumas coisas soltas"
+                "Sim, uso algo hoje mas quero melhorar"
               ],
               "description": "Resposta da pergunta 5: histórico de tentativas com automação."
             }

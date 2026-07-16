@@ -201,7 +201,11 @@ var P1 = z.enum([
 ]);
 var P2 = z.enum(["S\xF3 eu", "2 a 5 pessoas", "6 a 20 pessoas", "Mais de 20 pessoas"]);
 var P3 = z.enum(["Menos de 10", "Entre 10 e 50", "Mais de 50"]);
-var P5 = z.enum(["Sim, testei mas n\xE3o deu certo", "N\xE3o, nunca tentei", "Uso algumas coisas soltas"]);
+var P5 = z.enum([
+  "N\xE3o, seria minha primeira vez",
+  "Sim, testei mas n\xE3o deu certo",
+  "Sim, uso algo hoje mas quero melhorar"
+]);
 var calcular_diagnostico_default = defineTool({
   name: "calcular_diagnostico",
   title: "Calcular diagn\xF3stico de agente de IA",
