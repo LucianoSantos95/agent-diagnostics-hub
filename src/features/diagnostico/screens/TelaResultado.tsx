@@ -16,18 +16,20 @@ const ICONE: Record<string, string> = {
   financeiro: '💰',
 };
 
+// Paleta Midnight Indigo — cada categoria carrega o mesmo DNA indigo
+// com um acento cromático sutil que preserva diferenciação sem quebrar o sistema.
 const COR_CATEGORIA: Record<string, string> = {
-  atendimento: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
-  vendas: 'linear-gradient(135deg, #10b981, #059669)',
-  operacao: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-  financeiro: 'linear-gradient(135deg, #f59e0b, #d97706)',
+  atendimento: 'linear-gradient(135deg, #1e1e5a 0%, #3b3fa8 55%, #4f46e5 100%)',
+  vendas: 'linear-gradient(135deg, #14324a 0%, #1e5566 55%, #2dd4a8 100%)',
+  operacao: 'linear-gradient(135deg, #1e1e5a 0%, #4338ca 55%, #7c3aed 100%)',
+  financeiro: 'linear-gradient(135deg, #2d1f4a 0%, #6b3fa8 55%, #c9a84c 100%)',
 };
 
 const COR_TEXTO: Record<string, string> = {
-  atendimento: '#38bdf8',
-  vendas: '#34d399',
-  operacao: '#a78bfa',
-  financeiro: '#fbbf24',
+  atendimento: '#a5b4fc',
+  vendas: '#5cbdb9',
+  operacao: '#c4b5fd',
+  financeiro: '#e8b84a',
 };
 
 interface Props {
