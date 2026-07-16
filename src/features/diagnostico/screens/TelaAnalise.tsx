@@ -68,8 +68,8 @@ export default function TelaAnalise({ respostas, onConcluir }: Props) {
             />
             <defs>
               <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#818cf8" />
+                <stop offset="0%" stopColor="#4f46e5" />
+                <stop offset="100%" stopColor="#a5b4fc" />
               </linearGradient>
             </defs>
           </svg>
@@ -87,7 +87,7 @@ export default function TelaAnalise({ respostas, onConcluir }: Props) {
               key={msg}
               className="text-base font-medium transition-all duration-400"
               style={{
-                color: '#93c5fd',
+                color: '#c7d2fe',
                 position: i === etapa ? 'relative' : 'absolute',
                 opacity: i === etapa ? 1 : 0,
                 transform: i === etapa ? 'translateY(0)' : 'translateY(8px)',
@@ -109,7 +109,7 @@ export default function TelaAnalise({ respostas, onConcluir }: Props) {
                 width: i === etapa ? 20 : 6,
                 height: 6,
                 background: i <= etapa
-                  ? 'linear-gradient(90deg, #3b82f6, #818cf8)'
+                  ? 'linear-gradient(90deg, #4f46e5, #a5b4fc)'
                   : 'rgba(255,255,255,0.1)',
               }}
             />

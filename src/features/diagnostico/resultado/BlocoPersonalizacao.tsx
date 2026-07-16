@@ -13,8 +13,8 @@ export default function BlocoPersonalizacao({ tarefaP4, categoria }: Props) {
   if (!tarefaP4.trim()) return null;
   return (
     <div className="rounded-xl px-5 py-4 border"
-      style={{ background: "rgba(59,130,246,0.1)", borderColor: "rgba(59,130,246,0.25)" }}>
-      <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#60a5fa" }}>
+      style={{ background: "rgba(79,70,229,0.1)", borderColor: "rgba(79,70,229,0.25)" }}>
+      <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#a5b4fc" }}>
         Personalizado para voce
       </p>
       <p className="text-sm leading-relaxed" style={{ color: "#bfdbfe" }}>

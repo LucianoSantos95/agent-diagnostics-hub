@@ -121,8 +121,8 @@ export default function LandingLayout({
               to="/"
               className="group relative px-7 py-3.5 rounded-2xl font-bold text-sm text-white overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                boxShadow: '0 0 40px rgba(37,99,235,0.35), 0 6px 24px rgba(0,0,0,0.25)',
+                background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                boxShadow: '0 0 40px rgba(79,70,229,0.35), 0 6px 24px rgba(0,0,0,0.25)',
               }}
             >
               <span className="relative z-10 flex items-center gap-2">

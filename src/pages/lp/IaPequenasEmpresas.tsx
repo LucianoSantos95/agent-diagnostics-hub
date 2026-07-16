@@ -34,7 +34,7 @@ export default function IaPequenasEmpresas() {
       slug="/ia-para-pequenas-empresas"
       title="IA para pequenas empresas: por onde começar em 2026 (sem gastar errado)"
       metaDescription="IA para pequenas empresas: como escolher entre chatbot, agente de vendas, automação operacional e IA financeira. Custos reais no Brasil e passo a passo para PMEs."
-      h1={<>IA para pequenas empresas: <span style={{ color: '#2563eb' }}>por onde começar</span> sem gastar errado</>}
+      h1={<>IA para pequenas empresas: <span style={{ color: '#4f46e5' }}>por onde começar</span> sem gastar errado</>}
       intro={
         <>
           A maioria das PMEs que tenta usar IA começa pela ferramenta errada,

@@ -252,7 +252,7 @@ export default function TelaAbertura({ onIniciar }: Props) {
             >
               <div
                 className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full"
-                style={{ background: '#a5b4fc', boxShadow: '0 0 10px #818cf8' }}
+                style={{ background: '#a5b4fc', boxShadow: '0 0 10px #a5b4fc' }}
               />
             </div>
 

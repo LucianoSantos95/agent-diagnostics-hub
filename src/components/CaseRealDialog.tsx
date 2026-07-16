@@ -6,7 +6,7 @@ const DEPOIMENTOS = [
     nome: 'Marina R.',
     empresa: 'Sócia — Escritório de contabilidade, Curitiba',
     iniciais: 'MR',
-    cor: '#3b82f6',
+    cor: '#4f46e5',
     estrelas: 5,
     texto:
       'Achei que precisava de um chatbot no site, mas o diagnóstico mostrou que meu gargalo era cobrança. Começamos pelo agente financeiro e as inadimplências caíram já no segundo mês.',
@@ -104,7 +104,7 @@ export default function CaseRealDialog({ open, onClose }: Props) {
         </button>
 
         <div style={{ marginBottom: 20 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#60a5fa', marginBottom: 6 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#a5b4fc', marginBottom: 6 }}>
             Cases reais
           </p>
           <h3 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>

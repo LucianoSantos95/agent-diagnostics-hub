@@ -25,7 +25,7 @@ function renderMarkdown(text: string) {
       <ul key={result.length} style={{ listStyle: 'none', padding: 0, margin: '6px 0 0 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
         {bullets.map((b, i) => (
           <li key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-            <span style={{ color: '#60a5fa', flexShrink: 0, marginTop: 1 }}>•</span>
+            <span style={{ color: '#a5b4fc', flexShrink: 0, marginTop: 1 }}>•</span>
             <span>{renderInline(b)}</span>
           </li>
         ))}
@@ -40,7 +40,7 @@ function renderMarkdown(text: string) {
       <ol key={result.length} style={{ listStyle: 'none', padding: 0, margin: '6px 0 0 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {numbered.map((n, i) => (
           <li key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <span style={{ color: '#60a5fa', flexShrink: 0, fontWeight: 700, minWidth: 20 }}>{i + 1}.</span>
+            <span style={{ color: '#a5b4fc', flexShrink: 0, fontWeight: 700, minWidth: 20 }}>{i + 1}.</span>
             <span style={{ lineHeight: 1.55 }}>{renderInline(n)}</span>
           </li>
         ))}
@@ -80,8 +80,8 @@ export default function AccordionResultado({ itens }: Props) {
           key={i}
           className="rounded-xl overflow-hidden border transition-all duration-200"
           style={{
-            background: aberto === i ? 'rgba(37,99,235,0.08)' : 'rgba(255,255,255,0.04)',
-            borderColor: aberto === i ? 'rgba(59,130,246,0.35)' : 'rgba(255,255,255,0.08)',
+            background: aberto === i ? 'rgba(79,70,229,0.08)' : 'rgba(255,255,255,0.04)',
+            borderColor: aberto === i ? 'rgba(79,70,229,0.35)' : 'rgba(255,255,255,0.08)',
           }}
         >
           <button
@@ -91,7 +91,7 @@ export default function AccordionResultado({ itens }: Props) {
             <span className="text-sm font-semibold text-white">{item.titulo}</span>
             <span
               className="text-sm flex-shrink-0 ml-2 transition-transform duration-300"
-              style={{ transform: aberto === i ? 'rotate(180deg)' : 'rotate(0deg)', color: '#60a5fa' }}
+              style={{ transform: aberto === i ? 'rotate(180deg)' : 'rotate(0deg)', color: '#a5b4fc' }}
             >
               ▾
             </span>

@@ -35,18 +35,18 @@ export default function CapturaEmail({ sessionId, categoria, onSalvar, onDesbloq
     <div
       className="rounded-2xl px-6 py-6 border relative overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.08))",
-        borderColor: "rgba(59,130,246,0.3)",
+        background: "linear-gradient(135deg, rgba(79,70,229,0.1), rgba(79,70,229,0.08))",
+        borderColor: "rgba(79,70,229,0.3)",
       }}
     >
       <div className="flex items-center gap-2 mb-3">
         <span
           className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-lg"
-          style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.3)" }}
+          style={{ background: "rgba(79,70,229,0.15)", border: "1px solid rgba(79,70,229,0.3)" }}
         >
           🔓
         </span>
-        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#60a5fa" }}>
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#a5b4fc" }}>
           Desbloqueie o guia completo
         </span>
       </div>
@@ -78,8 +78,8 @@ export default function CapturaEmail({ sessionId, categoria, onSalvar, onDesbloq
           disabled={loading}
           className="text-sm font-bold px-6 py-3 rounded-xl text-white whitespace-nowrap transition-all hover:scale-[1.02] active:scale-95"
           style={{
-            background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-            boxShadow: "0 4px 20px rgba(37,99,235,0.35)",
+            background: "linear-gradient(135deg, #4f46e5, #4338ca)",
+            boxShadow: "0 4px 20px rgba(79,70,229,0.35)",
           }}
         >
           {loading ? "..." : "Desbloquear guia →"}

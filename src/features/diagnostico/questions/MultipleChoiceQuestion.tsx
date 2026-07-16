@@ -15,10 +15,10 @@ export default function MultipleChoiceQuestion({ opcoes, valorAtual, onChange }:
             onClick={() => onChange(opcao)}
             className="w-full text-left px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 border"
             style={selecionado ? {
-              background: 'linear-gradient(135deg, rgba(37,99,235,0.3), rgba(29,78,216,0.3))',
-              borderColor: '#3b82f6',
+              background: 'linear-gradient(135deg, rgba(79,70,229,0.3), rgba(29,78,216,0.3))',
+              borderColor: '#4f46e5',
               color: '#fff',
-              boxShadow: '0 0 0 1px rgba(59,130,246,0.5), 0 4px 12px rgba(37,99,235,0.2)'
+              boxShadow: '0 0 0 1px rgba(79,70,229,0.5), 0 4px 12px rgba(79,70,229,0.2)'
             } : {
               background: 'rgba(255,255,255,0.04)',
               borderColor: 'rgba(255,255,255,0.1)',
@@ -29,7 +29,7 @@ export default function MultipleChoiceQuestion({ opcoes, valorAtual, onChange }:
               <span
                 className="w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all"
                 style={selecionado
-                  ? { borderColor: '#60a5fa', background: '#2563eb' }
+                  ? { borderColor: '#a5b4fc', background: '#4f46e5' }
                   : { borderColor: 'rgba(255,255,255,0.3)' }
                 }
               >
