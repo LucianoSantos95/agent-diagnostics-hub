@@ -1,6 +1,10 @@
 import { IA_GERAL } from '../engine/ferramentasGerais';
 
-export default function FerramentasIAGeral() {
+interface Props { tarefaP4?: string }
+
+export default function FerramentasIAGeral({ tarefaP4 }: Props = {}) {
+  const p4 = tarefaP4?.trim();
+
   return (
     <div className="animate-fade-up">
       <div className="flex items-center gap-2 mb-3">
@@ -12,6 +16,16 @@ export default function FerramentasIAGeral() {
       <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
         Independente do agente que você vai montar, essas ferramentas resolvem 80% do trabalho manual do dia a dia. Cada uma é forte em uma coisa diferente.
       </p>
+      {p4 && (
+        <p
+          className="text-xs mb-3 px-3 py-2 rounded-lg border"
+          style={{ color: '#a5b4fc', background: 'rgba(79,70,229,0.08)', borderColor: 'rgba(79,70,229,0.22)' }}
+        >
+          <span className="font-mono font-bold uppercase tracking-widest text-[10px] mr-2">Dica</span>
+          Comece testando uma dessas com "{p4.length > 80 ? `${p4.slice(0, 80).trimEnd()}…` : p4}" — é a forma mais rápida de sentir o ganho no seu contexto.
+        </p>
+      )}
+
       <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
         {IA_GERAL.map((t) => (
           <a

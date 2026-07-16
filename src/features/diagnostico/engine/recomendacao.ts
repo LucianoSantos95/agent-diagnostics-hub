@@ -1,4 +1,5 @@
 export type Categoria = 'atendimento' | 'vendas' | 'operacao' | 'financeiro';
+export type PerfilExperiencia = 'iniciante' | 'testou-falhou' | 'ja-usa';
 
 export interface Ferramenta {
   nome: string;
@@ -18,9 +19,12 @@ export interface ResultadoDiagnostico {
   comoComecar: string;
   errosComuns: string;
   avisoToolsGenericas: boolean;
+  perfilExperiencia: PerfilExperiencia;
+  metaTresMeses: string;
+  pontePessoal: string;
 }
 
-const CONTEUDO: Record<Categoria, Omit<ResultadoDiagnostico, 'categoria' | 'porque' | 'avisoToolsGenericas'>> = {
+const CONTEUDO: Record<Categoria, Omit<ResultadoDiagnostico, 'categoria' | 'porque' | 'avisoToolsGenericas' | 'perfilExperiencia' | 'metaTresMeses' | 'pontePessoal'>> = {
   atendimento: {
     titulo: 'Agente de Atendimento',
     subtitulo: 'Seu maior gargalo está em responder clientes com velocidade e consistência.',
@@ -114,27 +118,58 @@ const P1_MAP: Record<string, Categoria> = {
   'Financeiro — não sei prever caixa, cobrança de cliente é manual': 'financeiro',
 };
 
+const NOME_CATEGORIA: Record<Categoria, string> = {
+  atendimento: 'atendimento',
+  vendas: 'vendas e follow-up',
+  operacao: 'operação interna',
+  financeiro: 'financeiro',
+};
+
+const PONTE_META: Record<Categoria, string> = {
+  atendimento: 'Um agente de atendimento é o caminho mais curto até lá — libera as horas que hoje somem respondendo o mesmo tipo de mensagem.',
+  vendas: 'Um agente de follow-up encurta esse caminho — mantém o contato quente sem depender da sua memória, para você chegar lá com pipeline cheio.',
+  operacao: 'Automatizar operação libera exatamente as horas semanais que hoje somem no repetitivo — é o que te tira de operador para dono.',
+  financeiro: 'Um agente financeiro cria previsibilidade — sem isso, essa meta fica sempre a um mês de distância.',
+};
+
+function truncar(texto: string, max: number): string {
+  const limpo = texto.trim();
+  return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}…` : limpo;
+}
+
+function classificarPerfil(p5: string): PerfilExperiencia {
+  if (p5 === 'Sim, testei mas não deu certo') return 'testou-falhou';
+  if (p5 === 'Sim, uso algo hoje mas quero melhorar') return 'ja-usa';
+  return 'iniciante';
+}
+
+const INTRO_PERFIL: Record<PerfilExperiencia, string> = {
+  iniciante: `Como é sua primeira vez com IA, comece pelo mais simples possível — resista ao impulso de montar tudo de uma vez. O objetivo das primeiras 2 semanas é entender a ferramenta funcionando de verdade, não impressionar ninguém.\n\n`,
+  'testou-falhou': `Já que uma tentativa anterior não deu certo, o ponto de virada aqui é escopo: rode um único caso de uso ponta a ponta antes de expandir. A maioria das tentativas falha por tentar automatizar cedo demais, coisas demais.\n\n`,
+  'ja-usa': `Como você já usa alguma coisa hoje, foque em integração e evolução do que existe — não em recomeçar. Mapeie onde a ferramenta atual entrega valor e onde ela para, e trate esse gap como o próximo agente.\n\n`,
+};
+
 export function calcularResultado(respostas: Record<number, string>): ResultadoDiagnostico {
   const p1 = respostas[1] ?? '';
   const p2 = respostas[2] ?? '';
   const p3 = respostas[3] ?? '';
   const p4 = respostas[4] ?? '';
   const p5 = respostas[5] ?? '';
+  const p6 = respostas[6] ?? '';
 
-  let categoria: Categoria = P1_MAP[p1] ?? 'atendimento';
+  const categoriaOriginal: Categoria = P1_MAP[p1] ?? 'atendimento';
+  let categoria: Categoria = categoriaOriginal;
 
-  // Pequeno time + volume alto de contatos → reforça atendimento, mesmo que P1 seja outro
   const timeMinimo = p2 === 'Só eu' || p2 === '2 a 5 pessoas';
   const altaVolume = p3 === 'Mais de 50';
-  if (timeMinimo && altaVolume && categoria !== 'atendimento') {
-    categoria = 'atendimento';
-  }
+  const overrideAtendimento = timeMinimo && altaVolume && categoriaOriginal !== 'atendimento';
+  if (overrideAtendimento) categoria = 'atendimento';
 
-  const avisoToolsGenericas = p5 === 'Sim, testei mas não deu certo';
+  const perfilExperiencia = classificarPerfil(p5);
+  const avisoToolsGenericas = perfilExperiencia === 'testou-falhou';
 
   const conteudo = CONTEUDO[categoria];
 
-  // Contexto dinâmico de time (P2) e volume (P3) — deixa o diagnóstico com cara de "seu"
   const contextoTime: Record<string, string> = {
     'Só eu': 'Trabalhando sozinho, cada hora gasta em tarefa repetitiva é uma hora que você não gasta crescendo o negócio',
     '2 a 5 pessoas': 'Com um time enxuto de 2 a 5 pessoas, você não tem folga para alocar alguém só nisso',
@@ -149,21 +184,37 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
 
   const fraseTime = contextoTime[p2] ?? '';
   const fraseVolume = contextoVolume[p3] ?? '';
-  const tarefa = p4 ? ` Você destacou "${p4}" como a tarefa que mais consome seu tempo — exatamente o tipo de coisa que esse agente elimina.` : '';
+  const p4Curto = truncar(p4, 120);
+  const tarefa = p4Curto ? ` Você destacou "${p4Curto}" como a tarefa que mais consome seu tempo — exatamente o tipo de coisa que esse agente elimina.` : '';
 
   const porqueBase: Record<Categoria, string> = {
-    atendimento: `O ponto crítico está na velocidade e consistência do atendimento. ${fraseVolume || 'Perder clientes por demora de resposta é resolvível com automação focada'}.`,
-    vendas: `O gargalo está no acompanhamento de oportunidades que já existem. Leads sem resposta por mais de 24h têm chance de conversão drasticamente menor. ${fraseTime || 'Um agente de follow-up resolve isso sem depender de memória'}.`,
-    operacao: `O tempo perdido em processos manuais internos é o maior freio de crescimento. ${fraseTime || 'Automatizar operação libera horas semanais para o trabalho que precisa de você'}.`,
+    atendimento: `O ponto crítico está na velocidade e consistência do atendimento. ${fraseVolume || fraseTime || 'Perder clientes por demora de resposta é resolvível com automação focada'}.`,
+    vendas: `O gargalo está no acompanhamento de oportunidades que já existem. Leads sem resposta por mais de 24h têm chance de conversão drasticamente menor. ${fraseTime || fraseVolume || 'Um agente de follow-up resolve isso sem depender de memória'}.`,
+    operacao: `O tempo perdido em processos manuais internos é o maior freio de crescimento. ${fraseTime || fraseVolume || 'Automatizar operação libera horas semanais para o trabalho que precisa de você'}.`,
     financeiro: `A falta de previsibilidade de caixa e a cobrança manual são os maiores riscos para a saúde do negócio. ${fraseTime || 'Um agente financeiro resolve o operacional e dá clareza sobre o que entra e quando'}.`,
   };
 
-  const porque = `${porqueBase[categoria]}${tarefa}`;
+  let prefacio = '';
+  if (overrideAtendimento) {
+    const gargaloTexto = NOME_CATEGORIA[categoriaOriginal];
+    prefacio = `Você marcou ${gargaloTexto} como gargalo, mas com ${p2.toLowerCase()} e ${p3.toLowerCase()} contatos por dia, o atendimento vira o freio real antes de qualquer outra coisa — por isso o diagnóstico foi ajustado. `;
+  }
+
+  const porque = `${prefacio}${porqueBase[categoria]}${tarefa}`;
+
+  const metaTresMeses = truncar(p6, 220);
+  const pontePessoal = PONTE_META[categoria];
+
+  const comoComecar = `${INTRO_PERFIL[perfilExperiencia]}${conteudo.comoComecar}`;
 
   return {
     categoria,
     ...conteudo,
+    comoComecar,
     porque,
     avisoToolsGenericas,
+    perfilExperiencia,
+    metaTresMeses,
+    pontePessoal,
   };
 }

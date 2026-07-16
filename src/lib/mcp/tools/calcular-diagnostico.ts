@@ -10,7 +10,11 @@ const P1 = z.enum([
 ]);
 const P2 = z.enum(["Só eu", "2 a 5 pessoas", "6 a 20 pessoas", "Mais de 20 pessoas"]);
 const P3 = z.enum(["Menos de 10", "Entre 10 e 50", "Mais de 50"]);
-const P5 = z.enum(["Sim, testei mas não deu certo", "Não, nunca tentei", "Uso algumas coisas soltas"]);
+const P5 = z.enum([
+  "Não, seria minha primeira vez",
+  "Sim, testei mas não deu certo",
+  "Sim, uso algo hoje mas quero melhorar",
+]);
 
 export default defineTool({
   name: "calcular_diagnostico",
@@ -27,6 +31,11 @@ export default defineTool({
       .max(200)
       .describe("Resposta da pergunta 4: tarefa manual que mais consome tempo (texto livre)."),
     ja_tentou_automatizar: P5.describe("Resposta da pergunta 5: histórico de tentativas com automação."),
+    meta_tres_meses: z
+      .string()
+      .max(300)
+      .optional()
+      .describe("Resposta da pergunta 6 (opcional): o que mudaria no dia a dia daqui a 3 meses se der certo."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: (input) => {
@@ -36,6 +45,7 @@ export default defineTool({
       3: input.volume_contatos_dia,
       4: input.tarefa_que_mais_consome,
       5: input.ja_tentou_automatizar,
+      6: input.meta_tres_meses ?? "",
     };
     const resultado = calcularResultado(respostas);
     return {

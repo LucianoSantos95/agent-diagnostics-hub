@@ -115,6 +115,30 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
           </div>
         </div>
 
+        {/* Meta em 3 meses — usa P6 */}
+        {resultado.metaTresMeses && (
+          <div
+            className="rounded-2xl p-5 border animate-fade-up delay-75 relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, rgba(52,211,153,0.09), rgba(79,70,229,0.09))',
+              borderColor: 'rgba(52,211,153,0.28)',
+            }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">🎯</span>
+              <p className="text-[10px] font-mono font-bold uppercase tracking-[0.24em]" style={{ color: '#34d399' }}>
+                Sua meta em 3 meses
+              </p>
+            </div>
+            <p className="text-base leading-relaxed mb-2" style={{ color: 'var(--text-primary)' }}>
+              <span className="font-semibold">"{resultado.metaTresMeses}"</span>
+            </p>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              {resultado.pontePessoal}
+            </p>
+          </div>
+        )}
+
         {/* Aviso ferramentas genéricas */}
         {resultado.avisoToolsGenericas && (
           <div
@@ -125,6 +149,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
               Você já tentou antes
             </p>
             <p className="text-sm leading-relaxed" style={{ color: '#fde68a' }}>
+
               O erro mais comum é usar uma ferramenta genérica para um problema específico.
               Um agente configurado para o <em>seu</em> gargalo é completamente diferente
               de um chatbot de prateleira.
@@ -174,13 +199,14 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
         </div>
 
         {/* Stack completa por categoria */}
-        <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} />
+        <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} tamanhoTime={respostas[2] ?? ''} volumeDia={respostas[3] ?? ''} />
 
         {/* Combinações lógicas — como as ferramentas se encaixam */}
-        <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} />
+        <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} tarefaP4={tarefaP4} />
 
         {/* IA de uso geral — bloco fixo, útil para qualquer negócio */}
-        <FerramentasIAGeral />
+        <FerramentasIAGeral tarefaP4={tarefaP4} />
+
 
         {/* Personalização P4 — gancho de valor antes do gate */}
         <BlocoPersonalizacao tarefaP4={tarefaP4} categoria={resultado.categoria} />
