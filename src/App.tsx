@@ -5,11 +5,13 @@ import ChatbotEmpresas from './pages/lp/ChatbotEmpresas'
 import AutomacaoAtendimento from './pages/lp/AutomacaoAtendimento'
 import IaPequenasEmpresas from './pages/lp/IaPequenasEmpresas'
 import { ThemeProvider } from './contexts/ThemeContext'
+import ScrollToTop from './components/ScrollToTop'
 
 export default function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<DiagnosticoPage />} />
           <Route path="/diagnostico-agente-ia" element={<DiagnosticoPage />} />
