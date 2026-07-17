@@ -109,6 +109,35 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Defense-in-depth: validate any URL fields in templateData against an
+  // allowlist so a compromised caller cannot render arbitrary phishing links
+  // into emails sent from the verified sender domain.
+  const URL_ALLOWED_HOSTS = [
+    'ndctxfvdtgunwpqlvnbr.supabase.co',
+    'diagnostico.focusinteligente.com.br',
+    'focusinteligente.com.br',
+  ]
+  const URL_KEYS = ['downloadUrl', 'actionUrl', 'ctaUrl', 'url', 'link']
+  for (const key of URL_KEYS) {
+    const v = templateData[key]
+    if (typeof v !== 'string' || v.length === 0) continue
+    try {
+      const u = new URL(v)
+      if (u.protocol !== 'https:' || !URL_ALLOWED_HOSTS.includes(u.hostname)) {
+        return new Response(
+          JSON.stringify({ error: `Disallowed URL host in templateData.${key}` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    } catch {
+      return new Response(
+        JSON.stringify({ error: `Invalid URL in templateData.${key}` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+  }
+
+
   // 1. Look up template from registry (early — needed to resolve recipient)
   const template = TEMPLATES[templateName]
 
