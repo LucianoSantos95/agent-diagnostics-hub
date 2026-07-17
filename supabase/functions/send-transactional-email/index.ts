@@ -49,6 +49,31 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Authorization: only trusted server-to-server callers (service_role) may
+  // trigger sends. The gateway verifies the JWT signature; here we enforce
+  // that its `role` claim is `service_role`, blocking anon-key callers from
+  // using this endpoint as an open email relay.
+  const authHeader = req.headers.get('Authorization') || ''
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
+  let callerRole: string | undefined
+  try {
+    const payloadPart = token.split('.')[1]
+    if (payloadPart) {
+      const padded = payloadPart.padEnd(payloadPart.length + ((4 - (payloadPart.length % 4)) % 4), '=')
+      const decoded = JSON.parse(atob(padded.replace(/-/g, '+').replace(/_/g, '/')))
+      callerRole = decoded?.role
+    }
+  } catch {
+    callerRole = undefined
+  }
+  if (callerRole !== 'service_role') {
+    return new Response(
+      JSON.stringify({ error: 'Forbidden' }),
+      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
+
   // Parse request body
   let templateName: string
   let recipientEmail: string
