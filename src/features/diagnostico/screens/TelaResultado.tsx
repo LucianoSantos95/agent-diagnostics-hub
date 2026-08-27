@@ -154,6 +154,12 @@ export default function TelaResultado({
   const playbook = useMemo(() => montarPlaybook(resultado, tarefa), [resultado, tarefa]);
   const cor = COR_CATEGORIA[resultado.categoria];
   const confAlta = resultado.confianca === 'alta';
+  const [emailCapturado, setEmailCapturado] = useState<string | null>(null);
+
+  function handleSalvarEmail(email: string) {
+    setEmailCapturado(email);
+    onSalvarEmail(email);
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ paddingTop: '60px' }}>
