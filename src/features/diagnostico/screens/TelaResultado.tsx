@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { type ResultadoDiagnostico } from '../engine/recomendacao';
 import { montarPlaybook } from '../playbooks';
 import type { Playbook } from '../playbooks';
 import BaixarPlaybook from '../resultado/BaixarPlaybook';
+import CaixaFeedback from '../resultado/CaixaFeedback';
 import PerguntaOrcamento from '../resultado/PerguntaOrcamento';
 import CTAComercial from '../resultado/CTAComercial';
 import Footer from '@/components/Footer';
