@@ -194,6 +194,14 @@ function truncar(texto, max) {
   const limpo = texto.trim();
   return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}\u2026` : limpo;
 }
+function metaValida(texto) {
+  const s = (texto ?? "").trim().toLowerCase();
+  if (s.length < 12) return false;
+  if (/^(sei l[aá]|n[aã]o sei|nao sei|n sei|talvez|qualquer|nada|nenhuma|tanto faz|-+|\.+|x+)$/.test(s)) return false;
+  if (!/\s/.test(s)) return false;
+  const palavras = s.split(/\s+/).filter((w) => w.length > 2);
+  return palavras.length >= 3;
+}
 function classificarExperiencia(jaUsaRaw) {
   const s = (jaUsaRaw ?? "").toLowerCase();
   if (/n[aã]o engatou|testei.*n[aã]o|desisti/.test(s)) return "testou-falhou";

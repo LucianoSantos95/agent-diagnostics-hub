@@ -241,6 +241,20 @@ function truncar(texto: string, max: number): string {
   return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}…` : limpo;
 }
 
+/**
+ * Uma meta só é exibida se disser algo. Respostas vagas ("sei la", "n sei",
+ * "-", "nada") ou curtas demais são descartadas pra não voltarem literalmente
+ * no resultado.
+ */
+function metaValida(texto: string): boolean {
+  const s = (texto ?? '').trim().toLowerCase();
+  if (s.length < 12) return false;
+  if (/^(sei l[aá]|n[aã]o sei|nao sei|n sei|talvez|qualquer|nada|nenhuma|tanto faz|-+|\.+|x+)$/.test(s)) return false;
+  if (!/\s/.test(s)) return false; // palavra única não é uma meta
+  const palavras = s.split(/\s+/).filter((w) => w.length > 2);
+  return palavras.length >= 3;
+}
+
 /** Deriva o nível de experiência a partir do que a pessoa marcou que já usa. */
 function classificarExperiencia(jaUsaRaw: string): PerfilExperiencia {
   const s = (jaUsaRaw ?? '').toLowerCase();
