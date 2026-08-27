@@ -15,7 +15,7 @@
       {
         "name": "calcular_diagnostico",
         "title": "Calcular diagnóstico de agente de IA",
-        "description": "Roda o motor de recomendação do Focus Diagnóstico e retorna qual tipo de agente de IA (atendimento, vendas, operação ou financeiro) o negócio deve priorizar, com justificativa, ferramentas recomendadas e guia de implementação.",
+        "description": "Roda o motor de recomendação do Focus Diagnóstico e retorna qual frente de IA (atendimento, vendas, operação ou financeiro) o negócio deve priorizar, com justificativa, ferramentas recomendadas, guia de implementação e um playbook.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -24,6 +24,16 @@
         "inputSchema": {
           "type": "object",
           "properties": {
+            "perfil": {
+              "type": "string",
+              "enum": [
+                "Autônomo ou freelancer — sou eu que faço e entrego",
+                "Consultor — presto serviço recorrente pra alguns clientes",
+                "Agência — tenho um time entregando pra vários clientes",
+                "Empresa com time — operação interna com funcionários"
+              ],
+              "description": "Resposta da pergunta 1: como a pessoa trabalha."
+            },
             "gargalo_principal": {
               "type": "string",
               "enum": [
@@ -32,7 +42,7 @@
                 "Operação interna — processo manual, retrabalho, tarefa repetitiva",
                 "Financeiro — não sei prever caixa, cobrança de cliente é manual"
               ],
-              "description": "Resposta da pergunta 1: onde está o maior gargalo do negócio."
+              "description": "Resposta da pergunta 2: onde está o maior gargalo do negócio."
             },
             "tamanho_time": {
               "type": "string",
@@ -42,7 +52,7 @@
                 "6 a 20 pessoas",
                 "Mais de 20 pessoas"
               ],
-              "description": "Resposta da pergunta 2: tamanho do time."
+              "description": "Resposta da pergunta 3: tamanho da operação."
             },
             "volume_contatos_dia": {
               "type": "string",
@@ -51,35 +61,31 @@
                 "Entre 10 e 50",
                 "Mais de 50"
               ],
-              "description": "Resposta da pergunta 3: volume de contatos por dia."
+              "description": "Resposta da pergunta 4: volume de contatos por dia."
             },
             "tarefa_que_mais_consome": {
               "type": "string",
               "minLength": 1,
               "maxLength": 200,
-              "description": "Resposta da pergunta 4: tarefa manual que mais consome tempo (texto livre)."
-            },
-            "ja_tentou_automatizar": {
-              "type": "string",
-              "enum": [
-                "Não, seria minha primeira vez",
-                "Sim, testei mas não deu certo",
-                "Sim, uso algo hoje mas quero melhorar"
-              ],
-              "description": "Resposta da pergunta 5: histórico de tentativas com automação."
+              "description": "Resposta da pergunta 5: tarefa manual que mais consome tempo (texto livre)."
             },
             "meta_tres_meses": {
               "type": "string",
               "maxLength": 300,
               "description": "Resposta da pergunta 6 (opcional): o que mudaria no dia a dia daqui a 3 meses se der certo."
+            },
+            "ja_usa": {
+              "type": "string",
+              "maxLength": 400,
+              "description": "Resposta da pergunta 7 (opcional): o que a pessoa já usa hoje, separado por ponto e vírgula (ex.: 'ChatGPT no dia a dia; Um CRM'). Use 'Nada ainda' se for a primeira vez."
             }
           },
           "required": [
+            "perfil",
             "gargalo_principal",
             "tamanho_time",
             "volume_contatos_dia",
-            "tarefa_que_mais_consome",
-            "ja_tentou_automatizar"
+            "tarefa_que_mais_consome"
           ],
           "additionalProperties": false,
           "$schema": "http://json-schema.org/draft-07/schema#"

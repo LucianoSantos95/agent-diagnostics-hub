@@ -10,6 +10,21 @@ import { defineTool } from "npm:@lovable.dev/mcp-js@0.20.0";
 import { z } from "npm:zod@^3.25.76";
 
 // src/features/diagnostico/engine/recomendacao.ts
+var PERFIL_LABEL = {
+  autonomo: "aut\xF4nomo / freelancer",
+  consultor: "consultor",
+  agencia: "ag\xEAncia",
+  empresa: "empresa com time"
+};
+var PERFIL_MAP = {
+  "Aut\xF4nomo ou freelancer \u2014 sou eu que fa\xE7o e entrego": "autonomo",
+  "Consultor \u2014 presto servi\xE7o recorrente pra alguns clientes": "consultor",
+  "Ag\xEAncia \u2014 tenho um time entregando pra v\xE1rios clientes": "agencia",
+  "Empresa com time \u2014 opera\xE7\xE3o interna com funcion\xE1rios": "empresa"
+};
+function classificarPerfil(resposta) {
+  return PERFIL_MAP[resposta] ?? "empresa";
+}
 var NOME_AGENTE = {
   atendimento: "Agente de Atendimento",
   vendas: "Agente de Vendas e Follow-up",
@@ -179,10 +194,100 @@ function truncar(texto, max) {
   const limpo = texto.trim();
   return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}\u2026` : limpo;
 }
-function classificarPerfil(p5) {
-  if (p5 === "Sim, testei mas n\xE3o deu certo") return "testou-falhou";
-  if (p5 === "Sim, uso algo hoje mas quero melhorar") return "ja-usa";
-  return "iniciante";
+function classificarExperiencia(jaUsaRaw) {
+  const s = (jaUsaRaw ?? "").toLowerCase();
+  if (/n[aã]o engatou|testei.*n[aã]o|desisti/.test(s)) return "testou-falhou";
+  if (!s.trim() || /nada ainda|primeira vez/.test(s)) return "iniciante";
+  return "ja-usa";
+}
+function parseJaUsa(jaUsaRaw) {
+  return (jaUsaRaw ?? "").split(/\s*[;|]\s*/).map((s) => s.trim()).filter(Boolean).filter((s) => !/nada ainda|primeira vez|n[aã]o engatou/i.test(s));
+}
+var GRUPO_JA_USA = {
+  atendimento: /chatbot|atendimento|manychat|typebot|tidio/i,
+  vendas: /\bcrm\b|rd station|pipedrive|hubspot|kommo/i,
+  operacao: /automa[çc][aã]o|\bmake\b|zapier|n8n/i,
+  financeiro: /cobran[çc]a|asaas|cora|vindi/i,
+  iaGeral: /chatgpt|gemini|claude|copilot/i,
+  planilha: /planilha|sheets|excel/i
+};
+function usaGrupo(jaUsa, grupo) {
+  return jaUsa.some((s) => GRUPO_JA_USA[grupo].test(s));
+}
+var SUB_FRENTES_KW = {
+  atendimento: [
+    { id: "instagram-dm", kw: /instagram|\bdm\b|direct|coment[aá]rio|stories?/i, grupo: "atendimento" },
+    { id: "site-chat", kw: /\bsite\b|website|p[aá]gina|landing|\bloja\b|e-?commerce|checkout/i, grupo: "atendimento" },
+    { id: "multicanal", kw: /v[aá]rios canais|multicanal|caixa de entrada|\binbox\b|time atende|equipe atende|central de atendimento/i, grupo: "atendimento" },
+    { id: "whatsapp-faq", kw: /whats?app|\bzap\b|d[uú]vida|pergunta|\bfaq\b|hor[aá]rio/i, grupo: "atendimento" }
+  ],
+  vendas: [
+    { id: "email-sequencia", kw: /e-?mail|newsletter|nutri[çc][aã]o|sequ[eê]ncia|disparo|cad[eê]ncia|marketing|autom[aá]tico de e-?mail|automatizar.*e-?mail/i, grupo: null },
+    { id: "proposta", kw: /proposta|or[çc]amento|cota[çc][aã]o|contrato|escopo|apresenta[çc][aã]o comercial/i, grupo: "iaGeral" },
+    { id: "followup-whatsapp", kw: /whats?app|\bzap\b|cobrar resposta|retomar|reativar|lembrar de responder/i, grupo: "vendas" },
+    { id: "organizar-funil", kw: /funil|pipeline|perco (lead|cliente|oportunidade)|organizar|planilha de vendas|esque[çc]o|acompanhar|controle/i, grupo: "vendas" }
+  ],
+  operacao: [
+    { id: "base-dados", kw: /planilha|base de dados|cadastro|\bcaos\b|v[aá]rias abas|controle em excel/i, grupo: "planilha" },
+    { id: "documento", kw: /relat[oó]rio|documento|\bata\b|resumo|descri[çc][aã]o|texto|apresenta[çc][aã]o/i, grupo: "iaGeral" },
+    { id: "tecnico", kw: /open source|c[oó]digo|\bapi\b|sem limite|volume alto|self-?host|desenvolvedor|customiza/i, grupo: "operacao" },
+    { id: "automatizar", kw: /automa[çc]|integr|conectar|mover dado|copiar|repetitiv|toda semana|todo dia|notifica|lembrete|agendar/i, grupo: "operacao" }
+  ],
+  financeiro: [
+    { id: "recorrencia", kw: /mensalidade|assinatura|recorr[eê]nte|\bplano\b|\bclube\b/i, grupo: "financeiro" },
+    { id: "nota-fiscal", kw: /nota fiscal|\bnfe?\b|nfs-?e|emitir nota|emiss[aã]o/i, grupo: null },
+    { id: "conciliacao", kw: /concilia|categoriz|onde (gasto|gasta|vai o dinheiro)|despesa|previs[aã]o de caixa|fluxo de caixa|fechar o m[eê]s|extrato/i, grupo: "financeiro" },
+    { id: "cobranca", kw: /cobran[çc]|boleto|\bpix\b|inadimpl|receber|atras|d[eê]bito|devendo|r[eé]gua/i, grupo: "financeiro" }
+  ]
+};
+function rotearSubFrente(categoria, textoLivre) {
+  const subs = SUB_FRENTES_KW[categoria];
+  const t = (textoLivre ?? "").toLowerCase();
+  const achado = subs.find((s) => s.kw.test(t)) ?? subs[subs.length - 1];
+  return { id: achado.id, grupo: achado.grupo };
+}
+function rotuloComplemento(jaUsa, categoria, subGrupo) {
+  if (usaGrupo(jaUsa, "vendas") && subGrupo !== "vendas") return "o CRM que voc\xEA j\xE1 usa";
+  if (usaGrupo(jaUsa, "operacao") && subGrupo !== "operacao") return "a automa\xE7\xE3o que voc\xEA j\xE1 usa (Make/Zapier)";
+  if (usaGrupo(jaUsa, "planilha") && subGrupo !== "planilha" && (categoria === "operacao" || categoria === "financeiro" || categoria === "vendas"))
+    return "a planilha que voc\xEA j\xE1 usa";
+  if (usaGrupo(jaUsa, "iaGeral") && subGrupo !== "iaGeral" && (categoria === "operacao" || categoria === "atendimento"))
+    return "a IA que voc\xEA j\xE1 usa (via API)";
+  if (usaGrupo(jaUsa, "financeiro") && subGrupo !== "financeiro" && categoria !== "financeiro")
+    return "a ferramenta de cobran\xE7a que voc\xEA j\xE1 usa";
+  return "";
+}
+function classificarForma(args) {
+  const { categoria, confianca, confiancaExplicacao, jaUsa, perfilExperiencia, time, volume, subGrupo } = args;
+  if (confianca === "baixa") {
+    return { forma: "validar", complementoLabel: "", formaMotivo: confiancaExplicacao };
+  }
+  const timeGrande = time === "6 a 20 pessoas" || time === "Mais de 20 pessoas";
+  const volumeAlto = volume === "Mais de 50";
+  if (subGrupo && usaGrupo(jaUsa, subGrupo)) {
+    return {
+      forma: "agente",
+      complementoLabel: "",
+      formaMotivo: "Voc\xEA j\xE1 usa uma ferramenta pra isso e o gargalo continua \u2014 o problema n\xE3o \xE9 a ferramenta, \xE9 a configura\xE7\xE3o pro seu processo."
+    };
+  }
+  if (timeGrande && volumeAlto) {
+    return {
+      forma: "agente",
+      complementoLabel: "",
+      formaMotivo: "No seu volume de contatos e tamanho de time, ferramenta de prateleira trava na integra\xE7\xE3o e na manuten\xE7\xE3o."
+    };
+  }
+  if (perfilExperiencia === "testou-falhou" && jaUsa.length >= 1) {
+    return {
+      forma: "agente",
+      complementoLabel: "",
+      formaMotivo: "Voc\xEA j\xE1 testou ferramentas e n\xE3o engatou. O pr\xF3ximo passo n\xE3o \xE9 outra ferramenta \u2014 \xE9 desenhar o agente pro seu caso."
+    };
+  }
+  const comp = rotuloComplemento(jaUsa, categoria, subGrupo);
+  if (comp) return { forma: "ferramenta-mais-complemento", complementoLabel: comp, formaMotivo: "" };
+  return { forma: "uma-ferramenta", complementoLabel: "", formaMotivo: "" };
 }
 var INTRO_PERFIL = {
   iniciante: `Como \xE9 sua primeira vez com IA, comece pelo mais simples poss\xEDvel \u2014 resista ao impulso de montar tudo de uma vez. O objetivo das primeiras 2 semanas \xE9 entender a ferramenta funcionando de verdade, n\xE3o impressionar ningu\xE9m.
@@ -271,22 +376,35 @@ function montarSubtitulo(categoria, confianca) {
   return base;
 }
 function calcularResultado(respostas) {
-  const p1 = respostas[1] ?? "";
-  const p2 = respostas[2] ?? "";
-  const p3 = respostas[3] ?? "";
-  const p4 = respostas[4] ?? "";
-  const p5 = respostas[5] ?? "";
+  const perfil = classificarPerfil(respostas[1] ?? "");
+  const p1 = respostas[2] ?? "";
+  const p2 = respostas[3] ?? "";
+  const p3 = respostas[4] ?? "";
+  const p4 = respostas[5] ?? "";
   const p6 = respostas[6] ?? "";
+  const jaUsaRaw = respostas[7] ?? "";
+  const jaUsa = parseJaUsa(jaUsaRaw);
   const categoriaOriginal = P1_MAP[p1] ?? "atendimento";
   let categoria = categoriaOriginal;
   const timeMinimo = p2 === "S\xF3 eu" || p2 === "2 a 5 pessoas";
   const altaVolume = p3 === "Mais de 50";
   const overrideAtendimento = timeMinimo && altaVolume && categoriaOriginal !== "atendimento";
   if (overrideAtendimento) categoria = "atendimento";
-  const perfilExperiencia = classificarPerfil(p5);
+  const perfilExperiencia = classificarExperiencia(jaUsaRaw);
   const avisoToolsGenericas = perfilExperiencia === "testou-falhou";
   const sinais = analisarSinais(p4, categoriaOriginal, overrideAtendimento);
   const { nivel: confianca, explicacao: confiancaExplicacao } = classificarConfianca(sinais);
+  const sub = rotearSubFrente(categoria, `${p4} ${p6}`);
+  const { forma, complementoLabel, formaMotivo } = classificarForma({
+    categoria,
+    confianca,
+    confiancaExplicacao,
+    jaUsa,
+    perfilExperiencia,
+    time: p2,
+    volume: p3,
+    subGrupo: sub.grupo
+  });
   const conteudo = CONTEUDO[categoria];
   const contextoTime = {
     "S\xF3 eu": "Trabalhando sozinho, cada hora gasta em tarefa repetitiva \xE9 uma hora que voc\xEA n\xE3o gasta crescendo o neg\xF3cio",
@@ -340,14 +458,27 @@ function calcularResultado(respostas) {
     porque,
     avisoToolsGenericas,
     perfilExperiencia,
+    perfil,
+    perfilLabel: PERFIL_LABEL[perfil],
+    jaUsa,
     metaTresMeses,
     pontePessoal,
     confianca,
-    confiancaExplicacao
+    confiancaExplicacao,
+    forma,
+    complementoLabel,
+    formaMotivo,
+    subFrenteId: sub.id
   };
 }
 
 // src/lib/mcp/tools/calcular-diagnostico.ts
+var PERFIL = z.enum([
+  "Aut\xF4nomo ou freelancer \u2014 sou eu que fa\xE7o e entrego",
+  "Consultor \u2014 presto servi\xE7o recorrente pra alguns clientes",
+  "Ag\xEAncia \u2014 tenho um time entregando pra v\xE1rios clientes",
+  "Empresa com time \u2014 opera\xE7\xE3o interna com funcion\xE1rios"
+]);
 var P1 = z.enum([
   "Atendimento ao cliente \u2014 demoro para responder, perco gente no caminho",
   "Vendas e follow-up \u2014 esque\xE7o de cobrar resposta, perco oportunidade",
@@ -356,32 +487,31 @@ var P1 = z.enum([
 ]);
 var P2 = z.enum(["S\xF3 eu", "2 a 5 pessoas", "6 a 20 pessoas", "Mais de 20 pessoas"]);
 var P3 = z.enum(["Menos de 10", "Entre 10 e 50", "Mais de 50"]);
-var P5 = z.enum([
-  "N\xE3o, seria minha primeira vez",
-  "Sim, testei mas n\xE3o deu certo",
-  "Sim, uso algo hoje mas quero melhorar"
-]);
 var calcular_diagnostico_default = defineTool({
   name: "calcular_diagnostico",
   title: "Calcular diagn\xF3stico de agente de IA",
-  description: "Roda o motor de recomenda\xE7\xE3o do Focus Diagn\xF3stico e retorna qual tipo de agente de IA (atendimento, vendas, opera\xE7\xE3o ou financeiro) o neg\xF3cio deve priorizar, com justificativa, ferramentas recomendadas e guia de implementa\xE7\xE3o.",
+  description: "Roda o motor de recomenda\xE7\xE3o do Focus Diagn\xF3stico e retorna qual frente de IA (atendimento, vendas, opera\xE7\xE3o ou financeiro) o neg\xF3cio deve priorizar, com justificativa, ferramentas recomendadas, guia de implementa\xE7\xE3o e um playbook.",
   inputSchema: {
-    gargalo_principal: P1.describe("Resposta da pergunta 1: onde est\xE1 o maior gargalo do neg\xF3cio."),
-    tamanho_time: P2.describe("Resposta da pergunta 2: tamanho do time."),
-    volume_contatos_dia: P3.describe("Resposta da pergunta 3: volume de contatos por dia."),
-    tarefa_que_mais_consome: z.string().min(1).max(200).describe("Resposta da pergunta 4: tarefa manual que mais consome tempo (texto livre)."),
-    ja_tentou_automatizar: P5.describe("Resposta da pergunta 5: hist\xF3rico de tentativas com automa\xE7\xE3o."),
-    meta_tres_meses: z.string().max(300).optional().describe("Resposta da pergunta 6 (opcional): o que mudaria no dia a dia daqui a 3 meses se der certo.")
+    perfil: PERFIL.describe("Resposta da pergunta 1: como a pessoa trabalha."),
+    gargalo_principal: P1.describe("Resposta da pergunta 2: onde est\xE1 o maior gargalo do neg\xF3cio."),
+    tamanho_time: P2.describe("Resposta da pergunta 3: tamanho da opera\xE7\xE3o."),
+    volume_contatos_dia: P3.describe("Resposta da pergunta 4: volume de contatos por dia."),
+    tarefa_que_mais_consome: z.string().min(1).max(200).describe("Resposta da pergunta 5: tarefa manual que mais consome tempo (texto livre)."),
+    meta_tres_meses: z.string().max(300).optional().describe("Resposta da pergunta 6 (opcional): o que mudaria no dia a dia daqui a 3 meses se der certo."),
+    ja_usa: z.string().max(400).optional().describe(
+      "Resposta da pergunta 7 (opcional): o que a pessoa j\xE1 usa hoje, separado por ponto e v\xEDrgula (ex.: 'ChatGPT no dia a dia; Um CRM'). Use 'Nada ainda' se for a primeira vez."
+    )
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: (input) => {
     const respostas = {
-      1: input.gargalo_principal,
-      2: input.tamanho_time,
-      3: input.volume_contatos_dia,
-      4: input.tarefa_que_mais_consome,
-      5: input.ja_tentou_automatizar,
-      6: input.meta_tres_meses ?? ""
+      1: input.perfil,
+      2: input.gargalo_principal,
+      3: input.tamanho_time,
+      4: input.volume_contatos_dia,
+      5: input.tarefa_que_mais_consome,
+      6: input.meta_tres_meses ?? "",
+      7: input.ja_usa ?? ""
     };
     const resultado = calcularResultado(respostas);
     return {
@@ -411,11 +541,13 @@ var listar_ferramentas_default = defineTool2({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: ({ categoria }) => {
     const resultado = calcularResultado({
-      1: GARGALO_POR_CATEGORIA[categoria],
-      2: "2 a 5 pessoas",
-      3: "Entre 10 e 50",
-      4: "tarefas repetitivas",
-      5: "N\xE3o, nunca tentei"
+      1: "Empresa com time \u2014 opera\xE7\xE3o interna com funcion\xE1rios",
+      2: GARGALO_POR_CATEGORIA[categoria],
+      3: "2 a 5 pessoas",
+      4: "Entre 10 e 50",
+      5: "tarefas repetitivas",
+      6: "",
+      7: "Nada ainda \u2014 seria minha primeira vez"
     });
     const payload = {
       categoria,
