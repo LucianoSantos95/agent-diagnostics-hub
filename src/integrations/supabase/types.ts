@@ -85,6 +85,11 @@ export type Database = {
           created_at: string
           current_step: number
           id: string
+          landing_path: string | null
+          referrer: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
           utm_source: string | null
         }
         Insert: {
@@ -93,6 +98,11 @@ export type Database = {
           created_at?: string
           current_step?: number
           id?: string
+          landing_path?: string | null
+          referrer?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
           utm_source?: string | null
         }
         Update: {
@@ -101,6 +111,11 @@ export type Database = {
           created_at?: string
           current_step?: number
           id?: string
+          landing_path?: string | null
+          referrer?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
           utm_source?: string | null
         }
         Relationships: []
