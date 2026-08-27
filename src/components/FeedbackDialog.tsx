@@ -72,24 +72,32 @@ export default function FeedbackDialog({ open, onClose }: Props) {
     outline: 'none',
   };
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Deixe seu feedback"
       style={{
-        position: 'fixed', inset: 0, zIndex: 200,
-        background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'rgba(3,4,20,0.82)', backdropFilter: 'blur(8px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 16, animation: 'fade-in-up 0.25s ease-out',
+        padding: 16, overflowY: 'auto',
+        animation: 'fade-in-up 0.25s ease-out',
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'var(--surface)', backdropFilter: 'blur(20px)',
+          background: 'var(--card, #12142e)', backgroundColor: 'var(--card, #12142e)',
           border: '1px solid var(--surface-border)', borderRadius: 18,
-          maxWidth: 460, width: '100%', padding: 24, position: 'relative',
+          maxWidth: 460, width: '100%', padding: '28px 24px 24px', position: 'relative',
+          maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
+          boxShadow: '0 32px 80px -20px rgba(0,0,0,0.75)',
+          margin: 'auto',
         }}
       >
+
         <button
           onClick={onClose}
           aria-label="Fechar"
