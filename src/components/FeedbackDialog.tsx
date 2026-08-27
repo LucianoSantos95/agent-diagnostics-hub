@@ -188,5 +188,6 @@ export default function FeedbackDialog({ open, onClose }: Props) {
         )}
       </div>
     </div>
+    document.body
   );
 }
