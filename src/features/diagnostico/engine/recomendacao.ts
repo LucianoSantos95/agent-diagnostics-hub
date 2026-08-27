@@ -2,6 +2,20 @@ export type Categoria = 'atendimento' | 'vendas' | 'operacao' | 'financeiro';
 export type PerfilExperiencia = 'iniciante' | 'testou-falhou' | 'ja-usa';
 export type Confianca = 'alta' | 'media' | 'baixa';
 
+/**
+ * Formato da recomendação — decide o que a tela de resultado mostra.
+ * O complemento SÓ existe quando há necessidade real (a pessoa já tem outro
+ * sistema pra ligar), nunca por padrão.
+ */
+export type Forma = 'uma-ferramenta' | 'ferramenta-mais-complemento' | 'agente' | 'validar';
+
+export const FORMA_LABEL: Record<Forma, string> = {
+  'uma-ferramenta': 'uma ferramenta',
+  'ferramenta-mais-complemento': 'ferramenta + complemento',
+  agente: 'agente sob medida',
+  validar: 'validar antes',
+};
+
 /** Como a pessoa trabalha — define vocabulário e ranqueamento das ferramentas. */
 export type Perfil = 'autonomo' | 'consultor' | 'agencia' | 'empresa';
 
@@ -49,6 +63,12 @@ export interface ResultadoDiagnostico {
   pontePessoal: string;
   confianca: Confianca;
   confiancaExplicacao: string;
+  /** Formato da recomendação (ver type Forma). */
+  forma: Forma;
+  /** Quando forma = 'ferramenta-mais-complemento': o que ligar ("o CRM que você já usa"). */
+  complementoLabel: string;
+  /** Frase que explica por que essa forma (usada no subheadline de 'agente'/'validar'). */
+  formaMotivo: string;
 }
 
 type ConteudoBase = Omit<
@@ -64,6 +84,9 @@ type ConteudoBase = Omit<
   | 'pontePessoal'
   | 'confianca'
   | 'confiancaExplicacao'
+  | 'forma'
+  | 'complementoLabel'
+  | 'formaMotivo'
   | 'titulo'
   | 'subtitulo'
 >;
@@ -232,6 +255,84 @@ export function parseJaUsa(jaUsaRaw: string): string[] {
     .filter((s) => !/nada ainda|primeira vez|n[aã]o engatou/i.test(s));
 }
 
+// ---------------------------------------------------------------------------
+// FORMA da recomendação
+// ---------------------------------------------------------------------------
+
+// Grupos do que a pessoa já usa (resposta P7). "iaGeral"/"planilha" são
+// candidatos a COMPLEMENTO; os 4 primeiros casam 1:1 com uma frente.
+const GRUPO_JA_USA: Record<'atendimento' | 'vendas' | 'operacao' | 'financeiro' | 'iaGeral' | 'planilha', RegExp> = {
+  atendimento: /chatbot|atendimento|manychat|typebot|tidio/i,
+  vendas: /\bcrm\b|rd station|pipedrive|hubspot|kommo/i,
+  operacao: /automa[çc][aã]o|\bmake\b|zapier|n8n/i,
+  financeiro: /cobran[çc]a|asaas|cora|vindi/i,
+  iaGeral: /chatgpt|gemini|claude|copilot/i,
+  planilha: /planilha|sheets|excel/i,
+};
+
+function usaGrupo(jaUsa: string[], grupo: keyof typeof GRUPO_JA_USA): boolean {
+  return jaUsa.some((s) => GRUPO_JA_USA[grupo].test(s));
+}
+
+/** Rótulo do sistema que a pessoa já tem e que serve de complemento à ferramenta-base. */
+function rotuloComplemento(jaUsa: string[], categoria: Categoria): string {
+  if (usaGrupo(jaUsa, 'vendas') && categoria !== 'vendas') return 'o CRM que você já usa';
+  if (usaGrupo(jaUsa, 'operacao')) return 'a automação que você já usa (Make/Zapier)';
+  if (usaGrupo(jaUsa, 'planilha') && (categoria === 'operacao' || categoria === 'financeiro')) return 'a planilha que você já usa';
+  if (usaGrupo(jaUsa, 'iaGeral') && categoria === 'operacao') return 'a IA que você já usa (via API)';
+  if (usaGrupo(jaUsa, 'financeiro') && categoria !== 'financeiro') return 'a ferramenta de cobrança que você já usa';
+  return '';
+}
+
+function classificarForma(args: {
+  categoria: Categoria;
+  confianca: Confianca;
+  confiancaExplicacao: string;
+  jaUsa: string[];
+  perfilExperiencia: PerfilExperiencia;
+  time: string;
+  volume: string;
+}): { forma: Forma; complementoLabel: string; formaMotivo: string } {
+  const { categoria, confianca, confiancaExplicacao, jaUsa, perfilExperiencia, time, volume } = args;
+
+  // 1. Respostas se contradizem → não prescrever, validar.
+  if (confianca === 'baixa') {
+    return { forma: 'validar', complementoLabel: '', formaMotivo: confiancaExplicacao };
+  }
+
+  // 2. Sinais de "agente sob medida".
+  const timeGrande = time === '6 a 20 pessoas' || time === 'Mais de 20 pessoas';
+  const volumeAlto = volume === 'Mais de 50';
+  if (usaGrupo(jaUsa, categoria)) {
+    return {
+      forma: 'agente',
+      complementoLabel: '',
+      formaMotivo: 'Você já usa ferramenta nessa frente e o gargalo continua — o problema não é a ferramenta, é a configuração pro seu processo.',
+    };
+  }
+  if (timeGrande && volumeAlto) {
+    return {
+      forma: 'agente',
+      complementoLabel: '',
+      formaMotivo: 'No seu volume de contatos e tamanho de time, ferramenta de prateleira trava na integração e na manutenção.',
+    };
+  }
+  if (perfilExperiencia === 'testou-falhou' && jaUsa.length >= 1) {
+    return {
+      forma: 'agente',
+      complementoLabel: '',
+      formaMotivo: 'Você já testou ferramentas e não engatou. O próximo passo não é outra ferramenta — é desenhar o agente pro seu caso.',
+    };
+  }
+
+  // 3. Complemento real — só se há outro sistema que casa.
+  const comp = rotuloComplemento(jaUsa, categoria);
+  if (comp) return { forma: 'ferramenta-mais-complemento', complementoLabel: comp, formaMotivo: '' };
+
+  // 4. Default: uma peça, montar, pronto.
+  return { forma: 'uma-ferramenta', complementoLabel: '', formaMotivo: '' };
+}
+
 const INTRO_PERFIL: Record<PerfilExperiencia, string> = {
   iniciante: `Como é sua primeira vez com IA, comece pelo mais simples possível — resista ao impulso de montar tudo de uma vez. O objetivo das primeiras 2 semanas é entender a ferramenta funcionando de verdade, não impressionar ninguém.\n\n`,
   'testou-falhou': `Já que uma tentativa anterior não deu certo, o ponto de virada aqui é escopo: rode um único caso de uso ponta a ponta antes de expandir. A maioria das tentativas falha por tentar automatizar cedo demais, coisas demais.\n\n`,
@@ -355,6 +456,16 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
   const sinais = analisarSinais(p4, categoriaOriginal, overrideAtendimento);
   const { nivel: confianca, explicacao: confiancaExplicacao } = classificarConfianca(sinais);
 
+  const { forma, complementoLabel, formaMotivo } = classificarForma({
+    categoria,
+    confianca,
+    confiancaExplicacao,
+    jaUsa,
+    perfilExperiencia,
+    time: p2,
+    volume: p3,
+  });
+
   const conteudo = CONTEUDO[categoria];
 
   const contextoTime: Record<string, string> = {
@@ -425,5 +536,8 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
     pontePessoal,
     confianca,
     confiancaExplicacao,
+    forma,
+    complementoLabel,
+    formaMotivo,
   };
 }

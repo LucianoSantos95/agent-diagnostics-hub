@@ -1,6 +1,6 @@
-import type { Categoria, Perfil } from '../engine/recomendacao';
+import type { Categoria, Forma, Perfil } from '../engine/recomendacao';
 
-export type { Perfil };
+export type { Perfil, Forma };
 export { PERFIL_LABEL } from '../engine/recomendacao';
 
 export interface PassoPlaybook {
@@ -49,15 +49,27 @@ export interface IntegracaoPlaybook {
 
 export interface Playbook {
   geradoEm: string;
+  forma: Forma;
   perfil: Perfil;
   categoria: Categoria;
+  /** Título do documento (ex.: "Agente de Atendimento"). */
   tituloResultado: string;
-  /** Parágrafo de abertura, ciente do perfil. */
+  /** Headline da tela, direto e ciente da forma. */
+  headline: string;
+  /** 1 frase de porquê, abaixo do headline. */
+  subheadline: string;
+  /** Quando forma = 'ferramenta-mais-complemento': o que ligar. Vazio nas outras. */
+  complementoLabel: string;
+  /** 2–3 bullets curtos na tela — o passo a passo completo fica no PDF. */
+  resumoBullets: string[];
+  /** Parágrafo de abertura do PDF, ciente do perfil. */
   resumo: string;
   /** O que o usuário marcou que já usa (rótulos legíveis). */
   jaUsa: string[];
   pontoDePartida: FerramentaPlaybook;
+  /** Preenchido só quando a forma justifica mostrar alternativas. */
   alternativas: FerramentaPlaybook[];
+  /** 0 (uma-ferramenta / agente / validar) ou 1 (ferramenta-mais-complemento). */
   integracoes: IntegracaoPlaybook[];
   quandoEvoluir: string[];
   checklist: string[];

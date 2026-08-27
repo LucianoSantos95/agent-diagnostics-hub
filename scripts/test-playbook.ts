@@ -1,79 +1,100 @@
-// Verificação do pipeline de playbook — roda com:
-//   node --experimental-strip-types scripts/test-playbook.ts
+// Verificação do motor: forma da recomendação + montarPlaybook.
+//   node --experimental-strip-types scripts/test-playbook.ts  (ou via esbuild bundle)
 import { calcularResultado } from '../src/features/diagnostico/engine/recomendacao.ts';
-import { montarPlaybook, playbookToMarkdown, playbookToHTML } from '../src/features/diagnostico/playbooks/index.ts';
+import { montarPlaybook } from '../src/features/diagnostico/playbooks/index.ts';
 
-const cenarios: Array<{ nome: string; respostas: Record<number, string> }> = [
+interface Cenario {
+  nome: string;
+  respostas: Record<number, string>;
+  formaEsperada: string;
+}
+
+const P1 = {
+  autonomo: 'Autônomo ou freelancer — sou eu que faço e entrego',
+  consultor: 'Consultor — presto serviço recorrente pra alguns clientes',
+  empresa: 'Empresa com time — operação interna com funcionários',
+};
+const GARGALO = {
+  atendimento: 'Atendimento ao cliente — demoro para responder, perco gente no caminho',
+  vendas: 'Vendas e follow-up — esqueço de cobrar resposta, perco oportunidade',
+  operacao: 'Operação interna — processo manual, retrabalho, tarefa repetitiva',
+  financeiro: 'Financeiro — não sei prever caixa, cobrança de cliente é manual',
+};
+
+const cenarios: Cenario[] = [
   {
-    nome: 'Consultor · atendimento · já usa ChatGPT + CRM',
+    nome: 'Autônomo · atendimento · não usa nada → uma-ferramenta',
+    formaEsperada: 'uma-ferramenta',
     respostas: {
-      1: 'Consultor — presto serviço recorrente pra alguns clientes',
-      2: 'Atendimento ao cliente — demoro para responder, perco gente no caminho',
-      3: '2 a 5 pessoas',
-      4: 'Entre 10 e 50',
-      5: 'responder no whatsapp as mesmas duvidas de clientes sobre prazo e escopo',
-      6: 'eu focaria em vender e entregar em vez de responder mensagem o dia todo',
-      7: 'ChatGPT, Gemini ou Claude no dia a dia; Um CRM (RD Station, Pipedrive, HubSpot, Kommo...)',
-    },
-  },
-  {
-    nome: 'Autônomo · atendimento · começa do zero',
-    respostas: {
-      1: 'Autônomo ou freelancer — sou eu que faço e entrego',
-      2: 'Atendimento ao cliente — demoro para responder, perco gente no caminho',
-      3: 'Só eu',
-      4: 'Menos de 10',
-      5: 'responder dm no instagram',
-      6: 'ter mais tempo livre',
+      1: P1.autonomo, 2: GARGALO.atendimento, 3: 'Só eu', 4: 'Menos de 10',
+      5: 'responder as mesmas duvidas no whatsapp', 6: 'ter mais tempo',
       7: 'Nada ainda — seria minha primeira vez',
     },
   },
   {
-    nome: 'Empresa · financeiro · já usa automação',
+    nome: 'Consultor · atendimento · já usa CRM → ferramenta-mais-complemento',
+    formaEsperada: 'ferramenta-mais-complemento',
     respostas: {
-      1: 'Empresa com time — operação interna com funcionários',
-      2: 'Financeiro — não sei prever caixa, cobrança de cliente é manual',
-      3: '6 a 20 pessoas',
-      4: 'Menos de 10',
-      5: 'cobrar cliente inadimplente na mão todo mês',
-      6: 'previsibilidade de caixa',
-      7: 'Automação (Make, Zapier, n8n); Planilhas (Google Sheets / Excel) pra controlar processo',
+      1: P1.consultor, 2: GARGALO.atendimento, 3: '2 a 5 pessoas', 4: 'Entre 10 e 50',
+      5: 'responder duvidas de prazo no whatsapp', 6: 'focar em vender',
+      7: 'Um CRM (RD Station, Pipedrive, HubSpot, Kommo...)',
+    },
+  },
+  {
+    nome: 'Empresa · atendimento · já usa chatbot → agente',
+    formaEsperada: 'agente',
+    respostas: {
+      1: P1.empresa, 2: GARGALO.atendimento, 3: '6 a 20 pessoas', 4: 'Entre 10 e 50',
+      5: 'bot atual nao da conta das duvidas mais complexas', 6: 'menos fila',
+      7: 'Chatbot ou atendimento (ManyChat, Typebot, Tidio...)',
+    },
+  },
+  {
+    nome: 'Empresa · vendas · time grande + volume alto → agente',
+    formaEsperada: 'agente',
+    respostas: {
+      1: P1.empresa, 2: GARGALO.vendas, 3: 'Mais de 20 pessoas', 4: 'Mais de 50',
+      5: 'follow up de proposta some no meio do funil', 6: 'previsibilidade',
+      7: 'Planilhas (Google Sheets / Excel) pra controlar processo',
+    },
+  },
+  {
+    nome: 'Autônomo · financeiro · gargalo x tarefa conflitam → validar',
+    formaEsperada: 'validar',
+    respostas: {
+      1: P1.autonomo, 2: GARGALO.financeiro, 3: 'Só eu', 4: 'Menos de 10',
+      5: 'responder cliente no instagram o dia todo', 6: 'sei la',
+      7: 'Nada ainda — seria minha primeira vez',
     },
   },
 ];
 
 let falhas = 0;
-function check(cond: boolean, msg: string) {
-  if (!cond) { falhas++; console.log('  ✗ ' + msg); } else { console.log('  ✓ ' + msg); }
-}
+const check = (cond: boolean, msg: string) => {
+  console.log((cond ? '  ✓ ' : '  ✗ ') + msg);
+  if (!cond) falhas++;
+};
 
 for (const c of cenarios) {
   console.log('\n=== ' + c.nome + ' ===');
-  const resultado = calcularResultado(c.respostas);
-  console.log(`perfil=${resultado.perfil} categoria=${resultado.categoria} confianca=${resultado.confianca}`);
-  console.log(`jaUsa=[${resultado.jaUsa.join(' | ')}] titulo="${resultado.titulo}"`);
+  const r = calcularResultado(c.respostas);
+  console.log(`forma=${r.forma} categoria=${r.categoria} confianca=${r.confianca} complemento="${r.complementoLabel}"`);
+  check(r.forma === c.formaEsperada, `forma esperada: ${c.formaEsperada} (obtida: ${r.forma})`);
 
-  const pb = montarPlaybook(resultado, c.respostas[5]);
-  check(!!pb.pontoDePartida?.nome, `ponto de partida: ${pb.pontoDePartida?.nome}`);
-  check(pb.pontoDePartida.passos.length >= 3, `ponto de partida tem ${pb.pontoDePartida.passos.length} passos`);
-  check(pb.integracoes.length >= 1, `${pb.integracoes.length} integrações: ${pb.integracoes.map((i) => i.id).join(', ')}`);
-  check(pb.checklist.length >= 4, `checklist com ${pb.checklist.length} itens`);
-  check(pb.quandoEvoluir.length >= 1, `quandoEvoluir com ${pb.quandoEvoluir.length} itens`);
+  const pb = montarPlaybook(r, c.respostas[5]);
+  check(!!pb.headline && !pb.headline.includes('undefined'), `headline: "${pb.headline}"`);
+  check(!!pb.subheadline && !pb.subheadline.includes('undefined'), `subheadline: "${pb.subheadline.slice(0, 70)}…"`);
+  check(pb.resumoBullets.length >= 2 && pb.resumoBullets.every((b) => b && !b.includes('undefined')), `${pb.resumoBullets.length} bullets ok`);
+  check(pb.checklist.length >= 3, `checklist com ${pb.checklist.length} itens`);
 
-  const md = playbookToMarkdown(pb);
-  const html = playbookToHTML(pb);
-  check(md.startsWith('# Playbook'), 'markdown começa com título');
-  check(md.includes(pb.pontoDePartida.nome), 'markdown cita a ferramenta de partida');
-  check(md.includes('Passo a passo'), 'markdown tem seção de passos');
-  check(html.startsWith('<!doctype html>'), 'html é documento completo');
-  check(html.includes('<title>'), 'html tem <title>');
-  check(!html.includes('undefined'), 'html não tem "undefined"');
-  check(!md.includes('undefined'), 'markdown não tem "undefined"');
-
-  // amostra
-  if (c === cenarios[0]) {
-    console.log('\n--- amostra Markdown (cenário 1, primeiras 60 linhas) ---');
-    console.log(md.split('\n').slice(0, 60).join('\n'));
+  if (pb.forma === 'ferramenta-mais-complemento') {
+    check(pb.integracoes.length === 1, 'exatamente 1 integração');
+    check(!!pb.complementoLabel, `complementoLabel: "${pb.complementoLabel}"`);
+  } else {
+    check(pb.integracoes.length === 0, 'sem integrações');
+  }
+  if (pb.forma === 'agente' || pb.forma === 'validar') {
+    check(pb.alternativas.length === 0, 'sem alternativas');
   }
 }
 

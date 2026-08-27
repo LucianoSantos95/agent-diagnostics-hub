@@ -6,6 +6,9 @@ verify_jwt = true
 [functions.enviar-diagnostico]
 verify_jwt = false
 
+[functions.gerar-playbook-pdf]
+verify_jwt = false
+
 [functions.diagnostico-progress]
 verify_jwt = false
 

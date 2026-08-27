@@ -110,8 +110,8 @@ export function useDiagnostico() {
     setState(s => ({ ...s, resultado, tela: 'resultado' }));
   }, []);
 
-  const registrarPlaybook = useCallback(async (formato: 'md' | 'html') => {
-    await progress({ action: 'playbook_download', session_id: sessionIdRef.current, formato });
+  const registrarPlaybook = useCallback(async () => {
+    await progress({ action: 'playbook_download', session_id: sessionIdRef.current, formato: 'pdf' });
   }, []);
 
   const salvarEmail = useCallback(async (email: string) => {
