@@ -237,8 +237,12 @@ export default function TelaResultado({
           playbook={playbook}
           sessionId={sessionId}
           onBaixar={onRegistrarPlaybook}
-          onSalvarEmail={onSalvarEmail}
+          onSalvarEmail={handleSalvarEmail}
         />
+
+        {/* FEEDBACK — aparece logo após o e-mail ser informado */}
+        {emailCapturado && <CaixaFeedback email={emailCapturado} />}
+
 
         {/* CTA — copy adapta à forma */}
         <CTAComercial forma={playbook.forma} onRegistrarCTA={onRegistrarCTA} />
