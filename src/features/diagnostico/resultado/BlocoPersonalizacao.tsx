@@ -13,12 +13,12 @@ export default function BlocoPersonalizacao({ tarefaP4, categoria }: Props) {
   if (!tarefaP4.trim()) return null;
   return (
     <div className="rounded-xl px-5 py-4 border"
-      style={{ background: "rgba(79,70,229,0.1)", borderColor: "rgba(79,70,229,0.25)" }}>
-      <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#a5b4fc" }}>
-        Personalizado para voce
+      style={{ background: "var(--accent-soft)", borderColor: "var(--accent-border)" }}>
+      <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text-accent)" }}>
+        Personalizado para você
       </p>
-      <p className="text-sm leading-relaxed" style={{ color: "#bfdbfe" }}>
-        Voce mencionou: <span className="font-semibold text-white">"{tarefaP4}"</span>. {CONEXAO[categoria]}
+      <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+        Você mencionou: <span className="font-semibold" style={{ color: "var(--text-primary)" }}>"{tarefaP4}"</span>. {CONEXAO[categoria]}
       </p>
     </div>
   );

@@ -25,11 +25,13 @@ export default defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: ({ categoria }) => {
     const resultado = calcularResultado({
-      1: GARGALO_POR_CATEGORIA[categoria],
-      2: "2 a 5 pessoas",
-      3: "Entre 10 e 50",
-      4: "tarefas repetitivas",
-      5: "Não, nunca tentei",
+      1: "Empresa com time — operação interna com funcionários",
+      2: GARGALO_POR_CATEGORIA[categoria],
+      3: "2 a 5 pessoas",
+      4: "Entre 10 e 50",
+      5: "tarefas repetitivas",
+      6: "",
+      7: "Nada ainda — seria minha primeira vez",
     });
     const payload = {
       categoria,

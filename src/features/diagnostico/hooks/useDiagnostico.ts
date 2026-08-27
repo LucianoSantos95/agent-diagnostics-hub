@@ -18,12 +18,28 @@ function gerarSessionId() {
 }
 
 async function criarSessao(sessionId: string) {
-  const utmSource = new URLSearchParams(window.location.search).get('utm_source') ?? undefined;
-  await supabase.from('diagnostico_sessions').insert({
-    id: sessionId,
-    utm_source: utmSource ?? null,
-    current_step: 0,
-  });
+  const params = new URLSearchParams(window.location.search);
+  const ref = (() => {
+    try {
+      return document.referrer ? new URL(document.referrer).hostname : null;
+    } catch {
+      return null;
+    }
+  })();
+  // Fire-and-forget: a criação da sessão nunca deve travar a entrada no quiz.
+  await supabase
+    .from('diagnostico_sessions')
+    .insert({
+      id: sessionId,
+      utm_source: params.get('utm_source'),
+      utm_medium: params.get('utm_medium'),
+      utm_campaign: params.get('utm_campaign'),
+      utm_content: params.get('utm_content'),
+      referrer: ref,
+      landing_path: window.location.pathname || '/',
+      current_step: 0,
+    })
+    .then(null, () => null);
 }
 
 async function progress(body: Record<string, unknown>) {
@@ -41,7 +57,7 @@ async function finalizarSessao(sessionId: string, categoria: string) {
   await progress({ action: 'session_finalize', session_id: sessionId, categoria_resultado: categoria });
 }
 
-const TOTAL_PERGUNTAS = 6;
+const TOTAL_PERGUNTAS = 7;
 
 export function useDiagnostico() {
   const sessionIdRef = useRef<string>(gerarSessionId());
@@ -90,7 +106,12 @@ export function useDiagnostico() {
   const concluirAnalise = useCallback(async (respostas: Record<number, string>) => {
     const resultado = calcularResultado(respostas);
     await finalizarSessao(sessionIdRef.current, resultado.categoria).catch(() => null);
+    progress({ action: 'resultado_visto', session_id: sessionIdRef.current }).catch(() => null);
     setState(s => ({ ...s, resultado, tela: 'resultado' }));
+  }, []);
+
+  const registrarPlaybook = useCallback(async (formato: 'md' | 'html') => {
+    await progress({ action: 'playbook_download', session_id: sessionIdRef.current, formato });
   }, []);
 
   const salvarEmail = useCallback(async (email: string) => {
@@ -128,6 +149,7 @@ export function useDiagnostico() {
     salvarEmail,
     salvarOrcamento,
     registrarCTA,
+    registrarPlaybook,
     reiniciar,
   };
 }

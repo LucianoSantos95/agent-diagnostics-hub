@@ -62,7 +62,7 @@ const webAppSchema = {
   operatingSystem: 'Web',
   inLanguage: 'pt-BR',
   description:
-    'Ferramenta gratuita de 6 perguntas que diagnostica qual tipo de agente de IA uma pequena ou média empresa deve implementar primeiro: atendimento, vendas, operação ou financeiro.',
+    'Ferramenta gratuita de 7 perguntas que diagnostica qual frente de IA você deve montar primeiro — atendimento, vendas, operação ou financeiro — e entrega um playbook com o passo a passo. Para autônomo, consultor, agência ou empresa.',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
   provider: { '@type': 'Organization', name: 'Focus Indica', url: 'https://focusinteligente.com.br' },
 }
@@ -74,10 +74,10 @@ export default function DiagnosticoPage() {
         <title>Diagnóstico de Agente de IA — Grátis em 2 Minutos</title>
         <meta
           name="description"
-          content="6 perguntas para descobrir qual agente de IA sua PME precisa: atendimento, vendas, operação ou financeiro. Grátis, sem cadastro."
+          content="7 perguntas para descobrir qual frente de IA montar primeiro (atendimento, vendas, operação ou financeiro) — com playbook pra baixar. Grátis, sem cadastro."
         />
         <meta property="og:title" content="Diagnóstico de Agente de IA — Grátis em 2 Minutos" />
-        <meta property="og:description" content="6 perguntas para descobrir qual agente de IA sua PME precisa: atendimento, vendas, operação ou financeiro. Grátis, sem cadastro." />
+        <meta property="og:description" content="7 perguntas para descobrir qual frente de IA montar primeiro (atendimento, vendas, operação ou financeiro) — com playbook pra baixar. Grátis, sem cadastro." />
         <meta property="og:url" content={`${SITE}/`} />
         <link rel="canonical" href={`${SITE}/`} />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>

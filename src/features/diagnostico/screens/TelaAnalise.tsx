@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import PageBackground from '@/components/PageBackground';
 
-const MENSAGENS = [
-  'Lendo suas respostas...',
-  'Cruzando com seu gargalo principal...',
-  'Identificando a categoria certa...',
-  'Quase lá...',
+// Passos reais do que acontece aqui: classificar a frente + montar o playbook.
+const PASSOS = [
+  'Analisando suas respostas',
+  'Definindo a frente prioritária',
+  'Montando seu playbook',
 ];
 
-const DURACAO_TOTAL = 3600;
+// Curto e honesto. Timer-based (não requestAnimationFrame) pra não travar
+// se a aba perder o foco — o onConcluir SEMPRE dispara no prazo.
+const DURACAO_MS = 1100;
 
 interface Props {
   respostas: Record<number, string>;
@@ -16,133 +19,93 @@ interface Props {
 }
 
 export default function TelaAnalise({ respostas, onConcluir }: Props) {
+  const prefersReduced = useReducedMotion();
   const [etapa, setEtapa] = useState(0);
-  const [progresso, setProgresso] = useState(0);
+  const [preencheu, setPreencheu] = useState(false);
+  const doneRef = useRef(false);
 
   useEffect(() => {
-    const inicio = performance.now();
-    let rafId: number;
+    if (doneRef.current) return;
+    const total = prefersReduced ? 250 : DURACAO_MS;
+    const passoMs = total / PASSOS.length;
 
-    const tick = (agora: number) => {
-      const elapsed = agora - inicio;
-      const pct = Math.min(elapsed / DURACAO_TOTAL, 1);
-      setProgresso(pct);
-      setEtapa(Math.min(Math.floor(pct * MENSAGENS.length), MENSAGENS.length - 1));
+    // dispara a transição do anel no próximo frame lógico
+    const t0 = window.setTimeout(() => setPreencheu(true), 30);
+    const passos = PASSOS.map((_, i) =>
+      window.setTimeout(() => setEtapa(i), Math.round(passoMs * i)),
+    );
+    const fim = window.setTimeout(() => {
+      doneRef.current = true;
+      onConcluir(respostas);
+    }, total);
 
-      if (pct < 1) {
-        rafId = requestAnimationFrame(tick);
-      } else {
-        setTimeout(() => onConcluir(respostas), 300);
-      }
+    return () => {
+      clearTimeout(t0);
+      passos.forEach(clearTimeout);
+      clearTimeout(fim);
     };
+  }, [respostas, onConcluir, prefersReduced]);
 
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, [respostas, onConcluir]);
-
-  const circunferencia = 2 * Math.PI * 44;
-  const offset = circunferencia * (1 - progresso);
+  const circ = 2 * Math.PI * 44;
 
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
       style={{ paddingTop: '60px' }}
+      role="status"
+      aria-live="polite"
     >
       <PageBackground />
 
       <div className="relative z-10 flex flex-col items-center gap-8 max-w-sm w-full">
-
-        {/* Ring + núcleo orbital */}
         <div className="relative w-40 h-40">
-          {/* Halo ambiente */}
           <div
             className="absolute inset-0 rounded-full blur-2xl opacity-70"
             style={{ background: 'radial-gradient(circle, rgba(79,70,229,0.45) 0%, transparent 65%)' }}
           />
-          {/* Anel de progresso */}
           <svg viewBox="0 0 100 100" className="relative w-full h-full -rotate-90">
-            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
+            <circle cx="50" cy="50" r="44" fill="none" stroke="var(--border-soft)" strokeWidth="2.5" />
             <circle
               cx="50" cy="50" r="44"
               fill="none"
               stroke="url(#ring-grad)"
               strokeWidth="2.5"
               strokeLinecap="round"
-              strokeDasharray={circunferencia}
-              strokeDashoffset={offset}
-              style={{ transition: 'stroke-dashoffset 0.08s linear', filter: 'drop-shadow(0 0 6px rgba(79,70,229,0.6))' }}
+              strokeDasharray={circ}
+              strokeDashoffset={preencheu ? 0 : circ}
+              style={{
+                transition: `stroke-dashoffset ${prefersReduced ? 0 : DURACAO_MS}ms linear`,
+                filter: 'drop-shadow(0 0 6px var(--accent-glow))',
+              }}
             />
             <defs>
               <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#4f46e5" />
-                <stop offset="100%" stopColor="#a5b4fc" />
+                <stop offset="0%" stopColor="var(--accent)" />
+                <stop offset="100%" stopColor="var(--text-accent)" />
               </linearGradient>
             </defs>
           </svg>
-
-          {/* Núcleo geométrico orbital — DNA da TelaAbertura */}
-          <svg
-            viewBox="0 0 100 100"
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            aria-hidden="true"
-          >
-            <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(165,180,252,0.25)" strokeWidth="0.4" strokeDasharray="1 3" className="animate-spin" style={{ animationDuration: '18s', transformOrigin: '50% 50%' }} />
-            <circle cx="50" cy="50" r="26" fill="none" stroke="rgba(165,180,252,0.35)" strokeWidth="0.4" />
-            <circle cx="50" cy="50" r="18" fill="none" stroke="rgba(165,180,252,0.28)" strokeWidth="0.4" strokeDasharray="2 2" className="animate-spin" style={{ animationDuration: '9s', animationDirection: 'reverse', transformOrigin: '50% 50%' }} />
-            {/* Órbita marcadores */}
-            <circle cx="50" cy="16" r="1.2" fill="#a5b4fc">
-              <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="6s" repeatCount="indefinite" />
-            </circle>
-            <circle cx="76" cy="50" r="0.9" fill="#c4b5fd">
-              <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="-360 50 50" dur="9s" repeatCount="indefinite" />
-            </circle>
-          </svg>
-
-          {/* Percentual central */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="font-display text-2xl font-extrabold text-white tabular-nums tracking-tight">
-              {Math.round(progresso * 100)}
-              <span className="text-sm font-semibold text-indigo-200/70 ml-0.5">%</span>
-            </span>
-          </div>
         </div>
 
-        {/* Messages */}
-        <div className="text-center h-12 flex items-center justify-center overflow-hidden">
-          {MENSAGENS.map((msg, i) => (
-            <p
-              key={msg}
-              className="text-base font-medium transition-all duration-400"
-              style={{
-                color: '#c7d2fe',
-                position: i === etapa ? 'relative' : 'absolute',
-                opacity: i === etapa ? 1 : 0,
-                transform: i === etapa ? 'translateY(0)' : 'translateY(8px)',
-                pointerEvents: i === etapa ? 'auto' : 'none',
-              }}
-            >
-              {msg}
-            </p>
-          ))}
+        <div className="text-center h-8 flex items-center justify-center overflow-hidden">
+          <p key={etapa} className="text-base font-medium animate-fade-up" style={{ color: 'var(--text-secondary)' }}>
+            {PASSOS[etapa]}…
+          </p>
         </div>
 
-        {/* Steps */}
         <div className="flex gap-2">
-          {MENSAGENS.map((_, i) => (
+          {PASSOS.map((_, i) => (
             <div
               key={i}
-              className="rounded-full transition-all duration-500"
+              className="rounded-full transition-all duration-300"
               style={{
                 width: i === etapa ? 20 : 6,
                 height: 6,
-                background: i <= etapa
-                  ? 'linear-gradient(90deg, #4f46e5, #a5b4fc)'
-                  : 'rgba(255,255,255,0.1)',
+                background: i <= etapa ? 'linear-gradient(90deg, var(--accent), var(--text-accent))' : 'var(--border-soft)',
               }}
             />
           ))}
         </div>
-
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 //
 // Payload:
 //   { action: 'session_step' | 'session_finalize' | 'resposta_upsert'
+//           | 'resultado_visto' | 'playbook_download'
 //           | 'lead_email' | 'lead_orcamento' | 'lead_cta',
 //     session_id: string,
 //     ...fields }
@@ -65,6 +66,27 @@ Deno.serve(async (req) => {
         if (error) throw error;
         return json({ ok: true });
       }
+      case 'resultado_visto': {
+        const { error } = await supabase
+          .from('diagnostico_sessions')
+          .update({ resultado_visto_at: new Date().toISOString() })
+          .eq('id', session_id)
+          .is('resultado_visto_at', null);
+        if (error) throw error;
+        return json({ ok: true });
+      }
+      case 'playbook_download': {
+        const formato = String(body.formato ?? '').slice(0, 16) || null;
+        const { error } = await supabase
+          .from('diagnostico_sessions')
+          .update({
+            playbook_baixado_at: new Date().toISOString(),
+            playbook_formato: formato,
+          })
+          .eq('id', session_id);
+        if (error) throw error;
+        return json({ ok: true });
+      }
       case 'resposta_upsert': {
         const pergunta = Number(body.pergunta_numero);
         const valor = String(body.resposta_valor ?? '').slice(0, 4000);
@@ -90,8 +112,12 @@ Deno.serve(async (req) => {
         return json({ ok: true });
       }
       case 'lead_orcamento': {
-        // orcamento is captured for analytics but not persisted as a dedicated
-        // column yet; store it in nome-adjacent metadata via a no-op success.
+        const orcamento = String(body.orcamento ?? '').trim().slice(0, 120);
+        if (!orcamento) return json({ error: 'invalid_orcamento' }, 400);
+        const { error } = await supabase
+          .from('diagnostico_leads')
+          .upsert({ session_id, orcamento }, { onConflict: 'session_id' });
+        if (error) throw error;
         return json({ ok: true });
       }
       case 'lead_cta': {

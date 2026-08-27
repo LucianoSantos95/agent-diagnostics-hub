@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import CaseRealDialog from '@/components/CaseRealDialog';
 import FeedbackDialog from '@/components/FeedbackDialog';
 import { MessageSquarePlus, ArrowRight, Check, MessageCircle, TrendingUp, Settings, DollarSign } from 'lucide-react';
 import ConteudoSEO from './ConteudoSEO';
+import { EASE_OUT } from '@/lib/motion';
 
 interface Props {
   onIniciar: () => void;
@@ -16,6 +18,7 @@ const CATEGORIAS = [
 ];
 
 export default function TelaAbertura({ onIniciar }: Props) {
+  const prefersReduced = useReducedMotion();
   const [visivel, setVisivel] = useState(false);
   const [caseOpen, setCaseOpen] = useState(false);
   const [fbOpen, setFbOpen] = useState(false);
@@ -63,15 +66,15 @@ export default function TelaAbertura({ onIniciar }: Props) {
               Descubra qual{' '}
               <span
                 style={{
-                  background: 'linear-gradient(90deg, #4f46e5 0%, #a5b4fc 100%)',
+                  background: 'linear-gradient(90deg, var(--accent) 0%, var(--text-accent) 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
                 }}
               >
-                Agente de IA
+                ferramenta de IA
               </span>{' '}
-              sua empresa exige.
+              começar a usar hoje.
             </h1>
 
             {/* Sub */}
@@ -81,8 +84,9 @@ export default function TelaAbertura({ onIniciar }: Props) {
               }`}
               style={{ color: 'var(--text-secondary)', transitionDelay: '160ms' }}
             >
-              Um diagnóstico técnico de 2 minutos para mapear gargalos e recomendar a
-              automação ideal para Atendimento, Vendas, Operação ou Financeiro.
+              Um diagnóstico de 2 minutos que mapeia seu gargalo — atendimento, vendas,
+              operação ou financeiro — e devolve um playbook com o passo a passo pra montar,
+              seja você autônomo, consultor, agência ou empresa com time.
             </p>
 
             {/* Feature bullets */}
@@ -93,8 +97,8 @@ export default function TelaAbertura({ onIniciar }: Props) {
               style={{ transitionDelay: '240ms' }}
             >
               {[
-                { t: 'Relatório consultivo', d: 'Recomendação baseada no gargalo real da sua operação.' },
-                { t: 'Diagnóstico gratuito', d: 'Sem cadastro. 6 perguntas. Resultado imediato.' },
+                { t: 'Playbook pra baixar', d: 'Passo a passo real: setup, integração por API/MCP e checklist.' },
+                { t: 'Diagnóstico gratuito', d: 'Sem cadastro. 7 perguntas. Resultado imediato.' },
               ].map((f) => (
                 <div key={f.t} className="flex items-start gap-3">
                   <div
@@ -122,27 +126,26 @@ export default function TelaAbertura({ onIniciar }: Props) {
               }`}
               style={{ transitionDelay: '320ms' }}
             >
-              <button
+              <motion.button
                 onClick={onIniciar}
-                className="group relative w-full sm:w-auto px-8 py-4 rounded-xl overflow-hidden font-display font-bold text-white transition-all duration-300"
+                className="group relative w-full sm:w-auto px-8 py-4 rounded-xl overflow-hidden font-display font-bold"
                 style={{
                   background: 'var(--accent)',
+                  color: 'var(--accent-contrast)',
                   boxShadow: '0 0 30px var(--accent-glow)',
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                    '0 0 50px var(--accent-glow), 0 0 80px rgba(79,70,229,0.25)';
+                whileHover={prefersReduced ? undefined : {
+                  boxShadow: '0 0 50px var(--accent-glow), 0 0 80px rgba(79,70,229,0.25)',
                 }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 30px var(--accent-glow)';
-                }}
+                whileTap={prefersReduced ? undefined : { scale: 0.98 }}
+                transition={{ duration: 0.3, ease: EASE_OUT }}
               >
                 <span className="relative z-10 flex items-center justify-center gap-3">
                   Iniciar diagnóstico agora
                   <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              </button>
+              </motion.button>
 
               <p
                 className="mt-5 text-[10px] uppercase tracking-[0.2em] font-medium"
@@ -252,7 +255,7 @@ export default function TelaAbertura({ onIniciar }: Props) {
             >
               <div
                 className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full"
-                style={{ background: '#a5b4fc', boxShadow: '0 0 10px #a5b4fc' }}
+                style={{ background: 'var(--text-accent)', boxShadow: '0 0 10px var(--text-accent)' }}
               />
             </div>
 
@@ -319,7 +322,7 @@ export default function TelaAbertura({ onIniciar }: Props) {
             className="absolute inset-0 pointer-events-none opacity-[0.04]"
             style={{
               backgroundImage:
-                'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
+                'linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)',
               backgroundSize: '40px 40px',
             }}
           />

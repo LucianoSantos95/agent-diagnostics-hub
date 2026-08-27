@@ -16,7 +16,7 @@ export default function CombinacoesLogicas({ categoria, corTexto, tarefaP4 }: Pr
         <p className="text-xs font-bold uppercase tracking-widest" style={{ color: corTexto }}>
           Combinações lógicas · como as peças se encaixam
         </p>
-        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+        <div className="flex-1 h-px" style={{ background: 'var(--border-hairline)' }} />
       </div>
       <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
         Uma ferramenta sozinha resolve pouco. Aqui estão 3 fluxos prontos mostrando como agente + automação + IA geral se conectam pra virar resultado.
@@ -24,7 +24,7 @@ export default function CombinacoesLogicas({ categoria, corTexto, tarefaP4 }: Pr
       {p4 && (
         <p
           className="text-xs mb-3 px-3 py-2 rounded-lg border"
-          style={{ color: '#a5b4fc', background: 'rgba(79,70,229,0.08)', borderColor: 'rgba(79,70,229,0.22)' }}
+          style={{ color: 'var(--text-accent)', background: 'var(--accent-soft)', borderColor: 'var(--accent-chip-border)' }}
         >
           <span className="font-mono font-bold uppercase tracking-widest text-[10px] mr-2">No seu caso</span>
           "{p4.length > 100 ? `${p4.slice(0, 100).trimEnd()}…` : p4}" — pelo menos um destes fluxos resolve exatamente esse padrão.
@@ -37,17 +37,17 @@ export default function CombinacoesLogicas({ categoria, corTexto, tarefaP4 }: Pr
             key={c.titulo}
             className="rounded-2xl p-5 border"
             style={{
-              background: 'linear-gradient(135deg, rgba(79,70,229,0.06), rgba(129,140,248,0.03))',
-              borderColor: 'rgba(79,70,229,0.22)',
+              background: 'var(--accent-soft)',
+              borderColor: 'var(--accent-chip-border)',
             }}
           >
             <div className="flex items-center gap-2 mb-2">
               <span
                 className="text-[10px] font-mono font-bold px-2 py-0.5 rounded"
                 style={{
-                  background: 'rgba(79,70,229,0.2)',
-                  color: '#a5b4fc',
-                  border: '1px solid rgba(79,70,229,0.35)',
+                  background: 'var(--accent-chip-bg)',
+                  color: 'var(--text-accent)',
+                  border: '1px solid var(--accent-chip-border)',
                 }}
               >
                 FLUXO {String(idx + 1).padStart(2, '0')}
@@ -67,15 +67,15 @@ export default function CombinacoesLogicas({ categoria, corTexto, tarefaP4 }: Pr
                   <span
                     className="text-xs font-semibold px-2.5 py-1 rounded-lg"
                     style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.1)',
+                      background: 'var(--card)',
+                      border: '1px solid var(--border-soft)',
                       color: 'var(--text-primary)',
                     }}
                   >
                     {passo}
                   </span>
                   {i < c.fluxo.length - 1 && (
-                    <span style={{ color: '#818cf8', fontWeight: 700 }}>→</span>
+                    <span style={{ color: 'var(--text-accent)', fontWeight: 700 }}>→</span>
                   )}
                 </span>
               ))}
@@ -83,7 +83,7 @@ export default function CombinacoesLogicas({ categoria, corTexto, tarefaP4 }: Pr
 
             <p
               className="text-[11px] font-mono uppercase tracking-widest"
-              style={{ color: '#818cf8' }}
+              style={{ color: 'var(--text-accent)' }}
             >
               Pra quem: <span className="normal-case tracking-normal font-sans" style={{ color: 'var(--text-muted)', fontSize: 12 }}>{c.paraQuem}</span>
             </p>

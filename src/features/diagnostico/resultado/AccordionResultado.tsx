@@ -8,7 +8,7 @@ function renderInline(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/);
   return parts.map((p, i) =>
     p.startsWith('**') && p.endsWith('**')
-      ? <strong key={i} style={{ color: '#e2e8f0', fontWeight: 600 }}>{p.slice(2, -2)}</strong>
+      ? <strong key={i} style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{p.slice(2, -2)}</strong>
       : p
   );
 }
@@ -25,7 +25,7 @@ function renderMarkdown(text: string) {
       <ul key={result.length} style={{ listStyle: 'none', padding: 0, margin: '6px 0 0 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
         {bullets.map((b, i) => (
           <li key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-            <span style={{ color: '#a5b4fc', flexShrink: 0, marginTop: 1 }}>•</span>
+            <span style={{ color: 'var(--text-accent)', flexShrink: 0, marginTop: 1 }}>•</span>
             <span>{renderInline(b)}</span>
           </li>
         ))}
@@ -40,7 +40,7 @@ function renderMarkdown(text: string) {
       <ol key={result.length} style={{ listStyle: 'none', padding: 0, margin: '6px 0 0 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {numbered.map((n, i) => (
           <li key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <span style={{ color: '#a5b4fc', flexShrink: 0, fontWeight: 700, minWidth: 20 }}>{i + 1}.</span>
+            <span style={{ color: 'var(--text-accent)', flexShrink: 0, fontWeight: 700, minWidth: 20 }}>{i + 1}.</span>
             <span style={{ lineHeight: 1.55 }}>{renderInline(n)}</span>
           </li>
         ))}
@@ -80,18 +80,18 @@ export default function AccordionResultado({ itens }: Props) {
           key={i}
           className="rounded-xl overflow-hidden border transition-all duration-200"
           style={{
-            background: aberto === i ? 'rgba(79,70,229,0.08)' : 'rgba(255,255,255,0.04)',
-            borderColor: aberto === i ? 'rgba(79,70,229,0.35)' : 'rgba(255,255,255,0.08)',
+            background: aberto === i ? 'var(--accent-soft)' : 'var(--card)',
+            borderColor: aberto === i ? 'var(--accent-border)' : 'var(--border-soft)',
           }}
         >
           <button
             onClick={() => setAberto(aberto === i ? null : i)}
             className="w-full flex items-center justify-between px-5 py-4 text-left"
           >
-            <span className="text-sm font-semibold text-white">{item.titulo}</span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{item.titulo}</span>
             <span
               className="text-sm flex-shrink-0 ml-2 transition-transform duration-300"
-              style={{ transform: aberto === i ? 'rotate(180deg)' : 'rotate(0deg)', color: '#a5b4fc' }}
+              style={{ transform: aberto === i ? 'rotate(180deg)' : 'rotate(0deg)', color: 'var(--text-accent)' }}
             >
               ▾
             </span>
@@ -106,7 +106,7 @@ export default function AccordionResultado({ itens }: Props) {
           >
             <div
               className="px-5 pb-5 pt-1 text-sm leading-relaxed border-t"
-              style={{ color: '#94a3b8', borderColor: 'rgba(255,255,255,0.07)' }}
+              style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-hairline)' }}
             >
               {renderMarkdown(item.conteudo)}
             </div>

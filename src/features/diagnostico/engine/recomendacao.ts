@@ -2,6 +2,27 @@ export type Categoria = 'atendimento' | 'vendas' | 'operacao' | 'financeiro';
 export type PerfilExperiencia = 'iniciante' | 'testou-falhou' | 'ja-usa';
 export type Confianca = 'alta' | 'media' | 'baixa';
 
+/** Como a pessoa trabalha — define vocabulário e ranqueamento das ferramentas. */
+export type Perfil = 'autonomo' | 'consultor' | 'agencia' | 'empresa';
+
+export const PERFIL_LABEL: Record<Perfil, string> = {
+  autonomo: 'autônomo / freelancer',
+  consultor: 'consultor',
+  agencia: 'agência',
+  empresa: 'empresa com time',
+};
+
+const PERFIL_MAP: Record<string, Perfil> = {
+  'Autônomo ou freelancer — sou eu que faço e entrego': 'autonomo',
+  'Consultor — presto serviço recorrente pra alguns clientes': 'consultor',
+  'Agência — tenho um time entregando pra vários clientes': 'agencia',
+  'Empresa com time — operação interna com funcionários': 'empresa',
+};
+
+export function classificarPerfil(resposta: string): Perfil {
+  return PERFIL_MAP[resposta] ?? 'empresa';
+}
+
 export interface Ferramenta {
   nome: string;
   url: string;
@@ -21,6 +42,9 @@ export interface ResultadoDiagnostico {
   errosComuns: string;
   avisoToolsGenericas: boolean;
   perfilExperiencia: PerfilExperiencia;
+  perfil: Perfil;
+  perfilLabel: string;
+  jaUsa: string[];
   metaTresMeses: string;
   pontePessoal: string;
   confianca: Confianca;
@@ -33,6 +57,9 @@ type ConteudoBase = Omit<
   | 'porque'
   | 'avisoToolsGenericas'
   | 'perfilExperiencia'
+  | 'perfil'
+  | 'perfilLabel'
+  | 'jaUsa'
   | 'metaTresMeses'
   | 'pontePessoal'
   | 'confianca'
@@ -188,10 +215,21 @@ function truncar(texto: string, max: number): string {
   return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}…` : limpo;
 }
 
-function classificarPerfil(p5: string): PerfilExperiencia {
-  if (p5 === 'Sim, testei mas não deu certo') return 'testou-falhou';
-  if (p5 === 'Sim, uso algo hoje mas quero melhorar') return 'ja-usa';
-  return 'iniciante';
+/** Deriva o nível de experiência a partir do que a pessoa marcou que já usa. */
+function classificarExperiencia(jaUsaRaw: string): PerfilExperiencia {
+  const s = (jaUsaRaw ?? '').toLowerCase();
+  if (/n[aã]o engatou|testei.*n[aã]o|desisti/.test(s)) return 'testou-falhou';
+  if (!s.trim() || /nada ainda|primeira vez/.test(s)) return 'iniciante';
+  return 'ja-usa';
+}
+
+/** Quebra a resposta multi-seleção "o que já usa" numa lista de rótulos limpos. */
+export function parseJaUsa(jaUsaRaw: string): string[] {
+  return (jaUsaRaw ?? '')
+    .split(/\s*[;|]\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .filter((s) => !/nada ainda|primeira vez|n[aã]o engatou/i.test(s));
 }
 
 const INTRO_PERFIL: Record<PerfilExperiencia, string> = {
@@ -291,12 +329,16 @@ function montarSubtitulo(categoria: Categoria, confianca: Confianca): string {
 }
 
 export function calcularResultado(respostas: Record<number, string>): ResultadoDiagnostico {
-  const p1 = respostas[1] ?? '';
-  const p2 = respostas[2] ?? '';
-  const p3 = respostas[3] ?? '';
-  const p4 = respostas[4] ?? '';
-  const p5 = respostas[5] ?? '';
+  // Numeração das perguntas (v2): 1=perfil, 2=gargalo, 3=time, 4=volume,
+  // 5=tarefa livre, 6=meta 3 meses, 7=o que já usa (multi-seleção).
+  const perfil = classificarPerfil(respostas[1] ?? '');
+  const p1 = respostas[2] ?? '';
+  const p2 = respostas[3] ?? '';
+  const p3 = respostas[4] ?? '';
+  const p4 = respostas[5] ?? '';
   const p6 = respostas[6] ?? '';
+  const jaUsaRaw = respostas[7] ?? '';
+  const jaUsa = parseJaUsa(jaUsaRaw);
 
   const categoriaOriginal: Categoria = P1_MAP[p1] ?? 'atendimento';
   let categoria: Categoria = categoriaOriginal;
@@ -306,7 +348,7 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
   const overrideAtendimento = timeMinimo && altaVolume && categoriaOriginal !== 'atendimento';
   if (overrideAtendimento) categoria = 'atendimento';
 
-  const perfilExperiencia = classificarPerfil(p5);
+  const perfilExperiencia = classificarExperiencia(jaUsaRaw);
   const avisoToolsGenericas = perfilExperiencia === 'testou-falhou';
 
   // Análise de confiança usa a categoria original declarada pelo usuário
@@ -376,6 +418,9 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
     porque,
     avisoToolsGenericas,
     perfilExperiencia,
+    perfil,
+    perfilLabel: PERFIL_LABEL[perfil],
+    jaUsa,
     metaTresMeses,
     pontePessoal,
     confianca,

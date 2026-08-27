@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import MultipleChoiceQuestion from '../questions/MultipleChoiceQuestion';
 import FreeTextQuestion from '../questions/FreeTextQuestion';
 import PageBackground from '@/components/PageBackground';
@@ -11,12 +12,27 @@ interface Pergunta {
   opcoes?: string[];
   placeholder?: string;
   microcopy?: string;
+  /** Múltipla escolha com várias respostas (resposta salva como "a; b; c"). */
+  multi?: boolean;
+  /** Opção que zera as demais quando marcada (ex.: "Nada ainda"). */
+  exclusiva?: string;
 }
 
 const PERGUNTAS: Pergunta[] = [
   {
     numero: 1,
-    texto: 'Onde está o maior gargalo da sua empresa hoje?',
+    texto: 'Como você trabalha hoje?',
+    tipo: 'multipla',
+    opcoes: [
+      'Autônomo ou freelancer — sou eu que faço e entrego',
+      'Consultor — presto serviço recorrente pra alguns clientes',
+      'Agência — tenho um time entregando pra vários clientes',
+      'Empresa com time — operação interna com funcionários',
+    ],
+  },
+  {
+    numero: 2,
+    texto: 'Onde está o maior gargalo no seu trabalho hoje?',
     tipo: 'multipla',
     opcoes: [
       'Atendimento ao cliente — demoro para responder, perco gente no caminho',
@@ -24,44 +40,52 @@ const PERGUNTAS: Pergunta[] = [
       'Operação interna — processo manual, retrabalho, tarefa repetitiva',
       'Financeiro — não sei prever caixa, cobrança de cliente é manual',
     ],
-  },
-  {
-    numero: 2,
-    texto: 'Quantas pessoas trabalham com você hoje, incluindo você?',
-    tipo: 'multipla',
-    opcoes: ['Só eu', '2 a 5 pessoas', '6 a 20 pessoas', 'Mais de 20 pessoas'],
     microcopy: 'Boa! Mais perguntas rápidas.',
   },
   {
     numero: 3,
-    texto: 'Quantas mensagens ou contatos de clientes você recebe por dia, em média?',
+    texto: 'Quantas pessoas tocam a operação com você, contando você?',
     tipo: 'multipla',
-    opcoes: ['Menos de 10', 'Entre 10 e 50', 'Mais de 50'],
+    opcoes: ['Só eu', '2 a 5 pessoas', '6 a 20 pessoas', 'Mais de 20 pessoas'],
     microcopy: 'Quase na metade!',
   },
   {
     numero: 4,
+    texto: 'Quantas mensagens ou contatos de clientes você recebe por dia, em média?',
+    tipo: 'multipla',
+    opcoes: ['Menos de 10', 'Entre 10 e 50', 'Mais de 50'],
+    microcopy: 'Passando da metade.',
+  },
+  {
+    numero: 5,
     texto: 'Descreva em 1 frase a tarefa que mais consome seu tempo hoje, mesmo sendo repetitiva.',
     tipo: 'texto',
     placeholder: 'Ex: responder as mesmas dúvidas de clientes todo dia no WhatsApp',
     microcopy: 'Ótimo! Isso vai personalizar sua recomendação.',
   },
   {
-    numero: 5,
-    texto: 'Já tentou alguma ferramenta de IA antes?',
-    tipo: 'multipla',
-    opcoes: [
-      'Não, seria minha primeira vez',
-      'Sim, testei mas não deu certo',
-      'Sim, uso algo hoje mas quero melhorar',
-    ],
-    microcopy: 'Estamos chegando lá!',
-  },
-  {
     numero: 6,
     texto: 'Se desse certo, o que mudaria no seu dia a dia daqui a 3 meses?',
     tipo: 'texto',
     placeholder: 'Ex: pararia de passar o dia respondendo mensagens e focaria em vender',
+    microcopy: 'Estamos chegando lá!',
+  },
+  {
+    numero: 7,
+    texto: 'O que você já usa hoje? Marque tudo que se aplica.',
+    tipo: 'multipla',
+    multi: true,
+    exclusiva: 'Nada ainda — seria minha primeira vez',
+    opcoes: [
+      'Nada ainda — seria minha primeira vez',
+      'ChatGPT, Gemini ou Claude no dia a dia',
+      'Um CRM (RD Station, Pipedrive, HubSpot, Kommo...)',
+      'Planilhas (Google Sheets / Excel) pra controlar processo',
+      'Automação (Make, Zapier, n8n)',
+      'Chatbot ou atendimento (ManyChat, Typebot, Tidio...)',
+      'Ferramenta de cobrança (Asaas, Cora, Vindi...)',
+      'Já testei IA antes e não engatou',
+    ],
     microcopy: 'Última reta!',
   },
 ];
@@ -77,25 +101,35 @@ interface Props {
 }
 
 export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, onAvancar, onVoltar }: Props) {
-  const [animando, setAnimando] = useState(false);
-  const [direcao, setDirecao] = useState<'frente' | 'tras'>('frente');
-  const [perguntaVisivel, setPerguntaVisivel] = useState(perguntaAtual);
+  const prefersReduced = useReducedMotion();
+  const autoRef = useRef<number | undefined>(undefined);
 
-  useEffect(() => {
-    setAnimando(true);
-    const t = setTimeout(() => {
-      setPerguntaVisivel(perguntaAtual);
-      setAnimando(false);
-    }, 260);
-    return () => clearTimeout(t);
-  }, [perguntaAtual]);
-
-  const pergunta = PERGUNTAS[perguntaVisivel - 1];
+  const pergunta = PERGUNTAS[perguntaAtual - 1];
   const podeAvancar = !!(respostas[perguntaAtual]?.trim());
   const microcopy = perguntaAtual > 1 ? PERGUNTAS[perguntaAtual - 2]?.microcopy : undefined;
+  const ehUltima = perguntaAtual === TOTAL_PERGUNTAS;
 
-  function handleAvancar() { setDirecao('frente'); onAvancar(); }
-  function handleVoltar() { setDirecao('tras'); onVoltar(); }
+  useEffect(() => () => window.clearTimeout(autoRef.current), []);
+
+  function handleAvancar() {
+    window.clearTimeout(autoRef.current);
+    onAvancar();
+  }
+  function handleVoltar() {
+    window.clearTimeout(autoRef.current);
+    onVoltar();
+  }
+
+  // Múltipla escolha de resposta única avança sozinha — dá um respiro pro
+  // usuário ver a seleção antes de trocar de tela. Texto livre e multi-seleção
+  // continuam exigindo "Continuar".
+  function handleResponder(valor: string) {
+    onResponder(perguntaAtual, valor);
+    if (pergunta.tipo === 'multipla' && !pergunta.multi && !ehUltima && valor.trim()) {
+      window.clearTimeout(autoRef.current);
+      autoRef.current = window.setTimeout(onAvancar, prefersReduced ? 0 : 260);
+    }
+  }
 
   return (
     <div
@@ -109,13 +143,13 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
         {/* Progresso */}
         <div className="mb-7">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-semibold" style={{ color: 'rgba(199,210,254,0.7)' }}>
-              Pergunta {perguntaAtual} <span style={{ color: 'rgba(199,210,254,0.4)' }}>de {TOTAL_PERGUNTAS}</span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
+              Pergunta {perguntaAtual} <span style={{ color: 'var(--text-muted)' }}>de {TOTAL_PERGUNTAS}</span>
             </span>
             {microcopy && (
               <span
                 className="text-xs font-semibold px-3 py-1 rounded-full animate-fade-up"
-                style={{ background: 'rgba(52,211,153,0.12)', color: '#34d399', border: '1px solid rgba(52,211,153,0.25)' }}
+                style={{ background: 'var(--success-tint)', color: 'var(--success)', border: '1px solid var(--success-border)' }}
               >
                 {microcopy}
               </span>
@@ -130,39 +164,37 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
                 style={{
                   height: i === perguntaAtual - 1 ? 5 : 4,
                   background: i < perguntaAtual
-                    ? 'linear-gradient(90deg, #4f46e5, #a5b4fc)'
+                    ? 'linear-gradient(90deg, var(--accent), var(--text-accent))'
                     : i === perguntaAtual - 1
-                      ? 'rgba(79,70,229,0.4)'
-                      : 'rgba(255,255,255,0.1)',
-                  boxShadow: i < perguntaAtual ? '0 0 8px rgba(79,70,229,0.4)' : 'none',
+                      ? 'var(--accent-border)'
+                      : 'var(--border-soft)',
+                  boxShadow: i < perguntaAtual ? '0 0 8px var(--accent-glow)' : 'none',
                 }}
               />
             ))}
           </div>
         </div>
 
-        {/* Question card */}
+        {/* Question card — re-monta a cada pergunta com fade-up via CSS.
+            Sem AnimatePresence: não pode depender de animação concluir pra
+            trocar de pergunta. */}
         <div
-          className="rounded-2xl p-7 sm:p-8 border"
+          key={perguntaAtual}
+          className="rounded-2xl p-7 sm:p-8 border animate-fade-up"
           style={{
-            background: 'rgba(255,255,255,0.05)',
-            borderColor: 'rgba(255,255,255,0.1)',
+            background: 'var(--card)',
+            borderColor: 'var(--border-soft)',
             backdropFilter: 'blur(16px)',
-            opacity: animando ? 0 : 1,
-            transform: animando
-              ? direcao === 'frente' ? 'translateX(24px) scale(0.98)' : 'translateX(-24px) scale(0.98)'
-              : 'translateX(0) scale(1)',
-            transition: 'opacity 0.28s cubic-bezier(0.34,1.56,0.64,1), transform 0.28s cubic-bezier(0.34,1.56,0.64,1)',
           }}
         >
           <div
             className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold mb-4"
-            style={{ background: 'rgba(79,70,229,0.2)', color: '#a5b4fc', border: '1px solid rgba(79,70,229,0.3)' }}
+            style={{ background: 'var(--accent-chip-bg)', color: 'var(--text-accent)', border: '1px solid var(--accent-chip-border)' }}
           >
-            {perguntaVisivel}
+            {perguntaAtual}
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 leading-snug">
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 leading-snug" style={{ color: 'var(--text-primary)' }}>
             {pergunta.texto}
           </h2>
 
@@ -170,7 +202,9 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
             <MultipleChoiceQuestion
               opcoes={pergunta.opcoes!}
               valorAtual={respostas[perguntaAtual]}
-              onChange={v => onResponder(perguntaAtual, v)}
+              multi={pergunta.multi}
+              exclusiva={pergunta.exclusiva}
+              onChange={handleResponder}
             />
           ) : (
             <FreeTextQuestion
@@ -188,10 +222,9 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
               onClick={handleVoltar}
               className="flex-none px-5 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(165,180,252,0.32)',
-                color: '#e2e8f0',
-                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.04)',
+                background: 'var(--card)',
+                border: '1px solid var(--accent-chip-border)',
+                color: 'var(--text-secondary)',
               }}
             >
               ← Voltar
@@ -202,12 +235,12 @@ export default function TelaPerguntas({ perguntaAtual, respostas, onResponder, o
             disabled={!podeAvancar}
             className="flex-1 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-[1.02] active:scale-95"
             style={podeAvancar ? {
-              background: 'linear-gradient(135deg, #4f46e5, #4338ca)',
-              color: '#fff',
-              boxShadow: '0 4px 24px rgba(79,70,229,0.45)',
+              background: 'linear-gradient(135deg, var(--accent), #4338ca)',
+              color: 'var(--accent-contrast)',
+              boxShadow: '0 4px 24px var(--accent-glow)',
             } : {
-              background: 'rgba(255,255,255,0.06)',
-              color: 'rgba(255,255,255,0.28)',
+              background: 'var(--card)',
+              color: 'var(--text-muted)',
               cursor: 'not-allowed',
             }}
           >

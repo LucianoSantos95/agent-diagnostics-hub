@@ -37,13 +37,13 @@ const CATEGORIAS_DESC: Record<string, string> = {
 };
 
 const PERGUNTAS_LABEL: Record<number, string> = {
-  1: 'Maior gargalo atual',
-  2: 'Tamanho da equipe',
-  3: 'Volume diário de contatos',
-  4: 'Tarefa que mais consome tempo',
-  5: 'Experiência com IA',
-  6: 'Como seria o dia a dia ideal',
-  7: 'Orçamento mensal disponível',
+  1: 'Como trabalha hoje',
+  2: 'Maior gargalo atual',
+  3: 'Tamanho da operação',
+  4: 'Volume diário de contatos',
+  5: 'Tarefa que mais consome tempo',
+  6: 'Meta em 3 meses',
+  7: 'Ferramentas que já usa',
 };
 
 async function gerarPDF(opts: {

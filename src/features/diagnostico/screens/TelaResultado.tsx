@@ -9,6 +9,7 @@ import CTAComercial from '../resultado/CTAComercial';
 import StackRecomendada from '../resultado/StackRecomendada';
 import FerramentasIAGeral from '../resultado/FerramentasIAGeral';
 import CombinacoesLogicas from '../resultado/CombinacoesLogicas';
+import BaixarPlaybook from '../resultado/BaixarPlaybook';
 import Footer from '@/components/Footer';
 import PageBackground from '@/components/PageBackground';
 
@@ -28,11 +29,13 @@ const COR_CATEGORIA: Record<string, string> = {
   financeiro: 'linear-gradient(135deg, #2d1f4a 0%, #6b3fa8 55%, #c9a84c 100%)',
 };
 
+// Rótulos de seção usam o token de acento (legível nos dois temas). A
+// identidade da categoria fica no gradiente do hero + ícone.
 const COR_TEXTO: Record<string, string> = {
-  atendimento: '#a5b4fc',
-  vendas: '#5cbdb9',
-  operacao: '#c4b5fd',
-  financeiro: '#e8b84a',
+  atendimento: 'var(--text-accent)',
+  vendas: 'var(--text-accent)',
+  operacao: 'var(--text-accent)',
+  financeiro: 'var(--text-accent)',
 };
 
 interface Props {
@@ -42,13 +45,14 @@ interface Props {
   onSalvarEmail: (email: string) => Promise<void>;
   onSalvarOrcamento: (orcamento: string) => Promise<void>;
   onRegistrarCTA: () => void;
+  onRegistrarPlaybook?: (formato: 'md' | 'html') => void;
   onReiniciar: () => void;
 }
 
-export default function TelaResultado({ resultado, respostas, sessionId, onSalvarEmail, onSalvarOrcamento, onRegistrarCTA, onReiniciar }: Props) {
+export default function TelaResultado({ resultado, respostas, sessionId, onSalvarEmail, onSalvarOrcamento, onRegistrarCTA, onRegistrarPlaybook, onReiniciar }: Props) {
   const [desbloqueado, setDesbloqueado] = useState(false);
   const [emailCapturado, setEmailCapturado] = useState('');
-  const tarefaP4 = respostas[4] ?? '';
+  const tarefaP4 = respostas[5] ?? '';
   const cor = COR_CATEGORIA[resultado.categoria];
   const corTexto = COR_TEXTO[resultado.categoria];
 
@@ -68,7 +72,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8 flex flex-col gap-5">
 
         {/* Header resultado — hero section */}
-        <div className="rounded-2xl overflow-hidden border animate-fade-up" style={{ borderColor: 'rgba(255,255,255,0.08)', boxShadow: '0 24px 60px -30px rgba(79,70,229,0.4)' }}>
+        <div className="rounded-2xl overflow-hidden border animate-fade-up" style={{ borderColor: 'var(--border-soft)', boxShadow: '0 24px 60px -30px rgba(79,70,229,0.4)' }}>
           {/* Topo colorido */}
           <div className="px-6 py-7 relative overflow-hidden" style={{ background: cor }}>
             {/* Grid técnico */}
@@ -95,6 +99,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
                 style={{
                   background: resultado.confianca === 'alta' ? '#34d399' : resultado.confianca === 'media' ? '#fbbf24' : '#f87171',
                 }}
+                aria-hidden
               />
               <span className="text-[10px] font-mono uppercase tracking-widest text-white/85">
                 Confiança {resultado.confianca === 'alta' ? 'alta' : resultado.confianca === 'media' ? 'média' : 'a validar'}
@@ -114,18 +119,18 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
             </div>
           </div>
           {/* Por que você precisa */}
-          <div className="px-6 py-5 border-t" style={{ background: 'rgba(15,15,42,0.55)', borderColor: 'rgba(255,255,255,0.06)' }}>
+          <div className="px-6 py-5 border-t" style={{ background: 'var(--card-deep)', borderColor: 'var(--border-hairline)' }}>
             <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.24em] mb-2" style={{ color: corTexto }}>
               {resultado.confianca === 'alta' ? 'Por que esse agente?' : resultado.confianca === 'media' ? 'Por que essa prioridade?' : 'Por que essa hipótese?'}
             </p>
-            <p className="text-sm leading-relaxed" style={{ color: '#cbd5e1' }}>{resultado.porque}</p>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{resultado.porque}</p>
             {resultado.confianca !== 'alta' && (
               <p
                 className="mt-3 text-xs leading-relaxed px-3 py-2 rounded-lg border"
                 style={{
-                  color: resultado.confianca === 'media' ? '#fde68a' : '#fecaca',
-                  background: resultado.confianca === 'media' ? 'rgba(245,158,11,0.08)' : 'rgba(248,113,113,0.08)',
-                  borderColor: resultado.confianca === 'media' ? 'rgba(245,158,11,0.25)' : 'rgba(248,113,113,0.28)',
+                  color: resultado.confianca === 'media' ? 'var(--warn-text)' : 'var(--danger-text)',
+                  background: resultado.confianca === 'media' ? 'var(--warn-tint)' : 'var(--danger-tint)',
+                  borderColor: resultado.confianca === 'media' ? 'var(--warn-border)' : 'var(--danger-border)',
                 }}
               >
                 <span className="font-mono font-bold uppercase tracking-widest text-[10px] mr-2">
@@ -142,13 +147,13 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
           <div
             className="rounded-2xl p-5 border animate-fade-up delay-75 relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, rgba(52,211,153,0.09), rgba(79,70,229,0.09))',
-              borderColor: 'rgba(52,211,153,0.28)',
+              background: 'var(--success-tint)',
+              borderColor: 'var(--success-border)',
             }}
           >
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🎯</span>
-              <p className="text-[10px] font-mono font-bold uppercase tracking-[0.24em]" style={{ color: '#34d399' }}>
+              <p className="text-[10px] font-mono font-bold uppercase tracking-[0.24em]" style={{ color: 'var(--success)' }}>
                 Sua meta em 3 meses
               </p>
             </div>
@@ -165,12 +170,12 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
         {resultado.avisoToolsGenericas && (
           <div
             className="rounded-xl px-5 py-4 border animate-fade-up delay-100"
-            style={{ background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.28)' }}
+            style={{ background: 'var(--warn-tint)', borderColor: 'var(--warn-border)' }}
           >
-            <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: '#fbbf24' }}>
+            <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--warn)' }}>
               Você já tentou antes
             </p>
-            <p className="text-sm leading-relaxed" style={{ color: '#fde68a' }}>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--warn-text)' }}>
 
               O erro mais comum é usar uma ferramenta genérica para um problema específico.
               Um agente configurado para o <em>seu</em> gargalo é completamente diferente
@@ -185,7 +190,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
             <p className="text-xs font-bold uppercase tracking-widest" style={{ color: corTexto }}>
               Ferramentas para começar agora
             </p>
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+            <div className="flex-1 h-px" style={{ background: 'var(--border-hairline)' }} />
           </div>
           <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
             {resultado.ferramentas.map((f) => (
@@ -194,10 +199,10 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
                 href={f.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xl p-4 border group transition-all duration-200 hover:scale-[1.02] hover:border-blue-500/40"
+                className="rounded-xl p-4 border group transition-all duration-200 hover:scale-[1.02]"
                 style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  borderColor: 'rgba(255,255,255,0.09)',
+                  background: 'var(--card)',
+                  borderColor: 'var(--border-soft)',
                   textDecoration: 'none',
                   display: 'flex',
                   flexDirection: 'column',
@@ -205,13 +210,13 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
                 }}
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">{f.nome}</p>
-                  <span className="text-xs" style={{ color: 'rgba(199,210,254,0.5)' }}>↗</span>
+                  <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{f.nome}</p>
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>↗</span>
                 </div>
-                <p className="text-xs leading-snug" style={{ color: '#94a3b8' }}>{f.descricao}</p>
+                <p className="text-xs leading-snug" style={{ color: 'var(--text-secondary)' }}>{f.descricao}</p>
                 <span
                   className="inline-block text-xs font-semibold mt-1 px-2 py-0.5 rounded-full"
-                  style={{ background: 'rgba(52,211,153,0.12)', color: '#34d399', border: '1px solid rgba(52,211,153,0.2)' }}
+                  style={{ background: 'var(--success-tint)', color: 'var(--success)', border: '1px solid var(--success-border)' }}
                 >
                   {f.plano}
                 </span>
@@ -224,7 +229,7 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
             Em confiança média/baixa, esses blocos pressupõem certeza demais. */}
         {resultado.confianca === 'alta' && (
           <>
-            <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} tamanhoTime={respostas[2] ?? ''} volumeDia={respostas[3] ?? ''} />
+            <StackRecomendada categoria={resultado.categoria} corTexto={corTexto} tamanhoTime={respostas[3] ?? ''} volumeDia={respostas[4] ?? ''} />
             <CombinacoesLogicas categoria={resultado.categoria} corTexto={corTexto} tarefaP4={tarefaP4} />
           </>
         )}
@@ -232,6 +237,8 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
         {/* IA de uso geral — bloco fixo, útil para qualquer negócio */}
         <FerramentasIAGeral tarefaP4={tarefaP4} />
 
+        {/* Playbook para download — o valor de verdade, sem gate */}
+        <BaixarPlaybook resultado={resultado} tarefa={tarefaP4} onBaixar={onRegistrarPlaybook} />
 
         {/* Personalização P4 — gancho de valor antes do gate */}
         <BlocoPersonalizacao tarefaP4={tarefaP4} categoria={resultado.categoria} />
@@ -255,10 +262,10 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
             {/* Guia de implementação */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(199,210,254,0.6)' }}>
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                   Seu guia de implementação
                 </p>
-                <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+                <div className="flex-1 h-px" style={{ background: 'var(--border-hairline)' }} />
               </div>
               <AccordionResultado itens={acordionItens} />
             </div>
@@ -275,8 +282,8 @@ export default function TelaResultado({ resultado, respostas, sessionId, onSalva
         <div className="text-center pb-2">
           <button
             onClick={onReiniciar}
-            className="text-sm underline transition-colors hover:text-blue-300"
-            style={{ color: 'rgba(199,210,254,0.4)' }}
+            className="text-sm underline transition-colors hover:opacity-80"
+            style={{ color: 'var(--text-muted)' }}
           >
             Refazer com outras respostas
           </button>

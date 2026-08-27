@@ -33,7 +33,7 @@ export default function PerguntaOrcamento({ onSalvar }: Props) {
       </p>
 
       {selecionado ? (
-        <p className="text-sm font-medium flex items-center gap-2" style={{ color: "#34d399" }}>
+        <p className="text-sm font-medium flex items-center gap-2" style={{ color: "var(--success)" }}>
           <span>✓</span> Anotado — obrigado!
         </p>
       ) : (

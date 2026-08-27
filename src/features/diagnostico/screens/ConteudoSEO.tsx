@@ -60,12 +60,12 @@ export default function ConteudoSEO() {
             Como funciona o diagnóstico de agente de IA
           </h2>
           <p className="text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            Muitas pequenas e médias empresas testam ferramentas de inteligência artificial sem
-            resultado — não porque a tecnologia falha, mas porque estão resolvendo o problema errado.
-            Este diagnóstico gratuito faz <strong style={{ color: 'var(--text-primary)' }}>6 perguntas rápidas</strong> sobre
-            o seu negócio e indica qual dos quatro tipos de agente de IA você deveria implementar
-            primeiro, com ferramentas recomendadas e um passo a passo para começar. Leva cerca de
-            2 minutos e não exige cadastro.
+            Muita gente — de autônomo a empresa com time — testa ferramentas de inteligência
+            artificial sem resultado, não porque a tecnologia falha, mas porque está resolvendo o
+            problema errado. Este diagnóstico gratuito faz <strong style={{ color: 'var(--text-primary)' }}>7 perguntas rápidas</strong> sobre
+            o seu trabalho e indica qual das quatro frentes de IA você deveria montar primeiro, com
+            ferramentas recomendadas e um <strong style={{ color: 'var(--text-primary)' }}>playbook com o passo a passo</strong> —
+            incluindo como integrar ferramentas via API ou MCP. Leva cerca de 2 minutos e não exige cadastro.
           </p>
         </div>
 

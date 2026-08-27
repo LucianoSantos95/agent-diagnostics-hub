@@ -45,9 +45,9 @@ export default function CaixaFeedback({ email }: Props) {
     <div
       className="rounded-2xl px-5 py-5 border animate-fade-up relative overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, rgba(245,158,11,0.10), rgba(245,158,11,0.04))',
-        borderColor: 'rgba(245,158,11,0.35)',
-        boxShadow: '0 10px 40px -20px rgba(245,158,11,0.4)',
+        background: 'var(--warn-tint)',
+        borderColor: 'var(--warn-border)',
+        boxShadow: '0 10px 40px -20px rgba(245,158,11,0.35)',
       }}
     >
       {enviado ? (
@@ -72,13 +72,13 @@ export default function CaixaFeedback({ email }: Props) {
           <div className="flex items-center gap-2 mb-1">
             <span
               className="inline-flex items-center justify-center w-7 h-7 rounded-lg animate-glow-pulse"
-              style={{ background: 'rgba(245,158,11,0.2)', border: '1px solid rgba(245,158,11,0.4)' }}
+              style={{ background: 'var(--warn-tint)', border: '1px solid var(--warn-border)' }}
             >
-              <MessageCircle size={14} color="#f59e0b" />
+              <MessageCircle size={14} color="currentColor" style={{ color: 'var(--warn)' }} />
             </span>
             <p
               className="text-xs font-bold uppercase tracking-widest"
-              style={{ color: '#f59e0b' }}
+              style={{ color: 'var(--warn)' }}
             >
               Sua opinião conta
             </p>
@@ -108,7 +108,7 @@ export default function CaixaFeedback({ email }: Props) {
               }}
             />
 
-            {erro && <p className="text-xs" style={{ color: '#f87171' }}>{erro}</p>}
+            {erro && <p className="text-xs" style={{ color: 'var(--danger)' }}>{erro}</p>}
 
             <button
               type="submit"

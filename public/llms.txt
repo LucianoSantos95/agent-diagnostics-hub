@@ -1,7 +1,7 @@
 # Diagnóstico de Agente de IA
 
 > Ferramenta gratuita, em português, que ajuda pequenas e médias empresas brasileiras a descobrir
-> qual tipo de agente de inteligência artificial devem implementar primeiro. São 6 perguntas rápidas
+> qual tipo de agente de inteligência artificial devem implementar primeiro. São 7 perguntas rápidas
 > (cerca de 2 minutos) e o resultado é imediato, sem cadastro obrigatório.
 
 ## O que a ferramenta faz
@@ -23,7 +23,7 @@ processo específico de cada negócio. Site: https://focusinteligente.com.br
 
 ## Pages
 
-- [Diagnóstico de Agente de IA](/): quiz gratuito de 6 perguntas que recomenda o agente de IA ideal para a empresa.
+- [Diagnóstico de Agente de IA](/): quiz gratuito de 7 perguntas que recomenda a frente de IA ideal e entrega um playbook com o passo a passo.
 - [Focus Inteligente (site institucional)](https://focusinteligente.com.br): empresa que desenvolve os agentes de IA sob medida.
 
 ## Perguntas frequentes

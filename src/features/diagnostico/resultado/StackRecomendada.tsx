@@ -30,7 +30,7 @@ export default function StackRecomendada({ categoria, corTexto, tamanhoTime, vol
         <p className="text-xs font-bold uppercase tracking-widest" style={{ color: corTexto }}>
           Stack completa para essa categoria
         </p>
-        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+        <div className="flex-1 h-px" style={{ background: 'var(--border-hairline)' }} />
       </div>
       <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
         Não é só um agente — é o kit inteiro cobrindo o fluxo. Cada peça resolve uma parte do problema.
@@ -38,14 +38,14 @@ export default function StackRecomendada({ categoria, corTexto, tamanhoTime, vol
       {nota && (
         <p
           className="text-xs mb-3 px-3 py-2 rounded-lg border"
-          style={{ color: '#a5b4fc', background: 'rgba(79,70,229,0.08)', borderColor: 'rgba(79,70,229,0.22)' }}
+          style={{ color: 'var(--text-accent)', background: 'var(--accent-soft)', borderColor: 'var(--accent-chip-border)' }}
         >
           <span className="font-mono font-bold uppercase tracking-widest text-[10px] mr-2">No seu caso</span>
           {nota}
         </p>
       )}
 
-      <div className="rounded-2xl border overflow-hidden" style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}>
+      <div className="rounded-2xl border overflow-hidden" style={{ borderColor: 'var(--border-soft)', background: 'var(--card)' }}>
         {stack.map((item, i) => (
           <a
             key={item.nome}
@@ -54,16 +54,16 @@ export default function StackRecomendada({ categoria, corTexto, tamanhoTime, vol
             rel="noopener noreferrer"
             className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/[0.04]"
             style={{
-              borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.06)',
+              borderTop: i === 0 ? 'none' : '1px solid var(--border-hairline)',
               textDecoration: 'none',
             }}
           >
             <span
               className="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded"
               style={{
-                background: 'rgba(79,70,229,0.14)',
-                color: '#a5b4fc',
-                border: '1px solid rgba(79,70,229,0.28)',
+                background: 'var(--accent-chip-bg)',
+                color: 'var(--text-accent)',
+                border: '1px solid var(--accent-chip-border)',
                 minWidth: 92,
                 textAlign: 'center',
               }}
@@ -78,7 +78,7 @@ export default function StackRecomendada({ categoria, corTexto, tamanhoTime, vol
                 {item.descricao}
               </p>
             </div>
-            <span className="text-xs" style={{ color: 'rgba(199,210,254,0.5)' }}>↗</span>
+            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>↗</span>
           </a>
         ))}
       </div>

@@ -35,18 +35,18 @@ export default function CapturaEmail({ sessionId, categoria, onSalvar, onDesbloq
     <div
       className="rounded-2xl px-6 py-6 border relative overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, rgba(79,70,229,0.1), rgba(79,70,229,0.08))",
-        borderColor: "rgba(79,70,229,0.3)",
+        background: "var(--accent-soft)",
+        borderColor: "var(--accent-border)",
       }}
     >
       <div className="flex items-center gap-2 mb-3">
         <span
           className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-lg"
-          style={{ background: "rgba(79,70,229,0.15)", border: "1px solid rgba(79,70,229,0.3)" }}
+          style={{ background: "var(--accent-chip-bg)", border: "1px solid var(--accent-border)" }}
         >
           🔓
         </span>
-        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#a5b4fc" }}>
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-accent)" }}>
           Desbloqueie o guia completo
         </span>
       </div>
@@ -78,8 +78,8 @@ export default function CapturaEmail({ sessionId, categoria, onSalvar, onDesbloq
           disabled={loading}
           className="text-sm font-bold px-6 py-3 rounded-xl text-white whitespace-nowrap transition-all hover:scale-[1.02] active:scale-95"
           style={{
-            background: "linear-gradient(135deg, #4f46e5, #4338ca)",
-            boxShadow: "0 4px 20px rgba(79,70,229,0.35)",
+            background: "linear-gradient(135deg, var(--accent), #4338ca)",
+            boxShadow: "0 4px 20px var(--accent-glow)",
           }}
         >
           {loading ? "..." : "Desbloquear guia →"}
