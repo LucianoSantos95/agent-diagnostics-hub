@@ -143,13 +143,16 @@ var KEYWORDS = {
   atendimento: [
     /respond/i,
     /atend/i,
-    /client/i,
     /whats?app/i,
     /instagram|dm\b|direct/i,
     /d[uú]vida/i,
     /suporte/i,
     /chat/i,
-    /mensagem/i
+    /mensagem/i,
+    /tirar d[uú]vida/i,
+    // "cliente" só conta quando ligado a contato/resposta — evita casar com
+    // "cobrar cliente", "cadastrar cliente", "vender pra cliente".
+    /client[e|s]?\s+(pergunt|escrev|chama|espera|reclam|manda)/i
   ],
   vendas: [
     /lead/i,
@@ -178,16 +181,24 @@ var KEYWORDS = {
   ],
   financeiro: [
     /cobran[çc]/i,
+    /cobra(r|n[çc]a|ndo)/i,
     /boleto/i,
     /pix/i,
     /caixa/i,
     /inadimpl/i,
     /fluxo de caixa/i,
-    /fatura/i,
+    /mensalidad/i,
+    /assinatura/i,
+    /recorr[êe]nc/i,
+    /renova[çc][aã]o/i,
+    /fatur/i,
     /pag(a|amento)/i,
-    /recebiv/i,
+    /recebiv|receb[íi]vel/i,
     /financ/i,
-    /conta[s]? a (pagar|receber)/i
+    /conta[s]? a (pagar|receber)/i,
+    /nota fiscal|nfe/i,
+    /vencimento/i,
+    /reembols/i
   ]
 };
 function truncar(texto, max) {

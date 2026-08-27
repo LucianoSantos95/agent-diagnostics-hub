@@ -218,8 +218,11 @@ const PONTE_META: Record<Categoria, string> = {
 // Palavras-chave por categoria — usadas pra medir se a P4 (tarefa livre) confirma a P1.
 const KEYWORDS: Record<Categoria, RegExp[]> = {
   atendimento: [
-    /respond/i, /atend/i, /client/i, /whats?app/i, /instagram|dm\b|direct/i,
-    /d[uú]vida/i, /suporte/i, /chat/i, /mensagem/i,
+    /respond/i, /atend/i, /whats?app/i, /instagram|dm\b|direct/i,
+    /d[uú]vida/i, /suporte/i, /chat/i, /mensagem/i, /tirar d[uú]vida/i,
+    // "cliente" só conta quando ligado a contato/resposta — evita casar com
+    // "cobrar cliente", "cadastrar cliente", "vender pra cliente".
+    /client[e|s]?\s+(pergunt|escrev|chama|espera|reclam|manda)/i,
   ],
   vendas: [
     /lead/i, /follow[- ]?up/i, /proposta/i, /or[çc]amento/i, /cotar|cota[çc][aã]o/i,
@@ -231,8 +234,10 @@ const KEYWORDS: Record<Categoria, RegExp[]> = {
     /nota fiscal|nfe/i,
   ],
   financeiro: [
-    /cobran[çc]/i, /boleto/i, /pix/i, /caixa/i, /inadimpl/i, /fluxo de caixa/i,
-    /fatura/i, /pag(a|amento)/i, /recebiv/i, /financ/i, /conta[s]? a (pagar|receber)/i,
+    /cobran[çc]/i, /cobra(r|n[çc]a|ndo)/i, /boleto/i, /pix/i, /caixa/i, /inadimpl/i,
+    /fluxo de caixa/i, /mensalidad/i, /assinatura/i, /recorr[êe]nc/i, /renova[çc][aã]o/i,
+    /fatur/i, /pag(a|amento)/i, /recebiv|receb[íi]vel/i, /financ/i,
+    /conta[s]? a (pagar|receber)/i, /nota fiscal|nfe/i, /vencimento/i, /reembols/i,
   ],
 };
 
