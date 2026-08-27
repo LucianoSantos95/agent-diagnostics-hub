@@ -446,7 +446,7 @@ function calcularResultado(respostas) {
       porque = `Suas respostas apontam pra ${nomeFrente}, mas com sinais fracos. Trate o conte\xFAdo abaixo como hip\xF3tese de trabalho \u2014 as ferramentas gerais que aparecem na sequ\xEAncia j\xE1 rendem enquanto voc\xEA valida o gargalo real.`;
     }
   }
-  const metaTresMeses = truncar(p6, 220);
+  const metaTresMeses = metaValida(p6) ? truncar(p6, 220) : "";
   const pontePessoal = PONTE_META[categoria];
   const comoComecar = `${INTRO_PERFIL[perfilExperiencia]}${conteudo.comoComecar}`;
   return {

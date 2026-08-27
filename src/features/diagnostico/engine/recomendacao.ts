@@ -582,7 +582,7 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
     }
   }
 
-  const metaTresMeses = truncar(p6, 220);
+  const metaTresMeses = metaValida(p6) ? truncar(p6, 220) : '';
   const pontePessoal = PONTE_META[categoria];
 
   const comoComecar = `${INTRO_PERFIL[perfilExperiencia]}${conteudo.comoComecar}`;
