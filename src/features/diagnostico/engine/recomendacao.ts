@@ -218,8 +218,11 @@ const PONTE_META: Record<Categoria, string> = {
 // Palavras-chave por categoria — usadas pra medir se a P4 (tarefa livre) confirma a P1.
 const KEYWORDS: Record<Categoria, RegExp[]> = {
   atendimento: [
-    /respond/i, /atend/i, /client/i, /whats?app/i, /instagram|dm\b|direct/i,
-    /d[uú]vida/i, /suporte/i, /chat/i, /mensagem/i,
+    /respond/i, /atend/i, /whats?app/i, /instagram|dm\b|direct/i,
+    /d[uú]vida/i, /suporte/i, /chat/i, /mensagem/i, /tirar d[uú]vida/i,
+    // "cliente" só conta quando ligado a contato/resposta — evita casar com
+    // "cobrar cliente", "cadastrar cliente", "vender pra cliente".
+    /client[e|s]?\s+(pergunt|escrev|chama|espera|reclam|manda)/i,
   ],
   vendas: [
     /lead/i, /follow[- ]?up/i, /proposta/i, /or[çc]amento/i, /cotar|cota[çc][aã]o/i,
@@ -231,14 +234,30 @@ const KEYWORDS: Record<Categoria, RegExp[]> = {
     /nota fiscal|nfe/i,
   ],
   financeiro: [
-    /cobran[çc]/i, /boleto/i, /pix/i, /caixa/i, /inadimpl/i, /fluxo de caixa/i,
-    /fatura/i, /pag(a|amento)/i, /recebiv/i, /financ/i, /conta[s]? a (pagar|receber)/i,
+    /cobran[çc]/i, /cobra(r|n[çc]a|ndo)/i, /boleto/i, /pix/i, /caixa/i, /inadimpl/i,
+    /fluxo de caixa/i, /mensalidad/i, /assinatura/i, /recorr[êe]nc/i, /renova[çc][aã]o/i,
+    /fatur/i, /pag(a|amento)/i, /recebiv|receb[íi]vel/i, /financ/i,
+    /conta[s]? a (pagar|receber)/i, /nota fiscal|nfe/i, /vencimento/i, /reembols/i,
   ],
 };
 
 function truncar(texto: string, max: number): string {
   const limpo = texto.trim();
   return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}…` : limpo;
+}
+
+/**
+ * Uma meta só é exibida se disser algo. Respostas vagas ("sei la", "n sei",
+ * "-", "nada") ou curtas demais são descartadas pra não voltarem literalmente
+ * no resultado.
+ */
+function metaValida(texto: string): boolean {
+  const s = (texto ?? '').trim().toLowerCase();
+  if (s.length < 12) return false;
+  if (/^(sei l[aá]|n[aã]o sei|nao sei|n sei|talvez|qualquer|nada|nenhuma|tanto faz|-+|\.+|x+)$/.test(s)) return false;
+  if (!/\s/.test(s)) return false; // palavra única não é uma meta
+  const palavras = s.split(/\s+/).filter((w) => w.length > 2);
+  return palavras.length >= 3;
 }
 
 /** Deriva o nível de experiência a partir do que a pessoa marcou que já usa. */
@@ -582,7 +601,7 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
     }
   }
 
-  const metaTresMeses = truncar(p6, 220);
+  const metaTresMeses = metaValida(p6) ? truncar(p6, 220) : '';
   const pontePessoal = PONTE_META[categoria];
 
   const comoComecar = `${INTRO_PERFIL[perfilExperiencia]}${conteudo.comoComecar}`;

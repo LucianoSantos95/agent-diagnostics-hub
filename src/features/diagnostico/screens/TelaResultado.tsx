@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { type ResultadoDiagnostico } from '../engine/recomendacao';
 import { montarPlaybook } from '../playbooks';
 import type { Playbook } from '../playbooks';
 import BaixarPlaybook from '../resultado/BaixarPlaybook';
+import CaixaFeedback from '../resultado/CaixaFeedback';
 import PerguntaOrcamento from '../resultado/PerguntaOrcamento';
 import CTAComercial from '../resultado/CTAComercial';
 import Footer from '@/components/Footer';
@@ -154,6 +155,12 @@ export default function TelaResultado({
   const playbook = useMemo(() => montarPlaybook(resultado, tarefa), [resultado, tarefa]);
   const cor = COR_CATEGORIA[resultado.categoria];
   const confAlta = resultado.confianca === 'alta';
+  const [emailCapturado, setEmailCapturado] = useState<string | null>(null);
+
+  function handleSalvarEmail(email: string) {
+    setEmailCapturado(email);
+    onSalvarEmail(email);
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ paddingTop: '60px' }}>
@@ -230,8 +237,12 @@ export default function TelaResultado({
           playbook={playbook}
           sessionId={sessionId}
           onBaixar={onRegistrarPlaybook}
-          onSalvarEmail={onSalvarEmail}
+          onSalvarEmail={handleSalvarEmail}
         />
+
+        {/* FEEDBACK — aparece logo após o e-mail ser informado */}
+        {emailCapturado && <CaixaFeedback email={emailCapturado} />}
+
 
         {/* CTA — copy adapta à forma */}
         <CTAComercial forma={playbook.forma} onRegistrarCTA={onRegistrarCTA} />

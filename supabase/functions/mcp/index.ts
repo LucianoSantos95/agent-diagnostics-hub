@@ -143,13 +143,16 @@ var KEYWORDS = {
   atendimento: [
     /respond/i,
     /atend/i,
-    /client/i,
     /whats?app/i,
     /instagram|dm\b|direct/i,
     /d[uú]vida/i,
     /suporte/i,
     /chat/i,
-    /mensagem/i
+    /mensagem/i,
+    /tirar d[uú]vida/i,
+    // "cliente" só conta quando ligado a contato/resposta — evita casar com
+    // "cobrar cliente", "cadastrar cliente", "vender pra cliente".
+    /client[e|s]?\s+(pergunt|escrev|chama|espera|reclam|manda)/i
   ],
   vendas: [
     /lead/i,
@@ -178,21 +181,37 @@ var KEYWORDS = {
   ],
   financeiro: [
     /cobran[çc]/i,
+    /cobra(r|n[çc]a|ndo)/i,
     /boleto/i,
     /pix/i,
     /caixa/i,
     /inadimpl/i,
     /fluxo de caixa/i,
-    /fatura/i,
+    /mensalidad/i,
+    /assinatura/i,
+    /recorr[êe]nc/i,
+    /renova[çc][aã]o/i,
+    /fatur/i,
     /pag(a|amento)/i,
-    /recebiv/i,
+    /recebiv|receb[íi]vel/i,
     /financ/i,
-    /conta[s]? a (pagar|receber)/i
+    /conta[s]? a (pagar|receber)/i,
+    /nota fiscal|nfe/i,
+    /vencimento/i,
+    /reembols/i
   ]
 };
 function truncar(texto, max) {
   const limpo = texto.trim();
   return limpo.length > max ? `${limpo.slice(0, max).trimEnd()}\u2026` : limpo;
+}
+function metaValida(texto) {
+  const s = (texto ?? "").trim().toLowerCase();
+  if (s.length < 12) return false;
+  if (/^(sei l[aá]|n[aã]o sei|nao sei|n sei|talvez|qualquer|nada|nenhuma|tanto faz|-+|\.+|x+)$/.test(s)) return false;
+  if (!/\s/.test(s)) return false;
+  const palavras = s.split(/\s+/).filter((w) => w.length > 2);
+  return palavras.length >= 3;
 }
 function classificarExperiencia(jaUsaRaw) {
   const s = (jaUsaRaw ?? "").toLowerCase();
@@ -446,7 +465,7 @@ function calcularResultado(respostas) {
       porque = `Suas respostas apontam pra ${nomeFrente}, mas com sinais fracos. Trate o conte\xFAdo abaixo como hip\xF3tese de trabalho \u2014 as ferramentas gerais que aparecem na sequ\xEAncia j\xE1 rendem enquanto voc\xEA valida o gargalo real.`;
     }
   }
-  const metaTresMeses = truncar(p6, 220);
+  const metaTresMeses = metaValida(p6) ? truncar(p6, 220) : "";
   const pontePessoal = PONTE_META[categoria];
   const comoComecar = `${INTRO_PERFIL[perfilExperiencia]}${conteudo.comoComecar}`;
   return {

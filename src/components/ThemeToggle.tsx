@@ -27,6 +27,9 @@ export default function ThemeToggle() {
       <button
         onClick={() => setOpen(o => !o)}
         aria-label="Alterar tema"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title="Alterar tema"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
