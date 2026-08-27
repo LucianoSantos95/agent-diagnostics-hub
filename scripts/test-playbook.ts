@@ -7,6 +7,8 @@ interface Cenario {
   nome: string;
   respostas: Record<number, string>;
   formaEsperada: string;
+  /** id da ferramenta esperada como ponto de partida (opcional) */
+  toolEsperada?: string;
 }
 
 const P1 = {
@@ -23,8 +25,8 @@ const GARGALO = {
 
 const cenarios: Cenario[] = [
   {
-    nome: 'Autônomo · atendimento · não usa nada → uma-ferramenta',
-    formaEsperada: 'uma-ferramenta',
+    nome: 'Autônomo · atendimento · WhatsApp · não usa nada → uma-ferramenta / Typebot',
+    formaEsperada: 'uma-ferramenta', toolEsperada: 'typebot',
     respostas: {
       1: P1.autonomo, 2: GARGALO.atendimento, 3: 'Só eu', 4: 'Menos de 10',
       5: 'responder as mesmas duvidas no whatsapp', 6: 'ter mais tempo',
@@ -32,11 +34,56 @@ const cenarios: Cenario[] = [
     },
   },
   {
-    nome: 'Consultor · atendimento · já usa CRM → ferramenta-mais-complemento',
-    formaEsperada: 'ferramenta-mais-complemento',
+    nome: 'Autônomo · atendimento · Instagram → uma-ferramenta / ManyChat',
+    formaEsperada: 'uma-ferramenta', toolEsperada: 'manychat',
     respostas: {
-      1: P1.consultor, 2: GARGALO.atendimento, 3: '2 a 5 pessoas', 4: 'Entre 10 e 50',
-      5: 'responder duvidas de prazo no whatsapp', 6: 'focar em vender',
+      1: P1.autonomo, 2: GARGALO.atendimento, 3: 'Só eu', 4: 'Menos de 10',
+      5: 'respondo dm e comentario no instagram o dia todo', 6: 'menos tempo no celular',
+      7: 'Nada ainda — seria minha primeira vez',
+    },
+  },
+  {
+    nome: 'Consultor · VENDAS · "e-mails automáticos" → uma-ferramenta / Brevo (era Kommo!)',
+    formaEsperada: 'uma-ferramenta', toolEsperada: 'brevo',
+    respostas: {
+      1: P1.consultor, 2: GARGALO.vendas, 3: 'Só eu', 4: 'Menos de 10',
+      5: 'mandar os mesmos e-mails de acompanhamento pra cada lead novo', 6: 'Passaria a enviar e-mails automáticos',
+      7: 'Nada ainda — seria minha primeira vez',
+    },
+  },
+  {
+    nome: 'Consultor · vendas · "proposta" → uma-ferramenta / IA proposta',
+    formaEsperada: 'uma-ferramenta', toolEsperada: 'ia-proposta',
+    respostas: {
+      1: P1.consultor, 2: GARGALO.vendas, 3: 'Só eu', 4: 'Menos de 10',
+      5: 'monto proposta comercial do zero pra cada cliente', 6: 'fechar mais rapido',
+      7: 'Nada ainda — seria minha primeira vez',
+    },
+  },
+  {
+    nome: 'Empresa · operação · "relatório toda semana" → uma-ferramenta / IA documento',
+    formaEsperada: 'uma-ferramenta', toolEsperada: 'ia-documento',
+    respostas: {
+      1: P1.empresa, 2: GARGALO.operacao, 3: '2 a 5 pessoas', 4: 'Menos de 10',
+      5: 'monto o mesmo relatorio executivo toda semana na mao', 6: 'sair do operacional',
+      7: 'Nada ainda — seria minha primeira vez',
+    },
+  },
+  {
+    nome: 'Autônomo · financeiro · "mensalidade" → uma-ferramenta / Vindi',
+    formaEsperada: 'uma-ferramenta', toolEsperada: 'vindi',
+    respostas: {
+      1: P1.autonomo, 2: GARGALO.financeiro, 3: 'Só eu', 4: 'Menos de 10',
+      5: 'cobrar a mensalidade da assinatura de cada aluno', 6: 'previsibilidade',
+      7: 'Nada ainda — seria minha primeira vez',
+    },
+  },
+  {
+    nome: 'Consultor · vendas · e-mail + já usa CRM → ferramenta-mais-complemento / Brevo',
+    formaEsperada: 'ferramenta-mais-complemento', toolEsperada: 'brevo',
+    respostas: {
+      1: P1.consultor, 2: GARGALO.vendas, 3: '2 a 5 pessoas', 4: 'Entre 10 e 50',
+      5: 'sequencia de e-mail pra lead que entrou no funil', 6: 'nutrir sem trabalho manual',
       7: 'Um CRM (RD Station, Pipedrive, HubSpot, Kommo...)',
     },
   },
@@ -82,6 +129,10 @@ for (const c of cenarios) {
   check(r.forma === c.formaEsperada, `forma esperada: ${c.formaEsperada} (obtida: ${r.forma})`);
 
   const pb = montarPlaybook(r, c.respostas[5]);
+  console.log(`ponto de partida: ${pb.pontoDePartida.id} (${pb.pontoDePartida.nome})`);
+  if (c.toolEsperada) {
+    check(pb.pontoDePartida.id === c.toolEsperada, `ferramenta esperada: ${c.toolEsperada} (obtida: ${pb.pontoDePartida.id})`);
+  }
   check(!!pb.headline && !pb.headline.includes('undefined'), `headline: "${pb.headline}"`);
   check(!!pb.subheadline && !pb.subheadline.includes('undefined'), `subheadline: "${pb.subheadline.slice(0, 70)}…"`);
   check(pb.resumoBullets.length >= 2 && pb.resumoBullets.every((b) => b && !b.includes('undefined')), `${pb.resumoBullets.length} bullets ok`);

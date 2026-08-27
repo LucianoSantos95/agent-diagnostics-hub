@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import type { Playbook } from '../playbooks';
+import { playbookParaHtml } from '../playbooks';
 import { pressable } from '@/lib/motion';
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
   onSalvarEmail?: (email: string) => void;
 }
 
-type Estado = 'idle' | 'gerando' | 'pronto' | 'erro';
+type Estado = 'idle' | 'gerando' | 'pronto' | 'imprimir';
 
 export default function BaixarPlaybook({ playbook, sessionId, onBaixar, onSalvarEmail }: Props) {
   const prefersReduced = useReducedMotion();
@@ -20,7 +21,7 @@ export default function BaixarPlaybook({ playbook, sessionId, onBaixar, onSalvar
   const [email, setEmail] = useState('');
   const [emailStatus, setEmailStatus] = useState<'idle' | 'ok'>('idle');
 
-  async function gerar(comEmail?: string) {
+  async function gerarPdf(comEmail?: string) {
     const { data, error } = await supabase.functions.invoke('gerar-playbook-pdf', {
       body: { session_id: sessionId, playbook, email: comEmail },
     });
@@ -28,11 +29,20 @@ export default function BaixarPlaybook({ playbook, sessionId, onBaixar, onSalvar
     return data.url as string;
   }
 
+  // Fallback: abre o playbook numa aba pra imprimir/salvar como PDF.
+  function abrirParaImprimir() {
+    const w = window.open('', '_blank', 'noopener');
+    if (!w) return false;
+    w.document.write(playbookParaHtml(playbook));
+    w.document.close();
+    return true;
+  }
+
   async function baixar() {
     if (estado === 'gerando') return;
     setEstado('gerando');
     try {
-      const url = urlRef.current || (await gerar());
+      const url = urlRef.current || (await gerarPdf());
       urlRef.current = url;
       const a = document.createElement('a');
       a.href = url;
@@ -44,7 +54,10 @@ export default function BaixarPlaybook({ playbook, sessionId, onBaixar, onSalvar
       setEstado('pronto');
       onBaixar?.();
     } catch {
-      setEstado('erro');
+      // PDF do servidor indisponível → abre a versão pra imprimir
+      const ok = abrirParaImprimir();
+      setEstado(ok ? 'imprimir' : 'idle');
+      if (ok) onBaixar?.();
     }
   }
 
@@ -54,7 +67,7 @@ export default function BaixarPlaybook({ playbook, sessionId, onBaixar, onSalvar
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return;
     onSalvarEmail?.(v);
     setEmailStatus('ok');
-    gerar(v).catch(() => null); // fire-and-forget: gera + manda por e-mail
+    gerarPdf(v).catch(() => null); // fire-and-forget: gera + manda por e-mail
   }
 
   const nPassos = playbook.pontoDePartida.passos.length;
@@ -101,11 +114,17 @@ export default function BaixarPlaybook({ playbook, sessionId, onBaixar, onSalvar
           opacity: estado === 'gerando' ? 0.7 : 1,
         }}
       >
-        {estado === 'gerando' ? 'Gerando…' : estado === 'pronto' ? '✓ PDF baixado — baixar de novo' : '⬇ Baixar playbook (PDF)'}
+        {estado === 'gerando'
+          ? 'Gerando…'
+          : estado === 'pronto'
+          ? '✓ PDF baixado — baixar de novo'
+          : estado === 'imprimir'
+          ? '✓ Aberto — baixar de novo'
+          : '⬇ Baixar playbook (PDF)'}
       </motion.button>
-      {estado === 'erro' && (
-        <p className="text-xs mt-2" style={{ color: 'var(--danger)' }}>
-          Não deu pra gerar agora. Tenta de novo em instantes.
+      {estado === 'imprimir' && (
+        <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
+          Abri numa aba nova. Pra salvar como PDF: Ctrl/Cmd + P → "Salvar como PDF".
         </p>
       )}
 

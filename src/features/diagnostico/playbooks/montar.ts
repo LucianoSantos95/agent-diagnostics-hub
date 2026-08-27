@@ -16,48 +16,85 @@ function usa(jaUsa: string[], chave: keyof typeof SINAL_JA_USA): boolean {
   return jaUsa.some((s) => SINAL_JA_USA[chave].test(s));
 }
 
-// Ferramenta-âncora (1ª escolha natural) por frente.
-const ANCORA: Record<Categoria, string> = {
-  atendimento: 'typebot',
-  vendas: 'kommo',
-  operacao: 'make',
-  financeiro: 'asaas',
-};
-
-// Sinais de canal na descrição livre da tarefa (P5).
-function bonusCanal(id: string, tarefa: string): number {
-  const t = tarefa.toLowerCase();
-  if (id === 'typebot' && /whats?app|whats/.test(t)) return 3;
-  if (id === 'manychat' && /instagram|\bdm\b|direct|messenger/.test(t)) return 3;
-  if (id === 'tidio' && /site|website|chat no site|p[aá]gina/.test(t)) return 3;
-  return 0;
+// ---------------------------------------------------------------------------
+// SUB-FRENTES — o roteamento por keyword mora no motor (rotearSubFrente); aqui
+// só mapeamos o id do sub-caso pra ferramenta do catálogo + integração.
+// ---------------------------------------------------------------------------
+interface SubTool {
+  label: string;
+  toolId: string;
+  integracaoId?: string;
 }
 
-function rankFerramentas(
-  cands: FerramentaPlaybook[],
-  perfil: Perfil,
+const SUB_TOOL: Record<string, SubTool> = {
+  // atendimento
+  'instagram-dm': { label: 'atendimento no Instagram', toolId: 'manychat', integracaoId: 'atendimento-crm' },
+  'site-chat': { label: 'chat no site', toolId: 'tidio', integracaoId: 'atendimento-planilha' },
+  multicanal: { label: 'central de atendimento com time', toolId: 'chatwoot', integracaoId: 'atendimento-crm' },
+  'whatsapp-faq': { label: 'dúvidas repetidas no WhatsApp', toolId: 'typebot', integracaoId: 'atendimento-crm' },
+  // vendas
+  'email-sequencia': { label: 'sequência de e-mails automática', toolId: 'brevo', integracaoId: 'crm-email' },
+  proposta: { label: 'propostas comerciais', toolId: 'ia-proposta', integracaoId: 'crm-email' },
+  'followup-whatsapp': { label: 'follow-up no WhatsApp', toolId: 'kommo', integracaoId: 'crm-whatsapp' },
+  'organizar-funil': { label: 'organização do funil', toolId: 'rdstation-crm', integracaoId: 'form-crm' },
+  // operação
+  'base-dados': { label: 'organizar a base de dados', toolId: 'airtable', integracaoId: 'planilha-airtable' },
+  documento: { label: 'documentos repetitivos', toolId: 'ia-documento', integracaoId: 'automacao-ia' },
+  tecnico: { label: 'automação sem limite', toolId: 'n8n', integracaoId: 'automacao-ia' },
+  automatizar: { label: 'automatizar tarefa repetitiva', toolId: 'make', integracaoId: 'automacao-planilha' },
+  // financeiro
+  recorrencia: { label: 'cobrança recorrente', toolId: 'vindi', integracaoId: 'cobranca-crm' },
+  'nota-fiscal': { label: 'emissão de nota fiscal', toolId: 'enotas', integracaoId: 'cobranca-crm' },
+  conciliacao: { label: 'conciliação e previsão de caixa', toolId: 'conta-simples', integracaoId: 'cobranca-previsao' },
+  cobranca: { label: 'cobrança automática', toolId: 'asaas', integracaoId: 'cobranca-previsao' },
+};
+
+const ANCORA: Record<Categoria, string> = {
+  atendimento: 'typebot', vendas: 'rdstation-crm', operacao: 'make', financeiro: 'asaas',
+};
+
+function escolherPonto(
   categoria: Categoria,
-  tarefa: string,
-): FerramentaPlaybook[] {
-  const score = (f: FerramentaPlaybook) =>
-    (f.perfis.includes(perfil) ? 2 : 0) -
-    f.dificuldade +
-    (f.id === ANCORA[categoria] ? 1.5 : 0) +
-    bonusCanal(f.id, tarefa);
-  return [...cands].sort((a, b) => score(b) - score(a));
+  perfil: Perfil,
+  sub: SubTool,
+): { ponto: FerramentaPlaybook; alternativas: FerramentaPlaybook[] } {
+  const cands = FERRAMENTAS.filter((f) => f.categorias.includes(categoria));
+  const ponto =
+    cands.find((f) => f.id === sub.toolId) ??
+    cands.find((f) => f.id === ANCORA[categoria]) ??
+    cands[0];
+  const alternativas = cands
+    .filter((f) => f.id !== ponto.id)
+    .sort(
+      (a, b) =>
+        ((b.perfis.includes(perfil) ? 2 : 0) - b.dificuldade) -
+        ((a.perfis.includes(perfil) ? 2 : 0) - a.dificuldade),
+    );
+  return { ponto, alternativas };
 }
 
 function ordenarIntegracoes(
   integracoes: IntegracaoPlaybook[],
   jaUsa: string[],
+  complementoLabel: string,
+  subPreferida?: string,
 ): IntegracaoPlaybook[] {
+  const c = complementoLabel.toLowerCase();
   const score = (i: IntegracaoPlaybook) => {
-    let s = 0;
-    if (i.via === 'nativo') s += 1; // mais fácil primeiro, se nada mais pontuar
-    if (usa(jaUsa, 'crm') && /crm/i.test(i.titulo)) s += 5;
-    if (usa(jaUsa, 'automacao') && (i.via === 'make' || i.via === 'zapier' || i.via === 'n8n')) s += 5;
-    if (usa(jaUsa, 'iaGeral') && (i.via === 'api' || i.via === 'mcp')) s += 4;
-    if (usa(jaUsa, 'planilha') && /planilha|sheets/i.test(i.titulo)) s += 3;
+    const alvo = `${i.titulo} ${i.para} ${i.de}`.toLowerCase();
+    let s = i.via === 'nativo' ? 1 : 0;
+    if (i.id === subPreferida) s += 2;
+    // casa com o que a pessoa declarou que já usa (complementoLabel)
+    if (/crm/.test(c) && /crm/.test(alvo)) s += 6;
+    if (/automa|make|zapier/.test(c) && (/make|zapier|automa/.test(alvo) || i.via === 'make')) s += 6;
+    if (/planilha/.test(c) && /planilha|sheets|airtable/.test(alvo)) s += 6;
+    if (/\bia\b|api/.test(c) && (/\bia\b|openai|claude|api/.test(alvo) || i.via === 'api')) s += 6;
+    if (/cobran/.test(c) && /cobran|asaas|pagamento|recebiv/.test(alvo)) s += 6;
+    // reforço fraco pelos grupos de jaUsa
+    if (usa(jaUsa, 'crm') && /crm/.test(alvo)) s += 3;
+    if (usa(jaUsa, 'automacao') && (/make|zapier|automa/.test(alvo) || i.via === 'make')) s += 3;
+    if (usa(jaUsa, 'planilha') && /planilha|sheets/.test(alvo)) s += 3;
+    if (usa(jaUsa, 'iaGeral') && (i.via === 'api' || i.via === 'mcp')) s += 3;
     return s;
   };
   return [...integracoes].sort((a, b) => score(b) - score(a));
@@ -170,8 +207,10 @@ function conteudoPorForma(
   forma: Forma,
   ponto: FerramentaPlaybook,
   resultado: ResultadoDiagnostico,
+  subLabel: string,
 ): { headline: string; subheadline: string; resumoBullets: string[] } {
   const frente = FRENTE_LABEL[resultado.categoria];
+  const alvo = subLabel || frente;
 
   if (forma === 'agente') {
     return {
@@ -190,7 +229,7 @@ function conteudoPorForma(
   if (forma === 'ferramenta-mais-complemento') {
     return {
       headline: `Duas peças: ${ponto.nome} + ligar ${resultado.complementoLabel}`,
-      subheadline: `${ponto.nome} resolve ${frente}; ligar ${resultado.complementoLabel} tira o retrabalho de passar dado de um lado pro outro.`,
+      subheadline: `${ponto.nome} resolve ${alvo}; ligar ${resultado.complementoLabel} tira o retrabalho de passar dado de um lado pro outro.`,
       resumoBullets: [
         `Peça 1 — ${ponto.nome}: ${ponto.oQueResolve}`,
         `Peça 2 — conectar ${resultado.complementoLabel}, pra o que entra numa ponta aparecer na outra sozinho.`,
@@ -201,7 +240,7 @@ function conteudoPorForma(
   // uma-ferramenta
   return {
     headline: `Comece com uma ferramenta: ${ponto.nome}`,
-    subheadline: `Pro seu caso, ${ponto.nome} resolve o essencial de ${frente} — sem precisar montar um monte de coisa junto.`,
+    subheadline: `Pra ${alvo}, ${ponto.nome} resolve o essencial — sem precisar montar um monte de coisa junto.`,
     resumoBullets: [
       ponto.oQueResolve,
       `Dificuldade ${DIF_TXT[ponto.dificuldade]} · ${ponto.tempoSetup} · ${ponto.precoBRL.split('.')[0]}.`,
@@ -215,25 +254,33 @@ function conteudoPorForma(
  * O conteúdo muda conforme `resultado.forma` — complemento só entra se a forma
  * for 'ferramenta-mais-complemento'. Puro, sem I/O.
  */
-export function montarPlaybook(resultado: ResultadoDiagnostico, tarefaLivre = ''): Playbook {
+export function montarPlaybook(resultado: ResultadoDiagnostico, _tarefaLivre = ''): Playbook {
   const { categoria, perfil, jaUsa, forma } = resultado;
 
-  const candidatas = FERRAMENTAS.filter((f) => f.categorias.includes(categoria));
-  const ranqueadas = rankFerramentas(candidatas, perfil, categoria, tarefaLivre);
-  const pontoDePartida = ranqueadas[0] ?? FERRAMENTAS[0];
+  // O sub-caso já foi roteado pelo motor (resultado.subFrenteId).
+  const sub: SubTool = SUB_TOOL[resultado.subFrenteId] ?? {
+    label: FRENTE_LABEL[categoria],
+    toolId: ANCORA[categoria],
+  };
+  const { ponto: pontoDePartida, alternativas: altRanqueadas } = escolherPonto(categoria, perfil, sub);
 
   // Integrações e alternativas dependem da forma.
   let integracoes: IntegracaoPlaybook[] = [];
   let alternativas: FerramentaPlaybook[] = [];
   if (forma === 'ferramenta-mais-complemento') {
-    integracoes = ordenarIntegracoes(integracoesDaCategoria(categoria), jaUsa).slice(0, 1);
-    alternativas = ranqueadas.slice(1, 2);
+    integracoes = ordenarIntegracoes(
+      integracoesDaCategoria(categoria),
+      jaUsa,
+      resultado.complementoLabel,
+      sub.integracaoId,
+    ).slice(0, 1);
+    alternativas = altRanqueadas.slice(0, 1);
   } else if (forma === 'uma-ferramenta') {
-    alternativas = ranqueadas.slice(1, 2);
+    alternativas = altRanqueadas.slice(0, 1);
   }
   // 'agente' e 'validar': sem integrações, sem alternativas.
 
-  const { headline, subheadline, resumoBullets } = conteudoPorForma(forma, pontoDePartida, resultado);
+  const { headline, subheadline, resumoBullets } = conteudoPorForma(forma, pontoDePartida, resultado, sub.label);
 
   const catLabel = FRENTE_LABEL[categoria];
   const jaUsaNota = jaUsa.length

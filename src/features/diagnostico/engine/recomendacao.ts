@@ -69,6 +69,8 @@ export interface ResultadoDiagnostico {
   complementoLabel: string;
   /** Frase que explica por que essa forma (usada no subheadline de 'agente'/'validar'). */
   formaMotivo: string;
+  /** Sub-caso roteado pelo texto livre (ex.: 'email-sequencia', 'proposta'). */
+  subFrenteId: string;
 }
 
 type ConteudoBase = Omit<
@@ -87,6 +89,7 @@ type ConteudoBase = Omit<
   | 'forma'
   | 'complementoLabel'
   | 'formaMotivo'
+  | 'subFrenteId'
   | 'titulo'
   | 'subtitulo'
 >;
@@ -274,13 +277,70 @@ function usaGrupo(jaUsa: string[], grupo: keyof typeof GRUPO_JA_USA): boolean {
   return jaUsa.some((s) => GRUPO_JA_USA[grupo].test(s));
 }
 
-/** Rótulo do sistema que a pessoa já tem e que serve de complemento à ferramenta-base. */
-function rotuloComplemento(jaUsa: string[], categoria: Categoria): string {
-  if (usaGrupo(jaUsa, 'vendas') && categoria !== 'vendas') return 'o CRM que você já usa';
-  if (usaGrupo(jaUsa, 'operacao')) return 'a automação que você já usa (Make/Zapier)';
-  if (usaGrupo(jaUsa, 'planilha') && (categoria === 'operacao' || categoria === 'financeiro')) return 'a planilha que você já usa';
-  if (usaGrupo(jaUsa, 'iaGeral') && categoria === 'operacao') return 'a IA que você já usa (via API)';
-  if (usaGrupo(jaUsa, 'financeiro') && categoria !== 'financeiro') return 'a ferramenta de cobrança que você já usa';
+// ---------------------------------------------------------------------------
+// SUB-FRENTES — casos de uso concretos dentro de cada gargalo. O texto livre
+// (P4 tarefa + P6 meta) roteia pra um sub-caso. `grupo` = a capacidade que a
+// pessoa precisaria já ter pra isso virar "agente" (null = não é expressável
+// nas opções da P7, então nunca vira agente por esse sinal).
+// A última entrada de cada frente é o default.
+// ---------------------------------------------------------------------------
+type GrupoJaUsa = keyof typeof GRUPO_JA_USA;
+
+interface SubFrenteDef {
+  id: string;
+  kw: RegExp;
+  grupo: GrupoJaUsa | null;
+}
+
+const SUB_FRENTES_KW: Record<Categoria, SubFrenteDef[]> = {
+  atendimento: [
+    { id: 'instagram-dm', kw: /instagram|\bdm\b|direct|coment[aá]rio|stories?/i, grupo: 'atendimento' },
+    { id: 'site-chat', kw: /\bsite\b|website|p[aá]gina|landing|\bloja\b|e-?commerce|checkout/i, grupo: 'atendimento' },
+    { id: 'multicanal', kw: /v[aá]rios canais|multicanal|caixa de entrada|\binbox\b|time atende|equipe atende|central de atendimento/i, grupo: 'atendimento' },
+    { id: 'whatsapp-faq', kw: /whats?app|\bzap\b|d[uú]vida|pergunta|\bfaq\b|hor[aá]rio/i, grupo: 'atendimento' },
+  ],
+  vendas: [
+    { id: 'email-sequencia', kw: /e-?mail|newsletter|nutri[çc][aã]o|sequ[eê]ncia|disparo|cad[eê]ncia|marketing|autom[aá]tico de e-?mail|automatizar.*e-?mail/i, grupo: null },
+    { id: 'proposta', kw: /proposta|or[çc]amento|cota[çc][aã]o|contrato|escopo|apresenta[çc][aã]o comercial/i, grupo: 'iaGeral' },
+    { id: 'followup-whatsapp', kw: /whats?app|\bzap\b|cobrar resposta|retomar|reativar|lembrar de responder/i, grupo: 'vendas' },
+    { id: 'organizar-funil', kw: /funil|pipeline|perco (lead|cliente|oportunidade)|organizar|planilha de vendas|esque[çc]o|acompanhar|controle/i, grupo: 'vendas' },
+  ],
+  operacao: [
+    { id: 'base-dados', kw: /planilha|base de dados|cadastro|\bcaos\b|v[aá]rias abas|controle em excel/i, grupo: 'planilha' },
+    { id: 'documento', kw: /relat[oó]rio|documento|\bata\b|resumo|descri[çc][aã]o|texto|apresenta[çc][aã]o/i, grupo: 'iaGeral' },
+    { id: 'tecnico', kw: /open source|c[oó]digo|\bapi\b|sem limite|volume alto|self-?host|desenvolvedor|customiza/i, grupo: 'operacao' },
+    { id: 'automatizar', kw: /automa[çc]|integr|conectar|mover dado|copiar|repetitiv|toda semana|todo dia|notifica|lembrete|agendar/i, grupo: 'operacao' },
+  ],
+  financeiro: [
+    { id: 'recorrencia', kw: /mensalidade|assinatura|recorr[eê]nte|\bplano\b|\bclube\b/i, grupo: 'financeiro' },
+    { id: 'nota-fiscal', kw: /nota fiscal|\bnfe?\b|nfs-?e|emitir nota|emiss[aã]o/i, grupo: null },
+    { id: 'conciliacao', kw: /concilia|categoriz|onde (gasto|gasta|vai o dinheiro)|despesa|previs[aã]o de caixa|fluxo de caixa|fechar o m[eê]s|extrato/i, grupo: 'financeiro' },
+    { id: 'cobranca', kw: /cobran[çc]|boleto|\bpix\b|inadimpl|receber|atras|d[eê]bito|devendo|r[eé]gua/i, grupo: 'financeiro' },
+  ],
+};
+
+/** Roteia o texto livre (P4 + P6) pro sub-caso. Retorna o id + o grupo-capacidade. */
+export function rotearSubFrente(categoria: Categoria, textoLivre: string): { id: string; grupo: GrupoJaUsa | null } {
+  const subs = SUB_FRENTES_KW[categoria];
+  const t = (textoLivre ?? '').toLowerCase();
+  const achado = subs.find((s) => s.kw.test(t)) ?? subs[subs.length - 1];
+  return { id: achado.id, grupo: achado.grupo };
+}
+
+/**
+ * Rótulo do sistema que a pessoa já tem e que serve de complemento à
+ * ferramenta-base. Só conta como complemento se for DIFERENTE do que o
+ * sub-caso já entrega (subGrupo).
+ */
+function rotuloComplemento(jaUsa: string[], categoria: Categoria, subGrupo: GrupoJaUsa | null): string {
+  if (usaGrupo(jaUsa, 'vendas') && subGrupo !== 'vendas') return 'o CRM que você já usa';
+  if (usaGrupo(jaUsa, 'operacao') && subGrupo !== 'operacao') return 'a automação que você já usa (Make/Zapier)';
+  if (usaGrupo(jaUsa, 'planilha') && subGrupo !== 'planilha' && (categoria === 'operacao' || categoria === 'financeiro' || categoria === 'vendas'))
+    return 'a planilha que você já usa';
+  if (usaGrupo(jaUsa, 'iaGeral') && subGrupo !== 'iaGeral' && (categoria === 'operacao' || categoria === 'atendimento'))
+    return 'a IA que você já usa (via API)';
+  if (usaGrupo(jaUsa, 'financeiro') && subGrupo !== 'financeiro' && categoria !== 'financeiro')
+    return 'a ferramenta de cobrança que você já usa';
   return '';
 }
 
@@ -292,8 +352,9 @@ function classificarForma(args: {
   perfilExperiencia: PerfilExperiencia;
   time: string;
   volume: string;
+  subGrupo: GrupoJaUsa | null;
 }): { forma: Forma; complementoLabel: string; formaMotivo: string } {
-  const { categoria, confianca, confiancaExplicacao, jaUsa, perfilExperiencia, time, volume } = args;
+  const { categoria, confianca, confiancaExplicacao, jaUsa, perfilExperiencia, time, volume, subGrupo } = args;
 
   // 1. Respostas se contradizem → não prescrever, validar.
   if (confianca === 'baixa') {
@@ -303,11 +364,13 @@ function classificarForma(args: {
   // 2. Sinais de "agente sob medida".
   const timeGrande = time === '6 a 20 pessoas' || time === 'Mais de 20 pessoas';
   const volumeAlto = volume === 'Mais de 50';
-  if (usaGrupo(jaUsa, categoria)) {
+  // Já usa a ferramenta que faz exatamente o que o sub-caso precisa, e ainda
+  // marcou essa frente como gargalo → o problema é config, não ferramenta.
+  if (subGrupo && usaGrupo(jaUsa, subGrupo)) {
     return {
       forma: 'agente',
       complementoLabel: '',
-      formaMotivo: 'Você já usa ferramenta nessa frente e o gargalo continua — o problema não é a ferramenta, é a configuração pro seu processo.',
+      formaMotivo: 'Você já usa uma ferramenta pra isso e o gargalo continua — o problema não é a ferramenta, é a configuração pro seu processo.',
     };
   }
   if (timeGrande && volumeAlto) {
@@ -326,7 +389,7 @@ function classificarForma(args: {
   }
 
   // 3. Complemento real — só se há outro sistema que casa.
-  const comp = rotuloComplemento(jaUsa, categoria);
+  const comp = rotuloComplemento(jaUsa, categoria, subGrupo);
   if (comp) return { forma: 'ferramenta-mais-complemento', complementoLabel: comp, formaMotivo: '' };
 
   // 4. Default: uma peça, montar, pronto.
@@ -456,6 +519,9 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
   const sinais = analisarSinais(p4, categoriaOriginal, overrideAtendimento);
   const { nivel: confianca, explicacao: confiancaExplicacao } = classificarConfianca(sinais);
 
+  // Sub-caso pelo texto livre (P4 tarefa + P6 meta).
+  const sub = rotearSubFrente(categoria, `${p4} ${p6}`);
+
   const { forma, complementoLabel, formaMotivo } = classificarForma({
     categoria,
     confianca,
@@ -464,6 +530,7 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
     perfilExperiencia,
     time: p2,
     volume: p3,
+    subGrupo: sub.grupo,
   });
 
   const conteudo = CONTEUDO[categoria];
@@ -539,5 +606,6 @@ export function calcularResultado(respostas: Record<number, string>): ResultadoD
     forma,
     complementoLabel,
     formaMotivo,
+    subFrenteId: sub.id,
   };
 }
